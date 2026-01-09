@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试模块加载</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .module-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .module-item {
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .module-item strong {
+            color: #333;
+        }
+        .count {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>题库模块测试</h1>
+    <div id="moduleInfo"></div>
+    <h2>所有模块：</h2>
+    <div id="moduleList" class="module-list"></div>
+
+    <script src="modern-history-questions.js?v=6"></script>
+    <script>
+        window.onload = function() {
+            console.log('questionBank:', questionBank);
+
+            const infoDiv = document.getElementById('moduleInfo');
+            const listDiv = document.getElementById('moduleList');
+
+            if (typeof questionBank === 'undefined') {
+                infoDiv.innerHTML = '<p style="color: red;">错误：questionBank 未定义！</p>';
+                return;
+            }
+
+            // 统计所有模块
+            const moduleStats = {};
+
+            // 遍历所有题目类型
+            ['singleChoice', 'trueFalse', 'shortAnswer', 'essay'].forEach(type => {
+                if (questionBank[type]) {
+                    console.log(`${type}:`, questionBank[type].length, '题');
+                    questionBank[type].forEach(q => {
+                        if (!moduleStats[q.module]) {
+                            moduleStats[q.module] = 0;
+                        }
+                        moduleStats[q.module]++;
+                    });
+                }
+            });
+
+            // 显示统计信息
+            const totalModules = Object.keys(moduleStats).length;
+            const totalQuestions = Object.values(moduleStats).reduce((a, b) => a + b, 0);
+
+            infoDiv.innerHTML = `
+                <p><strong>总模块数：</strong>${totalModules}</p>
+                <p><strong>总题目数：</strong>${totalQuestions}</p>
+                <p><strong>题目类型：</strong></p>
+                <ul>
+                    <li>单选题：${questionBank.singleChoice ? questionBank.singleChoice.length : 0} 题</li>
+                    <li>判断题：${questionBank.trueFalse ? questionBank.trueFalse.length : 0} 题</li>
+                    <li>简答题：${questionBank.shortAnswer ? questionBank.shortAnswer.length : 0} 题</li>
+                    <li>论述题：${questionBank.essay ? questionBank.essay.length : 0} 题</li>
+                </ul>
+            `;
+
+            // 显示所有模块
+            Object.keys(moduleStats).sort().forEach(module => {
+                const item = document.createElement('div');
+                item.className = 'module-item';
+                item.innerHTML = `
+                    <strong>${module}</strong><br>
+                    <span class="count">${moduleStats[module]} 道题</span>
+                `;
+                listDiv.appendChild(item);
+            });
+        };
+    </script>
+</body>
+</html>

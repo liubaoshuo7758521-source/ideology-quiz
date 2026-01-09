@@ -1,7 +1,7 @@
 // 中国近代史纲要完整题库
 // 包含180道单项选择题, 100道判断题, 60道简答题, 60道论述题
 
-const modernHistoryQuestions = {
+var modernHistoryQuestions = {
   // 单项选择题 (180题)
   singleChoice: [
     // 试卷A 单选题
@@ -763,7 +763,10 @@ const modernHistoryQuestions = {
   ]
 };
 
-// 导出模块
+// 导出到全局变量供浏览器使用
+var questionBank = modernHistoryQuestions;
+
+// 导出模块供 Node.js 使用
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = modernHistoryQuestions;
 }

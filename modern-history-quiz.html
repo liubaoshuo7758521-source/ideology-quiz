@@ -538,9 +538,14 @@
         </div>
     </div>
 
-    <script src="modern-history-questions.js?v=4"></script>
+    <script src="modern-history-questions.js?v=5"></script>
 
     <script>
+        // 调试信息
+        console.log('Script loaded');
+        console.log('questionBank type:', typeof questionBank);
+        console.log('questionBank:', questionBank);
+
         // 题库数据
         let currentQuestions = [];
         let currentQuestionIndex = 0;
@@ -578,13 +583,20 @@
 
         // 页面加载时初始化
         window.onload = function() {
+            console.log('Window onload fired');
+            console.log('questionBank at onload:', typeof questionBank);
+
             loadData();
+
             // 等待一小段时间确保 questionBank 已加载
             setTimeout(function() {
+                console.log('After timeout, questionBank:', typeof questionBank);
                 if (typeof questionBank !== 'undefined') {
+                    console.log('Generating module buttons...');
                     generateModuleButtons();
                 } else {
                     console.error('questionBank not loaded!');
+                    alert('题库加载失败，请刷新页面！');
                 }
             }, 100);
         };
@@ -607,29 +619,53 @@
 
         // 生成模块选择按钮
         function generateModuleButtons() {
+            // 检查 questionBank 是否存在
+            if (typeof questionBank === 'undefined') {
+                console.error('questionBank not loaded!');
+                return;
+            }
+
             // 从题库中动态提取所有模块
             const moduleSet = new Set();
 
             // 从单选题中提取模块
-            questionBank.singleChoice.forEach(q => {
-                moduleSet.add(q.module);
-            });
+            if (questionBank.singleChoice) {
+                questionBank.singleChoice.forEach(q => {
+                    moduleSet.add(q.module);
+                });
+            }
 
             // 从判断题中提取模块
-            questionBank.trueFalse.forEach(q => {
-                moduleSet.add(q.module);
-            });
+            if (questionBank.trueFalse) {
+                questionBank.trueFalse.forEach(q => {
+                    moduleSet.add(q.module);
+                });
+            }
+
+            // 从简答题中提取模块
+            if (questionBank.shortAnswer) {
+                questionBank.shortAnswer.forEach(q => {
+                    moduleSet.add(q.module);
+                });
+            }
 
             // 从论述题中提取模块
-            questionBank.essay.forEach(q => {
-                moduleSet.add(q.module);
-            });
+            if (questionBank.essay) {
+                questionBank.essay.forEach(q => {
+                    moduleSet.add(q.module);
+                });
+            }
 
             // 转换为数组并排序
             const modules = Array.from(moduleSet).sort();
 
             const container = document.getElementById('moduleButtons');
             container.innerHTML = '';
+
+            if (modules.length === 0) {
+                container.innerHTML = '<p style="color: #999;">没有可用的模块</p>';
+                return;
+            }
 
             modules.forEach(module => {
                 const btn = document.createElement('div');
@@ -666,25 +702,31 @@
             currentQuestions = [];
 
             // 添加单选题
-            questionBank.singleChoice.forEach(q => {
-                if (selectedModules.includes(q.module)) {
-                    currentQuestions.push({...q, type: 'singleChoice'});
-                }
-            });
+            if (questionBank.singleChoice) {
+                questionBank.singleChoice.forEach(q => {
+                    if (selectedModules.includes(q.module)) {
+                        currentQuestions.push({...q, type: 'singleChoice'});
+                    }
+                });
+            }
 
             // 添加判断题
-            questionBank.trueFalse.forEach(q => {
-                if (selectedModules.includes(q.module)) {
-                    currentQuestions.push({...q, type: 'trueFalse'});
-                }
-            });
+            if (questionBank.trueFalse) {
+                questionBank.trueFalse.forEach(q => {
+                    if (selectedModules.includes(q.module)) {
+                        currentQuestions.push({...q, type: 'trueFalse'});
+                    }
+                });
+            }
 
             // 添加论述题
-            questionBank.essay.forEach(q => {
-                if (selectedModules.includes(q.module)) {
-                    currentQuestions.push({...q, type: 'essay'});
-                }
-            });
+            if (questionBank.essay) {
+                questionBank.essay.forEach(q => {
+                    if (selectedModules.includes(q.module)) {
+                        currentQuestions.push({...q, type: 'essay'});
+                    }
+                });
+            }
 
             if (currentQuestions.length === 0) {
                 alert('所选模块没有题目！');
@@ -696,23 +738,40 @@
 
         // 开始模拟考试
         function startMockExam() {
+            // 检查 questionBank 是否存在
+            if (typeof questionBank === 'undefined') {
+                alert('题库加载失败，请刷新页面重试！');
+                return;
+            }
+
             // 随机抽取题目（从所有题目中抽取50道）
             currentQuestions = [];
 
             // 添加单选题
-            questionBank.singleChoice.forEach(q => {
-                currentQuestions.push({...q, type: 'singleChoice'});
-            });
+            if (questionBank.singleChoice) {
+                questionBank.singleChoice.forEach(q => {
+                    currentQuestions.push({...q, type: 'singleChoice'});
+                });
+            }
 
             // 添加判断题
-            questionBank.trueFalse.forEach(q => {
-                currentQuestions.push({...q, type: 'trueFalse'});
-            });
+            if (questionBank.trueFalse) {
+                questionBank.trueFalse.forEach(q => {
+                    currentQuestions.push({...q, type: 'trueFalse'});
+                });
+            }
 
             // 添加论述题
-            questionBank.essay.forEach(q => {
-                currentQuestions.push({...q, type: 'essay'});
-            });
+            if (questionBank.essay) {
+                questionBank.essay.forEach(q => {
+                    currentQuestions.push({...q, type: 'essay'});
+                });
+            }
+
+            if (currentQuestions.length === 0) {
+                alert('题库中没有题目！');
+                return;
+            }
 
             // 随机打乱
             currentQuestions = shuffleArray(currentQuestions);
@@ -760,7 +819,7 @@
             document.getElementById('wrongCount').textContent = wrongCount;
 
             // 显示题目信息
-            document.getElementById('questionNumber').textContent = `第 ${question.number} 题`;
+            document.getElementById('questionNumber').textContent = `第 ${question.id} 题`;
             document.getElementById('questionContent').textContent = question.question;
 
             // 根据题目类型显示不同内容
@@ -833,7 +892,7 @@
 
                 // 显示参考答案
                 const refAnswerDiv = document.getElementById('referenceAnswer');
-                refAnswerDiv.innerHTML = `<h4>参考答案：</h4><p>${question.referenceAnswer.replace(/\n/g, '<br>')}</p>`;
+                refAnswerDiv.innerHTML = `<h4>参考答案：</h4><p>${question.answer.replace(/\n/g, '<br>')}</p>`;
                 refAnswerDiv.classList.remove('hidden');
 
                 // 论述题不算对错，自动下一题
@@ -925,7 +984,7 @@
 
             // 检查是否已存在
             const exists = window.wrongQuestions.some(q =>
-                q.number === wrongItem.number && q.module === wrongItem.module
+                q.id === wrongItem.id && q.module === wrongItem.module
             );
 
             if (!exists) {

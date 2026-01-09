@@ -1,0 +1,4 @@
+  File "D:\Git\bin\c\generate_complete_questions.py", line 28
+    (7, "第一章 反对外国侵略的斗争", "提出"师夷长技以制夷"思想的是（）", ["A. 魏源", "B. 林则徐", "C. 龚自珍", "D. 严复"], "A"),
+                             ^^^^^^^
+SyntaxError: invalid syntax. Is this intended to be part of the string?

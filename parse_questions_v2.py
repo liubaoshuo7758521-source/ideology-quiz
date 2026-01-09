@@ -134,7 +134,7 @@ def parse_questions():
 
         question_num = 1
         for q in questions[1:]:  # Skip first empty element
-            match = re.match(r'(\d+)\.\s*(.*?)\n\*\*答案\*\*[：:]\s*(.*?)(?=\n\d+\.|$)', q, re.DOTALL)
+            match = re.match(r'(\d+)\.\s*(.*?)\n\*\*答案\*\*[：:]\s*(.*?)(?=\n\d+\.|\s*###\s+第|$)', q, re.DOTALL)
             if match:
                 num, question, answer = match.groups()
                 question = question.strip()
@@ -181,10 +181,11 @@ def parse_questions():
 
         question_num = 1
         for q in questions[1:]:  # Skip first empty element
-            # Remove markdown formatting
+            # Remove markdown formatting and section headers
             q_clean = re.sub(r'\*\*', '', q)
-            # Extract question (everything up to the next number or end)
-            match = re.match(r'(\d+)\.\s*(.*?)(?=\n\d+\.|$)', q_clean, re.DOTALL)
+            # Extract question (everything up to the next number, section header, or end)
+            # Section headers like "### 第六章 中华民族的抗日战争（6题）" should stop the match
+            match = re.match(r'(\d+)\.\s*(.*?)(?=\n\d+\.|\s*###\s+第|$)', q_clean, re.DOTALL)
             if match:
                 num, question = match.groups()
                 question = question.strip()

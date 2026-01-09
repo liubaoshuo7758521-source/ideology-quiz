@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas 粒子流体效果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #000;
+            font-family: 'Arial', sans-serif;
+            cursor: crosshair;
+        }
+
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            user-select: none;
+        }
+
+        .info h3 {
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .info p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .info .highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            z-index: 1000;
+            user-select: none;
+        }
+
+        .controls button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .controls button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    
+    <div class="info">
+        <h3>粒子流体控制系统</h3>
+        <p>粒子数量: <span class="highlight" id="particleCount">1000</span></p>
+        <p>鼠标位置: <span class="highlight" id="mousePos">0, 0</span></p>
+        <p>FPS: <span class="highlight" id="fps">60</span></p>
+        <p>鼠标滚轮: 调节粒子密度</p>
+        <p>按住鼠标: 吸引粒子</p>
+        <p>空格键: 暂停/继续</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="particleSystem.reset()">重置粒子</button>
+        <button onclick="particleSystem.toggleGravity()">切换重力</button>
+        <button onclick="particleSystem.explode()">爆炸效果</button>
+        <button onclick="particleSystem.changeMode()">切换模式</button>
+    </div>
+
+    <script>
+        class Particle {
+            constructor(x, y, canvas) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.radius = Math.random() * 3 + 1;
+                this.baseRadius = this.radius;
+                this.canvas = canvas;
+                this.mass = this.radius * 0.5;
+                this.hue = Math.random() * 360;
+                this.saturation = 70 + Math.random() * 30;
+                this.lightness = 50 + Math.random() * 20;
+                this.alpha = 0.8 + Math.random() * 0.2;
+                this.life = 1;
+                this.decay = 0.001;
+                this.trail = [];
+                this.maxTrailLength = 10;
+            }
+
+            update(mouseX, mouseY, isMouseDown, particles, gravityEnabled) {
+                // 保存轨迹
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > this.maxTrailLength) {
+                    this.trail.shift();
+                }
+
+                // 鼠标交互
+                if (mouseX !== null && mouseY !== null) {
+                    const dx = mouseX - this.x;
+                    const dy = mouseY - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 200) {
+                        const force = (200 - distance) / 200;
+                        const forceX = (dx / distance) * force * 2;
+                        const forceY = (dy / distance) * force * 2;
+                        
+                        if (isMouseDown) {
+                            // 吸引模式
+                            this.vx += forceX * 0.5;
+                            this.vy += forceY * 0.5;
+                        } else {
+                            // 排斥模式
+                            this.vx -= forceX * 0.3;
+                            this.vy -= forceY * 0.3;
+                        }
+                    }
+                }
+
+                // 粒子间的相互作用
+                particles.forEach(other => {
+                    if (other !== this) {
+                        const dx = other.x - this.x;
+                        const dy = other.y - this.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100 && distance > 0) {
+                            // 引力/斥力平衡
+                            const minDistance = this.radius + other.radius + 5;
+                            
+                            if (distance < minDistance) {
+                                // 斥力 - 防止重叠
+                                const force = (minDistance - distance) / minDistance;
+                                const forceX = (dx / distance) * force * 2;
+                                const forceY = (dy / distance) * force * 2;
+                                
+                                this.vx -= forceX;
+                                this.vy -= forceY;
+                            } else {
+                                // 引力 - 粒子间相互吸引
+                                const force = 0.05 / distance;
+                                const forceX = (dx / distance) * force;
+                                const forceY = (dy / distance) * force;
+                                
+                                this.vx += forceX;
+                                this.vy += forceY;
+                            }
+                        }
+                    }
+                });
+
+                // 重力效果
+                if (gravityEnabled) {
+                    this.vy += 0.1;
+                }
+
+                // 速度衰减
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+
+                // 限制最大速度
+                const maxSpeed = 10;
+                const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                if (currentSpeed > maxSpeed) {
+                    this.vx = (this.vx / currentSpeed) * maxSpeed;
+                    this.vy = (this.vy / currentSpeed) * maxSpeed;
+                }
+
+                // 更新位置
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // 边界碰撞检测
+                if (this.x - this.radius < 0) {
+                    this.x = this.radius;
+                    this.vx = Math.abs(this.vx) * 0.8;
+                }
+                if (this.x + this.radius > this.canvas.width) {
+                    this.x = this.canvas.width - this.radius;
+                    this.vx = -Math.abs(this.vx) * 0.8;
+                }
+                if (this.y - this.radius < 0) {
+                    this.y = this.radius;
+                    this.vy = Math.abs(this.vy) * 0.8;
+                }
+                if (this.y + this.radius > this.canvas.height) {
+                    this.y = this.canvas.height - this.radius;
+                    this.vy = -Math.abs(this.vy) * 0.8;
+                }
+
+                // 更新颜色
+                this.hue = (this.hue + 0.5) % 360;
+
+                // 生命周期
+                this.life -= this.decay;
+                if (this.life <= 0) {
+                    this.reset();
+                }
+            }
+
+            reset() {
+                this.x = Math.random() * this.canvas.width;
+                this.y = Math.random() * this.canvas.height;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.life = 1;
+                this.trail = [];
+            }
+
+            draw(ctx) {
+                // 绘制轨迹
+                if (this.trail.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[0].x, this.trail[0].y);
+                    
+                    for (let i = 1; i < this.trail.length; i++) {
+                        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    }
+                    
+                    ctx.strokeStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.alpha * 0.3})`;
+                    ctx.lineWidth = this.radius * 0.5;
+                    ctx.stroke();
+                }
+
+                // 绘制粒子光晕
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 3);
+                gradient.addColorStop(0, `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.alpha * 0.8})`);
+                gradient.addColorStop(0.5, `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.alpha * 0.3})`);
+                gradient.addColorStop(1, `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, 0)`);
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 3, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // 绘制粒子核心
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness + 20}%, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        class ParticleSystem {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.particleCount = 1000;
+                this.mouseX = null;
+                this.mouseY = null;
+                this.isMouseDown = false;
+                this.isPaused = false;
+                this.gravityEnabled = false;
+                this.mode = 'fluid'; // fluid, galaxy, explosion
+                this.lastTime = performance.now();
+                this.fps = 60;
+                
+                this.init();
+                this.setupEventListeners();
+                this.animate();
+            }
+
+            init() {
+                this.resizeCanvas();
+                this.createParticles();
+            }
+
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            createParticles() {
+                this.particles = [];
+                for (let i = 0; i < this.particleCount; i++) {
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+                    this.particles.push(new Particle(x, y, this.canvas));
+                }
+                this.updateParticleCount();
+            }
+
+            setupEventListeners() {
+                // 鼠标事件
+                this.canvas.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                    document.getElementById('mousePos').textContent = `${Math.round(e.clientX)}, ${Math.round(e.clientY)}`;
+                });
+
+                this.canvas.addEventListener('mousedown', () => {
+                    this.isMouseDown = true;
+                });
+
+                this.canvas.addEventListener('mouseup', () => {
+                    this.isMouseDown = false;
+                });
+
+                this.canvas.addEventListener('mouseleave', () => {
+                    this.mouseX = null;
+                    this.mouseY = null;
+                    this.isMouseDown = false;
+                });
+
+                // 滚轮事件 - 调节粒子密度
+                this.canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -50 : 50;
+                    this.particleCount = Math.max(100, Math.min(2000, this.particleCount + delta));
+                    
+                    // 调整粒子数量
+                    if (this.particleCount > this.particles.length) {
+                        const diff = this.particleCount - this.particles.length;
+                        for (let i = 0; i < diff; i++) {
+                            const x = Math.random() * this.canvas.width;
+                            const y = Math.random() * this.canvas.height;
+                            this.particles.push(new Particle(x, y, this.canvas));
+                        }
+                    } else {
+                        this.particles.splice(this.particleCount);
+                    }
+                    
+                    this.updateParticleCount();
+                });
+
+                // 键盘事件
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        this.isPaused = !this.isPaused;
+                    }
+                });
+
+                // 窗口调整
+                window.addEventListener('resize', () => {
+                    this.resizeCanvas();
+                });
+            }
+
+            updateParticleCount() {
+                document.getElementById('particleCount').textContent = this.particleCount;
+            }
+
+            updateFPS() {
+                const currentTime = performance.now();
+                const deltaTime = currentTime - this.lastTime;
+                this.fps = Math.round(1000 / deltaTime);
+                this.lastTime = currentTime;
+                document.getElementById('fps').textContent = this.fps;
+            }
+
+            reset() {
+                this.createParticles();
+            }
+
+            toggleGravity() {
+                this.gravityEnabled = !this.gravityEnabled;
+            }
+
+            explode() {
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                
+                this.particles.forEach(particle => {
+                    const dx = particle.x - centerX;
+                    const dy = particle.y - centerY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 0) {
+                        const force = 20;
+                        particle.vx = (dx / distance) * force;
+                        particle.vy = (dy / distance) * force;
+                    }
+                });
+            }
+
+            changeMode() {
+                const modes = ['fluid', 'galaxy', 'explosion'];
+                const currentIndex = modes.indexOf(this.mode);
+                this.mode = modes[(currentIndex + 1) % modes.length];
+                
+                // 根据模式调整粒子行为
+                switch(this.mode) {
+                    case 'galaxy':
+                        this.particles.forEach(particle => {
+                            const angle = Math.random() * Math.PI * 2;
+                            const radius = Math.random() * Math.min(this.canvas.width, this.canvas.height) * 0.4;
+                            particle.x = this.canvas.width / 2 + Math.cos(angle) * radius;
+                            particle.y = this.canvas.height / 2 + Math.sin(angle) * radius;
+                            particle.vx = -Math.sin(angle) * 2;
+                            particle.vy = Math.cos(angle) * 2;
+                        });
+                        break;
+                    case 'explosion':
+                        this.explode();
+                        break;
+                    default:
+                        this.reset();
+                }
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+
+                if (this.isPaused) return;
+
+                // 清除画布
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // 更新和绘制粒子
+                this.particles.forEach(particle => {
+                    particle.update(this.mouseX, this.mouseY, this.isMouseDown, this.particles, this.gravityEnabled);
+                    particle.draw(this.ctx);
+                });
+
+                // 绘制连线（当粒子距离很近时）
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                this.ctx.lineWidth = 0.5;
+                
+                for (let i = 0; i < this.particles.length; i++) {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const dx = this.particles[i].x - this.particles[j].x;
+                        const dy = this.particles[i].y - this.particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 50) {
+                            const opacity = (50 - distance) / 50 * 0.3;
+                            this.ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                            this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+
+                // 更新FPS
+                this.updateFPS();
+            }
+        }
+
+        // 初始化粒子系统
+        const particleSystem = new ParticleSystem('particleCanvas');
+    </script>
+</body>
+</html>

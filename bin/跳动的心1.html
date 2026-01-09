@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳动的爱心</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .heart-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            transform: rotate(-45deg);
+            animation: heartbeat 1.2s infinite;
+        }
+
+        .heart {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff3838);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255, 56, 56, 0.8);
+        }
+
+        .heart:before,
+        .heart:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff3838);
+            border-radius: 50%;
+        }
+
+        .heart:before {
+            top: -50%;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 50%;
+            top: 0;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: rotate(-45deg) scale(1);
+            }
+            25% {
+                transform: rotate(-45deg) scale(1.1);
+            }
+            40% {
+                transform: rotate(-45deg) scale(1);
+            }
+            60% {
+                transform: rotate(-45deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(-45deg) scale(1);
+            }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        .message {
+            position: absolute;
+            bottom: 50px;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="heart-container">
+        <div class="heart"></div>
+    </div>
+    
+    <div class="message">爱在跳动</div>
+
+    <script>
+        // 创建粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 创建额外的爱心粒子
+        function createHeartParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                const heartParticle = document.createElement('div');
+                heartParticle.innerHTML = '❤️';
+                heartParticle.style.position = 'absolute';
+                heartParticle.style.left = (Math.random() * 80 + 10) + '%';
+                heartParticle.style.top = '50%';
+                heartParticle.style.fontSize = '20px';
+                heartParticle.style.animation = 'float 4s ease-out forwards';
+                heartParticle.style.pointerEvents = 'none';
+                
+                particlesContainer.appendChild(heartParticle);
+                
+                // 4秒后移除粒子
+                setTimeout(() => {
+                    heartParticle.remove();
+                }, 4000);
+            }, 2000);
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            createParticles();
+            createHeartParticles();
+        });
+
+        // 点击爱心时的交互效果
+        document.querySelector('.heart-container').addEventListener('click', function() {
+            this.style.animation = 'none';
+            setTimeout(() => {
+                this.style.animation = 'heartbeat 0.6s infinite';
+            }, 10);
+            
+            // 创建爆炸粒子效果
+            for (let i = 0; i < 10; i++) {
+                const burst = document.createElement('div');
+                burst.innerHTML = '❤️';
+                burst.style.position = 'absolute';
+                burst.style.left = '50%';
+                burst.style.top = '50%';
+                burst.style.fontSize = '30px';
+                burst.style.transform = 'translate(-50%, -50%)';
+                burst.style.pointerEvents = 'none';
+                
+                const angle = (Math.PI * 2 * i) / 10;
+                const velocity = 200;
+                const duration = 1000;
+                
+                burst.style.transition = `all ${duration}ms ease-out`;
+                
+                document.body.appendChild(burst);
+                
+                setTimeout(() => {
+                    burst.style.transform = `translate(calc(-50% + ${Math.cos(angle) * velocity}px), calc(-50% + ${Math.sin(angle) * velocity}px)) scale(0)`;
+                    burst.style.opacity = '0';
+                }, 10);
+                
+                setTimeout(() => {
+                    burst.remove();
+                }, duration);
+            }
+        });
+    </script>
+</body>
+</html>

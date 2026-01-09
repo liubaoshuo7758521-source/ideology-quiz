@@ -538,7 +538,7 @@
         </div>
     </div>
 
-    <script src="modern-history-questions.js?v=3"></script>
+    <script src="modern-history-questions.js?v=4"></script>
 
     <script>
         // 题库数据
@@ -579,7 +579,14 @@
         // 页面加载时初始化
         window.onload = function() {
             loadData();
-            generateModuleButtons();
+            // 等待一小段时间确保 questionBank 已加载
+            setTimeout(function() {
+                if (typeof questionBank !== 'undefined') {
+                    generateModuleButtons();
+                } else {
+                    console.error('questionBank not loaded!');
+                }
+            }, 100);
         };
 
         // 显示主菜单

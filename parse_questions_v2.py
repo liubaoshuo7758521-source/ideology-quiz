@@ -228,6 +228,20 @@ def parse_questions():
         'essay': essay
     }
 
+def escape_js_string(s):
+    """Escape special characters for JavaScript strings"""
+    if not s:
+        return ""
+    s = s.replace('\\', '\\\\')  # Backslash first!
+    s = s.replace('"', '\\"')    # Double quote
+    s = s.replace("'", "\\'")    # Single quote
+    s = s.replace(''', "\\'")    # Chinese single quote left
+    s = s.replace(''', "\\'")    # Chinese single quote right
+    s = s.replace('\n', '\\n')   # Newline
+    s = s.replace('\r', '\\r')   # Carriage return
+    s = s.replace('\t', '\\t')   # Tab
+    return s
+
 def generate_javascript(questions):
     """Generate JavaScript file content"""
 
@@ -237,18 +251,19 @@ def generate_javascript(questions):
     js_content += "  // 单项选择题 (180题)\n"
     js_content += "  singleChoice: [\n"
     for i, q in enumerate(questions['singleChoice']):
-        # Replace Chinese quotes with single quotes
-        question = q['question'].replace('"', "'").replace('"', "'").replace('\n', ' ')
-        options = [opt.replace('"', "'").replace('"', "'").replace('\n', ' ') for opt in q['options']]
+        # Escape special characters for JavaScript
+        question = escape_js_string(q['question'].replace('\n', ' '))
+        options = [escape_js_string(opt.replace('\n', ' ')) for opt in q['options']]
+        answer = escape_js_string(q['answer'])
 
-        js_content += f"    {{ id: {i+1}, chapter: '第{get_chapter(q['module'])}章', module: '{q['module']}', question: '{question}', options: ['{options[0]}', '{options[1]}', '{options[2]}', '{options[3]}'], answer: '{q['answer']}' }},\n"
+        js_content += f"    {{ id: {i+1}, chapter: '第{get_chapter(q['module'])}章', module: '{q['module']}', question: '{question}', options: ['{options[0]}', '{options[1]}', '{options[2]}', '{options[3]}'], answer: '{answer}' }},\n"
     js_content += "  ],\n\n"
 
     # True/false questions
     js_content += "  // 判断题 (100题)\n"
     js_content += "  trueFalse: [\n"
     for i, q in enumerate(questions['trueFalse']):
-        question = q['question'].replace('"', "'").replace('"', "'").replace('\n', ' ')
+        question = escape_js_string(q['question'].replace('\n', ' '))
         js_content += f"    {{ id: {i+1}, chapter: '第{get_chapter(q['module'])}章', module: '{q['module']}', question: '{question}', answer: {q['answer']} }},\n"
     js_content += "  ],\n\n"
 
@@ -256,8 +271,8 @@ def generate_javascript(questions):
     js_content += "  // 简答题 (60题)\n"
     js_content += "  shortAnswer: [\n"
     for i, q in enumerate(questions['shortAnswer']):
-        question = q['question'].replace('"', "'").replace('"', "'").replace('\n', ' ')
-        answer = q['answer'].replace('"', "'").replace('"', "'").replace('\n', ' ')
+        question = escape_js_string(q['question'].replace('\n', ' '))
+        answer = escape_js_string(q['answer'].replace('\n', ' '))
         js_content += f"    {{ id: {i+1}, chapter: '第{get_chapter(q['module'])}章', module: '{q['module']}', question: '{question}', answer: '{answer}' }},\n"
     js_content += "  ],\n\n"
 
@@ -265,8 +280,8 @@ def generate_javascript(questions):
     js_content += "  // 论述题 (60题)\n"
     js_content += "  essay: [\n"
     for i, q in enumerate(questions['essay']):
-        question = q['question'].replace('"', "'").replace('"', "'").replace('\n', ' ')
-        answer = q['answer'].replace('"', "'").replace('"', "'").replace('\n', ' ')
+        question = escape_js_string(q['question'].replace('\n', ' '))
+        answer = escape_js_string(q['answer'].replace('\n', ' '))
         js_content += f"    {{ id: {i+1}, chapter: '第{get_chapter(q['module'])}章', module: '{q['module']}', question: '{question}', answer: '{answer}' }},\n"
     js_content += "  ]\n"
 

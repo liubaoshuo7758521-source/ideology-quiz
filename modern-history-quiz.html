@@ -600,18 +600,26 @@
 
         // 生成模块选择按钮
         function generateModuleButtons() {
-            const modules = [
-                "模块一：领悟人生真谛",
-                "模块二：坚定理想信念",
-                "模块三：弘扬中国精神",
-                "模块四：践行社会主义核心价值观",
-                "模块五：遵守道德规范",
-                "模块六：尊法学法守法用法",
-                "模块七：宪法是国家的根本大法",
-                "模块八：中国特色社会主义法律体系",
-                "模块九：法治中国建设",
-                "模块十：综合知识点"
-            ];
+            // 从题库中动态提取所有模块
+            const moduleSet = new Set();
+
+            // 从单选题中提取模块
+            questionBank.singleChoice.forEach(q => {
+                moduleSet.add(q.module);
+            });
+
+            // 从判断题中提取模块
+            questionBank.trueFalse.forEach(q => {
+                moduleSet.add(q.module);
+            });
+
+            // 从论述题中提取模块
+            questionBank.essay.forEach(q => {
+                moduleSet.add(q.module);
+            });
+
+            // 转换为数组并排序
+            const modules = Array.from(moduleSet).sort();
 
             const container = document.getElementById('moduleButtons');
             container.innerHTML = '';

@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多平台内容发布管理系统 - 企媒AI宝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 头部样式 */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #6a8bff);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 导航标签样式 */
+        .nav-tabs {
+            background-color: white;
+            padding: 0 2rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 70px;
+            z-index: 999;
+        }
+
+        .nav-tabs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-tab:hover {
+            background-color: var(--light-color);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* 主容器样式 */
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 卡片样式 */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5bd9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* 网格布局 */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -0.75rem;
+        }
+
+        .col {
+            padding: 0.75rem;
+            flex: 1;
+        }
+
+        .col-3 {
+            flex: 0 0 25%;
+        }
+
+        .col-4 {
+            flex: 0 0 33.333333%;
+        }
+
+        .col-6 {
+            flex: 0 0 50%;
+        }
+
+        .col-8 {
+            flex: 0 0 66.666667%;
+        }
+
+        .col-9 {
+            flex: 0 0 75%;
+        }
+
+        /* 账号卡片样式 */
+        .account-card {
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .account-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .account-info {
+            flex: 1;
+        }
+
+        .account-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .account-stats {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+        }
+
+        .account-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-connected {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-disconnected {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* 平台图标样式 */
+        .platform-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+        }
+
+        .platform-wechat { background-color: #07c160; }
+        .platform-douyin { background-color: #fe2c55; }
+        .platform-xiaohongshu { background-color: #ff2442; }
+        .platform-weibo { background-color: #e6162d; }
+        .platform-bilibili { background-color: #fb7299; }
+        .platform-zhihu { background-color: #0084ff; }
+
+        /* 内容编辑器样式 */
+        .content-editor {
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .editor-toolbar {
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .editor-btn {
+            padding: 0.4rem 0.6rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .editor-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .editor-content {
+            min-height: 300px;
+            padding: 1rem;
+        }
+
+        /* 平台适配设置样式 */
+        .platform-settings {
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* 发布记录表格样式 */
+        .publish-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .publish-table th,
+        .publish-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .publish-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .publish-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* 状态标签样式 */
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-failed {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* 审核面板样式 */
+        .review-panel {
+            border-left: 4px solid var(--warning-color);
+            background-color: rgba(255, 193, 7, 0.05);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-item i {
+            color: var(--warning-color);
+            margin-top: 0.2rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .col-3, .col-4, .col-6, .col-8, .col-9 {
+                flex: 0 0 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 1rem;
+            }
+
+            .main-container {
+                padding: 0 1rem;
+            }
+
+            .nav-tabs {
+                padding: 0 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+
+        .modal-close:hover {
+            color: var(--dark-color);
+        }
+
+        /* 通知样式 */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .notification-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .notification-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .notification-info {
+            border-left: 4px solid var(--info-color);
+        }
+
+        /* 账号网格布局 */
+        .account-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 平台选择样式 */
+        .platform-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .platform-item {
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .platform-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .platform-item.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 108, 247, 0.05);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+
+        .platform-checkbox {
+            margin-right: 0.5rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .platform-item label {
+            margin: 0;
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+        }
+
+        /* 账号统计样式修复 */
+        .account-stats-summary {
+            padding: 15px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-share-alt"></i>
+                <span>多平台内容发布管理系统</span>
+            </div>
+            <div class="user-info">
+                <a href="QimeiAI-Stable.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    返回主页
+                </a>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 导航标签 -->
+    <nav class="nav-tabs">
+        <div class="nav-tabs-container">
+            <div class="nav-tab active" data-tab="accounts">
+                <i class="fas fa-users"></i>
+                <span>账号管理</span>
+            </div>
+            <div class="nav-tab" data-tab="publish">
+                <i class="fas fa-paper-plane"></i>
+                <span>内容发布</span>
+            </div>
+            <div class="nav-tab" data-tab="adaptation">
+                <i class="fas fa-cogs"></i>
+                <span>平台适配</span>
+            </div>
+            <div class="nav-tab" data-tab="review">
+                <i class="fas fa-check-circle"></i>
+                <span>发布审核</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 账号管理模块 -->
+        <div id="accounts" class="tab-content active">
+            <div class="row">
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">已绑定账号</h3>
+                            <button class="btn btn-primary" id="addAccountBtn">
+                                <i class="fas fa-plus"></i>
+                                添加账号
+                            </button>
+                        </div>
+                        <div class="account-grid" id="accountsList">
+                            <!-- 账号列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">账号分组</h3>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">选择分组</label>
+                            <select class="form-control">
+                                <option>全部账号</option>
+                                <option>主账号组</option>
+                                <option>子账号组</option>
+                                <option>测试账号组</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">新建分组</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" placeholder="分组名称">
+                                <button class="btn btn-primary">创建</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">账号统计</h3>
+                        </div>
+                        <div class="account-stats-summary">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-value">8</div>
+                                        <div class="stat-label">已绑定账号</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-value">3</div>
+                                        <div class="stat-label">账号分组</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-value">156.2K</div>
+                                        <div class="stat-label">总粉丝数</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-value">92%</div>
+                                        <div class="stat-label">发布成功率</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容发布模块 -->
+        <div id="publish" class="tab-content">
+            <div class="row">
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">内容编辑</h3>
+                            <div>
+                                <button class="btn btn-outline btn-sm" id="saveDraftBtn">
+                                    <i class="fas fa-save"></i>
+                                    保存草稿
+                                </button>
+                                <button class="btn btn-primary" id="publishBtn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    发布内容
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">内容标题</label>
+                            <input type="text" class="form-control" id="contentTitle" placeholder="输入吸引人的标题...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">内容类型</label>
+                            <select class="form-control" id="contentType">
+                                <option value="text">图文内容</option>
+                                <option value="video">视频内容</option>
+                                <option value="short">短视频</option>
+                                <option value="article">长文章</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">封面图片</label>
+                            <div class="cover-upload">
+                                <input type="file" id="coverImage" accept="image/*" style="display: none;">
+                                <button class="btn btn-outline" onclick="document.getElementById('coverImage').click()">
+                                    <i class="fas fa-image"></i>
+                                    选择封面图片
+                                </button>
+                                <span id="coverFileName">未选择文件</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">内容正文</label>
+                            <div class="content-editor">
+                                <div class="editor-toolbar">
+                                    <button class="editor-btn" title="加粗">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button class="editor-btn" title="斜体">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button class="editor-btn" title="下划线">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <button class="editor-btn" title="插入链接">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <button class="editor-btn" title="插入图片">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button class="editor-btn" title="插入视频">
+                                        <i class="fas fa-video"></i>
+                                    </button>
+                                    <button class="editor-btn" title="表情">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                    <button class="editor-btn" title="话题标签">
+                                        <i class="fas fa-hashtag"></i>
+                                    </button>
+                                </div>
+                                <div class="editor-content" contenteditable="true" id="contentEditor">
+                                    在这里输入您的内容...
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">发布设置</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">发布时间</label>
+                                    <select class="form-control" id="publishTime">
+                                        <option value="now">立即发布</option>
+                                        <option value="scheduled">定时发布</option>
+                                    </select>
+                                </div>
+                                <div class="col-6" id="scheduledTimeGroup" style="display: none;">
+                                    <label class="form-label">选择时间</label>
+                                    <input type="datetime-local" class="form-control" id="scheduledTime">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">选择发布平台</h3>
+                        </div>
+                        <div class="platform-selection" id="platformSelection">
+                            <!-- 平台选择将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">草稿箱</h3>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-trash"></i>
+                                清空
+                            </button>
+                        </div>
+                        <div id="draftsList">
+                            <!-- 草稿列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">发布记录</h3>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-download"></i>
+                                导出
+                            </button>
+                        </div>
+                        <div id="publishHistory">
+                            <!-- 发布记录将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 平台适配模块 -->
+        <div id="adaptation" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">平台适配设置</h3>
+                    <button class="btn btn-primary" id="saveAdaptationBtn">
+                        <i class="fas fa-save"></i>
+                        保存设置
+                    </button>
+                </div>
+                <div id="platformAdaptationSettings">
+                    <!-- 平台适配设置将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 发布审核模块 -->
+        <div id="review" class="tab-content">
+            <div class="row">
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">内容审核</h3>
+                            <button class="btn btn-primary" id="checkContentBtn">
+                                <i class="fas fa-search"></i>
+                                检查内容
+                            </button>
+                        </div>
+                        <div class="review-panel">
+                            <h4>敏感词检测结果</h4>
+                            <div id="sensitiveWordResults">
+                                <div class="review-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>未检测到敏感词</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-panel">
+                            <h4>违规内容筛查</h4>
+                            <div id="violationCheckResults">
+                                <div class="review-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>内容合规，无违规信息</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">人工审核备注</label>
+                            <textarea class="form-control" placeholder="输入审核意见..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-success">
+                                <i class="fas fa-check"></i>
+                                审核通过
+                            </button>
+                            <button class="btn btn-danger">
+                                <i class="fas fa-times"></i>
+                                审核不通过
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">发布权限管理</h3>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="fas fa-user-plus"></i>
+                                添加用户
+                            </button>
+                        </div>
+                        <table class="publish-table">
+                            <thead>
+                                <tr>
+                                    <th>用户</th>
+                                    <th>角色</th>
+                                    <th>权限</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="permissionList">
+                                <!-- 权限列表将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="addAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>添加新账号</h2>
+            <div class="form-group">
+                <label class="form-label">选择平台</label>
+                <select class="form-control" id="platformSelect">
+                    <option value="">请选择平台</option>
+                    <option value="wechat">微信公众号</option>
+                    <option value="douyin">抖音</option>
+                    <option value="xiaohongshu">小红书</option>
+                    <option value="weibo">微博</option>
+                    <option value="bilibili">哔哩哔哩</option>
+                    <option value="zhihu">知乎</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">账号名称</label>
+                <input type="text" class="form-control" placeholder="输入账号名称">
+            </div>
+            <div class="form-group">
+                <label class="form-label">账号分组</label>
+                <select class="form-control">
+                    <option>主账号组</option>
+                    <option>子账号组</option>
+                    <option>测试账号组</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" id="authorizeAccountBtn">
+                    <i class="fas fa-key"></i>
+                    授权登录
+                </button>
+                <button class="btn btn-outline" id="cancelAddAccountBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知 -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationMessage">操作成功</span>
+    </div>
+
+    <script>
+        // 数据存储
+        const appData = {
+            accounts: [
+                { id: 1, platform: 'wechat', name: '科技前沿', avatar: '科', followers: '45.2K', status: 'connected', posts: 128, level: '认证号' },
+                { id: 2, platform: 'douyin', name: '生活小技巧', avatar: '生', followers: '32.8K', status: 'connected', posts: 256, level: '优质创作者' },
+                { id: 3, platform: 'xiaohongshu', name: '美食探店', avatar: '美', followers: '28.5K', status: 'connected', posts: 189, level: '达人' },
+                { id: 4, platform: 'weibo', name: '数码评测', avatar: '数', followers: '19.3K', status: 'disconnected', posts: 342, level: '大V' },
+                { id: 5, platform: 'bilibili', name: '游戏解说', avatar: '游', followers: '15.7K', status: 'connected', posts: 98, level: '知名UP主' },
+                { id: 6, platform: 'zhihu', name: '职场经验', avatar: '职', followers: '14.7K', status: 'connected', posts: 167, level: '优秀回答者' }
+            ],
+            drafts: [
+                { id: 1, title: '2024年科技趋势预测', type: 'article', date: '2024-01-15 14:30', status: 'draft' },
+                { id: 2, title: '春季护肤小技巧', type: 'text', date: '2024-01-14 10:15', status: 'draft' },
+                { id: 3, title: '新品开箱视频', type: 'video', date: '2024-01-13 16:45', status: 'draft' }
+            ],
+            publishHistory: [
+                { id: 1, title: '人工智能发展历程', platforms: ['微信', '知乎'], date: '2024-01-12 09:00', status: 'success' },
+                { id: 2, title: '周末美食推荐', platforms: ['抖音', '小红书'], date: '2024-01-11 18:30', status: 'success' },
+                { id: 3, title: '职场沟通技巧', platforms: ['微博'], date: '2024-01-10 12:15', status: 'failed' }
+            ],
+            permissions: [
+                { id: 1, user: '张三', role: '编辑', permission: '仅可提交发布' },
+                { id: 2, user: '李四', role: '审核员', permission: '可审核内容' },
+                { id: 3, user: '王五', role: '管理员', permission: '可审批并发布' }
+            ],
+            platforms: [
+                { id: 'wechat', name: '微信公众号', icon: 'fab fa-weixin', color: '#07c160' },
+                { id: 'douyin', name: '抖音', icon: 'fab fa-tiktok', color: '#fe2c55' },
+                { id: 'xiaohongshu', name: '小红书', icon: 'fas fa-book', color: '#ff2442' },
+                { id: 'weibo', name: '微博', icon: 'fab fa-weibo', color: '#e6162d' },
+                { id: 'bilibili', name: '哔哩哔哩', icon: 'fas fa-play-circle', color: '#fb7299' },
+                { id: 'zhihu', name: '知乎', icon: 'fas fa-question-circle', color: '#0084ff' }
+            ]
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            loadAccountsFromStorage();
+            renderAccounts();
+            renderPlatformSelection();
+            renderDrafts();
+            renderPublishHistory();
+            renderPermissions();
+            renderPlatformAdaptationSettings();
+            initEventListeners();
+        });
+
+        // ========== 抖音账号管理 ==========
+
+        // 从 localStorage 加载已授权的抖音账号
+        function loadAccountsFromStorage() {
+            try {
+                // 加载抖音账号
+                const douyinSaved = localStorage.getItem('qimeiai_douyin_accounts');
+                if (douyinSaved) {
+                    const douyinAccounts = JSON.parse(douyinSaved);
+                    // 过滤掉旧的模拟账号数据,只保留真实授权的账号
+                    appData.accounts = appData.accounts.filter(acc => acc.platform !== 'douyin' || !acc.avatar || acc.avatar.length > 1);
+                    appData.accounts.push(...douyinAccounts);
+                }
+
+                // 加载小红书账号
+                const xiaohongshuSaved = localStorage.getItem('qimeiai_xiaohongshu_accounts');
+                if (xiaohongshuSaved) {
+                    const xiaohongshuAccounts = JSON.parse(xiaohongshuSaved);
+                    appData.accounts = appData.accounts.filter(acc => acc.platform !== 'xiaohongshu' || !acc.avatar || acc.avatar.length > 1);
+                    appData.accounts.push(...xiaohongshuAccounts);
+                }
+            } catch (e) {
+                console.error('加载账号失败:', e);
+            }
+        }
+
+        // 保存账号到 localStorage
+        function saveAccountsToStorage() {
+            try {
+                // 保存抖音账号
+                const douyinAccounts = appData.accounts.filter(acc => acc.platform === 'douyin');
+                localStorage.setItem('qimeiai_douyin_accounts', JSON.stringify(douyinAccounts));
+
+                // 保存小红书账号
+                const xiaohongshuAccounts = appData.accounts.filter(acc => acc.platform === 'xiaohongshu');
+                localStorage.setItem('qimeiai_xiaohongshu_accounts', JSON.stringify(xiaohongshuAccounts));
+            } catch (e) {
+                console.error('保存账号失败:', e);
+            }
+        }
+
+        // 添加抖音账号到列表
+        function addDouyinAccount(account) {
+            // 检查是否已存在
+            const existingIndex = appData.accounts.findIndex(acc => acc.id === account.id);
+
+            if (existingIndex !== -1) {
+                // 更新现有账号
+                appData.accounts[existingIndex] = account;
+            } else {
+                // 添加新账号
+                appData.accounts.push(account);
+            }
+
+            // 保存到 localStorage
+            saveAccountsToStorage();
+
+            // 重新渲染账号列表
+            renderAccounts();
+        }
+
+        // 添加小红书账号到列表
+        function addXiaohongshuAccount(account) {
+            // 检查是否已存在
+            const existingIndex = appData.accounts.findIndex(acc => acc.id === account.id);
+
+            if (existingIndex !== -1) {
+                // 更新现有账号
+                appData.accounts[existingIndex] = account;
+            } else {
+                // 添加新账号
+                appData.accounts.push(account);
+            }
+
+            // 保存到 localStorage
+            saveAccountsToStorage();
+
+            // 重新渲染账号列表
+            renderAccounts();
+        }
+
+        // 导航初始化
+        function initNavigation() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.getAttribute('data-tab');
+
+                    // 移除所有活动状态
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // 添加当前活动状态
+                    tab.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        }
+
+        // 渲染账号列表
+        function renderAccounts() {
+            const accountsList = document.getElementById('accountsList');
+            accountsList.innerHTML = '';
+
+            appData.accounts.forEach(account => {
+                const platform = appData.platforms.find(p => p.id === account.platform);
+                const accountCard = document.createElement('div');
+                accountCard.className = 'account-card';
+                accountCard.innerHTML = `
+                    <div class="account-avatar" style="background-color: ${platform.color}">
+                        ${account.avatar}
+                    </div>
+                    <div class="account-info">
+                        <div class="account-name">
+                            <i class="${platform.icon}"></i>
+                            ${account.name}
+                        </div>
+                        <div class="account-stats">
+                            粉丝: ${account.followers} | 发布: ${account.posts} | 等级: ${account.level}
+                        </div>
+                    </div>
+                    <div class="account-status ${account.status === 'connected' ? 'status-connected' : 'status-disconnected'}">
+                        ${account.status === 'connected' ? '已连接' : '未连接'}
+                    </div>
+                    <div>
+                        <button class="btn btn-outline btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-unlink"></i>
+                        </button>
+                    </div>
+                `;
+                accountsList.appendChild(accountCard);
+            });
+        }
+
+        // 渲染平台选择
+        function renderPlatformSelection() {
+            const platformSelection = document.getElementById('platformSelection');
+            platformSelection.innerHTML = '';
+
+            appData.platforms.forEach(platform => {
+                const platformItem = document.createElement('div');
+                platformItem.className = 'platform-item';
+                platformItem.innerHTML = `
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" value="${platform.id}" class="platform-checkbox">
+                        <i class="${platform.icon}" style="color: ${platform.color}"></i>
+                        ${platform.name}
+                    </label>
+                `;
+                
+                // 添加点击事件，使整个区域可点击
+                platformItem.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('.platform-checkbox');
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    
+                    // 更新选中状态样式
+                    if (this.querySelector('.platform-checkbox').checked) {
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.remove('selected');
+                    }
+                });
+                
+                // 为复选框添加变化事件
+                const checkbox = platformItem.querySelector('.platform-checkbox');
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        platformItem.classList.add('selected');
+                    } else {
+                        platformItem.classList.remove('selected');
+                    }
+                });
+                
+                platformSelection.appendChild(platformItem);
+            });
+        }
+
+        // 渲染草稿列表
+        function renderDrafts() {
+            const draftsList = document.getElementById('draftsList');
+            draftsList.innerHTML = '';
+
+            if (appData.drafts.length === 0) {
+                draftsList.innerHTML = '<p>暂无草稿</p>';
+                return;
+            }
+
+            appData.drafts.forEach(draft => {
+                const draftItem = document.createElement('div');
+                draftItem.className = 'account-card';
+                draftItem.innerHTML = `
+                    <div class="account-info">
+                        <div class="account-name">${draft.title}</div>
+                        <div class="account-stats">${draft.date} | ${draft.type}</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                            编辑
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                draftsList.appendChild(draftItem);
+            });
+        }
+
+        // 渲染发布记录
+        function renderPublishHistory() {
+            const publishHistory = document.getElementById('publishHistory');
+            publishHistory.innerHTML = '';
+
+            if (appData.publishHistory.length === 0) {
+                publishHistory.innerHTML = '<p>暂无发布记录</p>';
+                return;
+            }
+
+            appData.publishHistory.forEach(record => {
+                const recordItem = document.createElement('div');
+                recordItem.className = 'account-card';
+                recordItem.innerHTML = `
+                    <div class="account-info">
+                        <div class="account-name">${record.title}</div>
+                        <div class="account-stats">${record.date} | ${record.platforms.join(', ')}</div>
+                    </div>
+                    <div class="status-badge status-${record.status}">
+                        ${record.status === 'success' ? '成功' : record.status === 'failed' ? '失败' : '待发布'}
+                    </div>
+                `;
+                publishHistory.appendChild(recordItem);
+            });
+        }
+
+        // 渲染权限列表
+        function renderPermissions() {
+            const permissionList = document.getElementById('permissionList');
+            permissionList.innerHTML = '';
+
+            appData.permissions.forEach(permission => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${permission.user}</td>
+                    <td>${permission.role}</td>
+                    <td>${permission.permission}</td>
+                    <td>
+                        <button class="btn btn-outline btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                permissionList.appendChild(row);
+            });
+        }
+
+        // 渲染平台适配设置
+        function renderPlatformAdaptationSettings() {
+            const platformAdaptationSettings = document.getElementById('platformAdaptationSettings');
+            platformAdaptationSettings.innerHTML = '';
+
+            appData.platforms.forEach(platform => {
+                const platformSettings = document.createElement('div');
+                platformSettings.className = 'platform-settings';
+                platformSettings.innerHTML = `
+                    <div class="platform-header">
+                        <i class="${platform.icon}" style="color: ${platform.color}"></i>
+                        ${platform.name} 适配设置
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label">标题长度限制</label>
+                                <input type="number" class="form-control" value="${getPlatformTitleLimit(platform.id)}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label">内容长度限制</label>
+                                <input type="number" class="form-control" value="${getPlatformContentLimit(platform.id)}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label">图片尺寸要求</label>
+                                <input type="text" class="form-control" value="${getPlatformImageSize(platform.id)}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label">视频时长限制</label>
+                                <input type="text" class="form-control" value="${getPlatformVideoLimit(platform.id)}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">自动添加话题标签</label>
+                        <input type="text" class="form-control" placeholder="输入默认话题标签，用逗号分隔">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" checked>
+                            启用自动格式适配
+                        </label>
+                    </div>
+                `;
+                platformAdaptationSettings.appendChild(platformSettings);
+            });
+        }
+
+        // 获取平台标题限制
+        function getPlatformTitleLimit(platformId) {
+            const limits = {
+                'wechat': 64,
+                'douyin': 100,
+                'xiaohongshu': 20,
+                'weibo': 140,
+                'bilibili': 80,
+                'zhihu': 100
+            };
+            return limits[platformId] || 100;
+        }
+
+        // 获取平台内容限制
+        function getPlatformContentLimit(platformId) {
+            const limits = {
+                'wechat': 2000,
+                'douyin': 2000,
+                'xiaohongshu': 1000,
+                'weibo': 140,
+                'bilibili': 2000,
+                'zhihu': 10000
+            };
+            return limits[platformId] || 1000;
+        }
+
+        // 获取平台图片尺寸
+        function getPlatformImageSize(platformId) {
+            const sizes = {
+                'wechat': '900x500',
+                'douyin': '1080x1920',
+                'xiaohongshu': '1080x1440',
+                'weibo': '1080x1080',
+                'bilibili': '1146x717',
+                'zhihu': '1200x630'
+            };
+            return sizes[platformId] || '1080x1080';
+        }
+
+        // 获取平台视频限制
+        function getPlatformVideoLimit(platformId) {
+            const limits = {
+                'wechat': '30分钟',
+                'douyin': '15分钟',
+                'xiaohongshu': '15分钟',
+                'weibo': '15分钟',
+                'bilibili': '12小时',
+                'zhihu': '10分钟'
+            };
+            return limits[platformId] || '15分钟';
+        }
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 添加账号按钮
+            document.getElementById('addAccountBtn').addEventListener('click', function() {
+                document.getElementById('addAccountModal').style.display = 'block';
+            });
+
+            // 模态框关闭按钮
+            document.querySelector('.modal-close').addEventListener('click', function() {
+                document.getElementById('addAccountModal').style.display = 'none';
+            });
+
+            // 取消添加账号按钮
+            document.getElementById('cancelAddAccountBtn').addEventListener('click', function() {
+                document.getElementById('addAccountModal').style.display = 'none';
+            });
+
+            // 授权账号按钮 - 支持测试模式和真实OAuth授权
+            document.getElementById('authorizeAccountBtn').addEventListener('click', async function() {
+                const platform = document.getElementById('platformSelect').value;
+                if (!platform) {
+                    showNotification('请选择平台！', 'error');
+                    return;
+                }
+
+                // 抖音和小红书授权
+                if (platform === 'douyin' || platform === 'xiaohongshu') {
+                    const platformName = platform === 'douyin' ? '抖音' : '小红书';
+                    const platformColor = platform === 'douyin' ? '#fe2c55' : '#ff2442';
+
+                    // 先尝试连接后端服务
+                    try {
+                        // 显示加载提示
+                        showNotification(`正在连接${platformName}授权服务...`, 'info');
+
+                        // 尝试请求后端生成授权 URL (设置3秒超时)
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                        const response = await fetch(`http://localhost:5002/auth/${platform}/authorize`, {
+                            signal: controller.signal
+                        });
+                        clearTimeout(timeoutId);
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            // 后端服务正常,使用真实OAuth授权
+                            showNotification(`正在跳转到${platformName}授权页面...`, 'info');
+
+                            // 打开新窗口进行 OAuth 授权
+                            const authWindow = window.open(
+                                data.auth_url,
+                                `${platformName}授权`,
+                                'width=800,height=600,scrollbars=yes,resizable=yes'
+                            );
+
+                            // 轮询检查授权状态
+                            const checkInterval = setInterval(async () => {
+                                try {
+                                    // 检查窗口是否被关闭
+                                    if (authWindow.closed) {
+                                        clearInterval(checkInterval);
+                                        showNotification('授权窗口已关闭', 'warning');
+                                        return;
+                                    }
+
+                                    // 查询授权状态
+                                    const statusResponse = await fetch(`http://localhost:5002/auth/${platform}/status/${data.state}`);
+                                    const statusData = await statusResponse.json();
+
+                                    if (statusData.status === 'success') {
+                                        // 授权成功
+                                        clearInterval(checkInterval);
+                                        authWindow.close();
+
+                                        // 添加账号到列表
+                                        if (platform === 'douyin') {
+                                            addDouyinAccount(statusData.account);
+                                        } else {
+                                            addXiaohongshuAccount(statusData.account);
+                                        }
+
+                                        showNotification(`${platformName}账号授权成功！`, 'success');
+                                        document.getElementById('addAccountModal').style.display = 'none';
+
+                                    } else if (statusData.status === 'failed') {
+                                        // 授权失败
+                                        clearInterval(checkInterval);
+                                        authWindow.close();
+
+                                        const errorMsg = statusData.error?.description || '授权失败,请重试';
+                                        showNotification(`授权失败: ${errorMsg}`, 'error');
+                                    }
+                                    // 如果 status 是 'pending',继续轮询
+
+                                } catch (error) {
+                                    console.error('检查授权状态失败:', error);
+                                    // 继续轮询,不中断
+                                }
+                            }, 2000); // 每2秒检查一次
+
+                            // 5分钟后停止轮询
+                            setTimeout(() => {
+                                clearInterval(checkInterval);
+                                if (!authWindow.closed) {
+                                    showNotification('授权超时,请重试', 'warning');
+                                }
+                            }, 300000);
+
+                        } else {
+                            showNotification('生成授权链接失败', 'error');
+                        }
+
+                    } catch (error) {
+                        // 后端服务未启动,使用测试模式
+                        console.log('后端服务未连接,切换到测试模式');
+
+                        // 创建模拟账号数据
+                        let mockAccount;
+                        if (platform === 'douyin') {
+                            mockAccount = {
+                                id: `douyin_test_${Date.now()}`,
+                                platform: 'douyin',
+                                open_id: 'test_open_id_' + Date.now(),
+                                name: '测试抖音账号',
+                                avatar: 'https://sf3-cdn-tos.toutiaogogo.com/obj/eden-cn/uhbfnupenuhos/douyin_web/2023/logo/favicon-32x32.png',
+                                followers: '10.5万',
+                                follower_count: 105000,
+                                status: 'connected',
+                                posts: 128,
+                                level: '认证创作者',
+                                is_verified: true,
+                                description: '这是一个测试账号,用于演示授权功能',
+                                authorized_at: new Date().toISOString(),
+                                expires_at: new Date(Date.now() + 86400000 * 30).toISOString(),
+                                _isTest: true
+                            };
+                            addDouyinAccount(mockAccount);
+                        } else if (platform === 'xiaohongshu') {
+                            mockAccount = {
+                                id: `xiaohongshu_test_${Date.now()}`,
+                                platform: 'xiaohongshu',
+                                open_id: 'test_open_id_' + Date.now(),
+                                name: '测试小红书账号',
+                                avatar: 'https://sns-webpic-qc.xhscdn.com/202401011918/2c8c6fd7a0b3f3e2e3a7b8c9d0e1f2g3/1040g00830ujq8k8h6g0005o8e6k8h6g005o8e6k8h6g005o8e6k8h6g005o8/1040g00830ujq8k8h6g0005o8e6k8h6g005o8e6k8h6g005o8e6k8h6g005o8e6k8h6g0~tplv-xhscdn-360x360.jpeg',
+                                followers: '8.2万',
+                                follower_count: 82000,
+                                status: 'connected',
+                                posts: 256,
+                                level: '认证博主',
+                                is_verified: true,
+                                description: '这是一个测试账号,用于演示授权功能',
+                                authorized_at: new Date().toISOString(),
+                                expires_at: new Date(Date.now() + 86400000 * 30).toISOString(),
+                                _isTest: true
+                            };
+                            addXiaohongshuAccount(mockAccount);
+                        }
+
+                        showNotification(`✅ 测试模式: 已添加模拟${platformName}账号!\n(后端服务未启动,使用测试数据)`, 'success');
+                        document.getElementById('addAccountModal').style.display = 'none';
+                    }
+                } else {
+                    showNotification('目前只支持抖音和小红书账号授权,其他平台开发中...', 'info');
+                }
+            });
+
+            // 保存草稿按钮
+            document.getElementById('saveDraftBtn').addEventListener('click', function() {
+                const title = document.getElementById('contentTitle').value;
+                if (title) {
+                    const newDraft = {
+                        id: appData.drafts.length + 1,
+                        title: title,
+                        type: document.getElementById('contentType').value,
+                        date: new Date().toLocaleString('zh-CN'),
+                        status: 'draft'
+                    };
+                    appData.drafts.unshift(newDraft);
+                    renderDrafts();
+                    showNotification('草稿保存成功！', 'success');
+                } else {
+                    showNotification('请输入标题！', 'error');
+                }
+            });
+
+            // 发布按钮
+            document.getElementById('publishBtn').addEventListener('click', function() {
+                const title = document.getElementById('contentTitle').value;
+                const content = document.getElementById('contentEditor').innerHTML;
+                const selectedPlatforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
+                
+                if (!title) {
+                    showNotification('请输入标题！', 'error');
+                    return;
+                }
+                
+                if (!content || content === '在这里输入您的内容...') {
+                    showNotification('请输入内容！', 'error');
+                    return;
+                }
+                
+                if (selectedPlatforms.length === 0) {
+                    showNotification('请选择至少一个发布平台！', 'error');
+                    return;
+                }
+                
+                // 添加到发布记录
+                const newRecord = {
+                    id: appData.publishHistory.length + 1,
+                    title: title,
+                    platforms: selectedPlatforms.map(id => {
+                        const platform = appData.platforms.find(p => p.id === id);
+                        return platform ? platform.name : id;
+                    }),
+                    date: new Date().toLocaleString('zh-CN'),
+                    status: 'success'
+                };
+                appData.publishHistory.unshift(newRecord);
+                renderPublishHistory();
+                
+                // 清空表单
+                document.getElementById('contentTitle').value = '';
+                document.getElementById('contentEditor').innerHTML = '在这里输入您的内容...';
+                document.querySelectorAll('.platform-checkbox').forEach(cb => {
+                    cb.checked = false;
+                    // 更新平台项的选中状态
+                    const platformItem = cb.closest('.platform-item');
+                    if (platformItem) {
+                        platformItem.classList.remove('selected');
+                    }
+                });
+                
+                showNotification('内容发布成功！', 'success');
+            });
+
+            // 发布时间选择
+            document.getElementById('publishTime').addEventListener('change', function() {
+                const scheduledTimeGroup = document.getElementById('scheduledTimeGroup');
+                if (this.value === 'scheduled') {
+                    scheduledTimeGroup.style.display = 'block';
+                    // 设置默认时间为明天上午9点
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(9, 0, 0, 0);
+                    document.getElementById('scheduledTime').value = tomorrow.toISOString().slice(0, 16);
+                } else {
+                    scheduledTimeGroup.style.display = 'none';
+                }
+            });
+
+            // 封面图片选择
+            document.getElementById('coverImage').addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : '未选择文件';
+                document.getElementById('coverFileName').textContent = fileName;
+            });
+
+            // 内容检查按钮
+            document.getElementById('checkContentBtn').addEventListener('click', function() {
+                const content = document.getElementById('contentEditor').innerHTML;
+                if (content && content !== '在这里输入您的内容...') {
+                    // 模拟内容检查
+                    setTimeout(() => {
+                        document.getElementById('sensitiveWordResults').innerHTML = `
+                            <div class="review-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>未检测到敏感词</div>
+                            </div>
+                        `;
+                        document.getElementById('violationCheckResults').innerHTML = `
+                            <div class="review-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>内容合规，无违规信息</div>
+                            </div>
+                        `;
+                        showNotification('内容检查完成！', 'success');
+                    }, 1000);
+                } else {
+                    showNotification('请先输入内容！', 'error');
+                }
+            });
+
+            // 保存适配设置按钮
+            document.getElementById('saveAdaptationBtn').addEventListener('click', function() {
+                showNotification('平台适配设置保存成功！', 'success');
+            });
+
+            // 点击模态框外部关闭
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('addAccountModal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            // 设置消息和样式
+            notificationMessage.textContent = message;
+            notification.className = 'notification show notification-' + type;
+            
+            // 设置图标
+            const icon = notification.querySelector('i');
+            icon.className = type === 'success' ? 'fas fa-check-circle' : 
+                           type === 'error' ? 'fas fa-exclamation-circle' : 
+                           type === 'warning' ? 'fas fa-exclamation-triangle' : 
+                           'fas fa-info-circle';
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

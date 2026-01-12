@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企媒AI宝 - 数据分析中心</title>
+    <!-- 引入 Vue 3 -->
+    <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* --- 核心样式 (与主页保持一致) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; overflow-x: hidden; color: #2c3e50; }
+        
+        .container { max-width: 1400px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); backdrop-filter: blur(10px); animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 头部与导航 --- */
+        .header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; gap: 15px; }
+        .header h1 { font-size: 1.8em; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        /* --- 按钮样式 --- */
+        .btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 5px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary { background: linear-gradient(45deg, #95a5a6, #7f8c8d); }
+        .btn-outline { background: white; border: 1px solid #667eea; color: #667eea; }
+        .btn-outline:hover { background: #f0f4ff; }
+
+        /* --- 筛选栏 --- */
+        .filter-bar { background: #f8f9fa; padding: 15px; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; margin-bottom: 25px; border: 1px solid #eee; }
+        .input-group { display: flex; align-items: center; gap: 8px; }
+        .form-control { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; font-size: 14px; }
+        .form-control:focus { border-color: #667eea; box-shadow: 0 0 0 2px rgba(102,126,234,0.1); }
+
+        /* --- KPI 卡片 --- */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden; border-left: 4px solid transparent; }
+        .kpi-card h4 { color: #95a5a6; font-size: 0.9em; margin-bottom: 5px; text-transform: uppercase; }
+        .kpi-card .value { font-size: 1.8em; font-weight: bold; color: #2c3e50; }
+        .kpi-card small { color: #7f8c8d; font-size: 0.85em; }
+        
+        /* KPI 颜色主题 */
+        .kpi-blue { border-left-color: #3498db; }
+        .kpi-purple { border-left-color: #9b59b6; }
+        .kpi-green { border-left-color: #2ecc71; }
+        .kpi-orange { border-left-color: #e67e22; }
+
+        /* --- 图表网格布局 --- */
+        .charts-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; margin-bottom: 25px; }
+        .chart-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .chart-card h3 { margin-bottom: 15px; font-size: 1.1em; color: #34495e; border-left: 4px solid #667eea; padding-left: 10px; }
+        
+        /* 布局控制 */
+        .col-12 { grid-column: span 12; }
+        .col-8 { grid-column: span 8; }
+        .col-6 { grid-column: span 6; }
+        .col-4 { grid-column: span 4; }
+        @media (max-width: 1024px) { .col-8, .col-6, .col-4 { grid-column: span 12; } }
+
+        /* --- 列表与详情 --- */
+        .detail-list { display: flex; flex-direction: column; gap: 8px; }
+        .list-item { display: flex; justify-content: space-between; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em; transition: background 0.2s; }
+        .list-item:hover { background: #f1f3f5; }
+        .tag { padding: 2px 8px; border-radius: 4px; font-size: 0.8em; background: #e0e7ff; color: #4338ca; }
+        
+        /* --- 状态栏 --- */
+        .status-bar { font-size: 0.9em; color: #7f8c8d; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        
+        /* --- 动画 --- */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="analytics-app">
+        <!-- 加载动画 -->
+        <div class="loading-overlay" v-if="isLoading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="container">
+            <!-- 头部 -->
+            <div class="header">
+                <div>
+                    <h1>📊 数据分析中心</h1>
+                    <p style="color: #7f8c8d; margin-top: 5px;">深度洞察多平台媒体表现与用户行为</p>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-secondary" @click="goHome">↩ 返回主页</button>
+                    <!-- 隐藏的文件上传输入 -->
+                    <input id="data-file" type="file" accept="application/json" style="display:none" @change="handleUpload" />
+                    <button class="btn btn-outline" @click="triggerUpload">📂 导入JSON数据</button>
+                    <button class="btn" @click="loadSampleData">🎲 加载模拟数据</button>
+                </div>
+            </div>
+
+            <!-- 筛选与控制 -->
+            <div class="filter-bar">
+                <div class="input-group">
+                    <label>平台:</label>
+                    <select class="form-control" v-model="filters.platform" @change="refreshChartData">
+                        <option value="全部">全部平台</option>
+                        <option v-for="p in platformsList" :value="p">{{p}}</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>日期:</label>
+                    <input type="date" class="form-control" v-model="filters.start">
+                    <span>至</span>
+                    <input type="date" class="form-control" v-model="filters.end">
+                </div>
+                <div style="flex-grow: 1;"></div>
+                <div class="controls">
+                    <button class="btn btn-outline" @click="generateReport('week')">📅 生成周报</button>
+                    <button class="btn" @click="downloadReport" :disabled="!reportText">📥 下载报告</button>
+                </div>
+            </div>
+
+            <!-- 数据源状态 -->
+            <div class="status-bar">
+                <span>📊 当前数据源: <strong>{{ lastDatasetName || '系统默认' }}</strong></span>
+                <span>⏱️ 最后更新: {{ lastUpdateTime }}</span>
+            </div>
+
+            <!-- 核心 KPI -->
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-blue">
+                    <h4>总播放/阅读量</h4>
+                    <div class="value">{{ formatNum(kpi.views) }}</div>
+                    <small>↑ 较上期增长 12%</small>
+                </div>
+                <div class="kpi-card kpi-purple">
+                    <h4>总互动 (赞/评/转)</h4>
+                    <div class="value">{{ formatNum(kpi.likes + kpi.comments + kpi.shares) }}</div>
+                    <small>互动率 {{ kpi.engagementRate }}%</small>
+                </div>
+                <div class="kpi-card kpi-green">
+                    <h4>粉丝净增</h4>
+                    <div class="value">{{ formatNum(funnel.follows) }}</div>
+                    <small>转化率 {{ kpi.followRate }}%</small>
+                </div>
+                <div class="kpi-card kpi-orange">
+                    <h4>预估转化价值</h4>
+                    <div class="value">¥ {{ formatNum(funnel.purchases * 120) }}</div>
+                    <small>基于 {{ funnel.purchases }} 次转化</small>
+                </div>
+            </div>
+
+            <!-- 图表第一行：趋势与分布 -->
+            <div class="charts-grid">
+                <div class="chart-card col-8">
+                    <h3>📈 内容表现实时监控 (趋势)</h3>
+                    <div style="height: 300px;">
+                        <canvas id="chartTime"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card col-4">
+                    <h3>🍰 平台流量占比</h3>
+                    <div style="height: 300px; display: flex; justify-content: center;">
+                        <canvas id="chartPlatform"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表第二行：漏斗与竞品 -->
+            <div class="charts-grid">
+                <div class="chart-card col-4">
+                    <h3>⚡ 营销转化漏斗</h3>
+                    <div style="height: 250px;">
+                        <canvas id="chartFunnel"></canvas>
+                    </div>
+                    <div class="detail-list" style="margin-top: 15px;">
+                        <div class="list-item"><span>曝光到关注</span> <strong>{{ kpi.followRate }}%</strong></div>
+                        <div class="list-item"><span>关注到购买</span> <strong>{{ kpi.purchaseRate }}%</strong></div>
+                    </div>
+                </div>
+                
+                <div class="chart-card col-4">
+                    <h3>🆚 竞品竞争力分析</h3>
+                    <div style="height: 250px;">
+                        <canvas id="chartCompetitor"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card col-4">
+                    <h3>🔥 热门话题趋势</h3>
+                    <div class="detail-list" style="max-height: 250px; overflow-y: auto;">
+                        <div class="list-item" v-for="(t, index) in trends" :key="index">
+                            <span><span style="color:#e74c3c; margin-right:5px;">{{index+1}}.</span> {{ t.topic }}</span>
+                            <span class="tag">热度 {{ t.score }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三行：用户画像 -->
+            <div class="charts-grid">
+                <div class="chart-card col-6">
+                    <h3>👥 用户年龄分布</h3>
+                    <div style="height: 200px;">
+                        <canvas id="chartAge"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card col-6">
+                    <h3>🏷️ 粉丝兴趣标签 Top 10</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px;">
+                        <span v-for="tag in interests" :key="tag.name" 
+                              style="background: #eef2ff; color: #4f46e5; padding: 6px 12px; border-radius: 20px; font-size: 14px;">
+                            #{{ tag.name }} ({{ tag.count }})
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; color: #95a5a6; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                企媒AI宝数据分析引擎 v1.0.0 | Powered by Chart.js & Vue 3
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    isLoading: false,
+                    lastUpdateTime: new Date().toLocaleTimeString(),
+                    lastDatasetName: '',
+                    reportText: '',
+                    reportName: '',
+                    filters: { platform: '全部', start: '', end: '' },
+                    platformsList: ['抖音', '快手', '小红书', '微博', '微信公众号'],
+                    
+                    // 数据模型
+                    kpi: { views: 0, likes: 0, comments: 0, shares: 0, followRate: 0, purchaseRate: 0, engagementRate: 0 },
+                    series: [],
+                    platformsData: [],
+                    interests: [],
+                    funnel: {},
+                    trends: [],
+                    competitors: [],
+                    
+                    // 图表实例
+                    charts: { time: null, platform: null, funnel: null, competitor: null, age: null }
+                }
+            },
+            mounted() {
+                this.loadSampleData(); // 初始化加载模拟数据
+                setInterval(() => {
+                    // 模拟实时数据微小波动
+                    if (!this.lastDatasetName) this.refreshRealtimeData(); 
+                }, 5000);
+            },
+            methods: {
+                goHome() { window.location.href = 'QimeiAI-Stable.html'; },
+                formatNum(num) { return num ? num.toLocaleString() : '0'; },
+
+                // --- 核心业务逻辑 ---
+
+                // 1. 生成模拟数据 (随机算法)
+                generateRandomData() {
+                    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+                    
+                    // 生成趋势数据
+                    const days = 7;
+                    const series = [];
+                    for(let i=0; i<days; i++) {
+                        series.push({
+                            time: ['周一','周二','周三','周四','周五','周六','周日'][i],
+                            views: rand(5000, 15000),
+                            likes: rand(500, 2000),
+                            comments: rand(100, 500),
+                            shares: rand(50, 300)
+                        });
+                    }
+
+                    // 生成平台数据
+                    const platformsData = this.platformsList.map(p => ({ name: p, value: rand(10000, 50000) }));
+
+                    // 生成漏斗数据
+                    const totalViews = series.reduce((a,b)=>a+b.views,0);
+                    const follows = Math.floor(totalViews * (rand(20, 50) / 1000)); // 2-5%
+                    const messages = Math.floor(follows * 0.3);
+                    const purchases = Math.floor(messages * 0.15);
+
+                    return {
+                        series,
+                        platformsData,
+                        interests: ['美妆','剧情','职场','科技','美食','旅行','萌宠','摄影','教育','健康'].map(n => ({name: n, count: rand(500, 2000)})).sort((a,b)=>b.count-a.count),
+                        funnel: { views: totalViews, follows, messages, purchases },
+                        trends: ['AI绘画实战','618大促攻略','职场潜规则','低成本创业','沉浸式护肤'].map(t => ({topic: t, score: rand(80, 99)})),
+                        competitors: [{name:'我们', score: rand(85,95)}, {name:'竞品A', score: rand(70,90)}, {name:'竞品B', score: rand(60,85)}]
+                    };
+                },
+
+                // 2. 加载数据并更新视图
+                loadSampleData() {
+                    this.isLoading = true;
+                    setTimeout(() => {
+                        const data = this.generateRandomData();
+                        this.applyData(data);
+                        this.lastDatasetName = '模拟演示数据';
+                        this.lastUpdateTime = new Date().toLocaleTimeString();
+                        this.isLoading = false;
+                        this.generateReport('week'); // 自动生成一份报告
+                    }, 800);
+                },
+
+                // 3. 应用数据到 Data 并重绘图表
+                applyData(d) {
+                    this.series = d.series;
+                    this.platformsData = d.platformsData;
+                    this.interests = d.interests;
+                    this.funnel = d.funnel;
+                    this.trends = d.trends;
+                    this.competitors = d.competitors;
+
+                    // 计算 KPI
+                    const sum = (arr, key) => arr.reduce((a, b) => a + b[key], 0);
+                    this.kpi.views = sum(this.series, 'views');
+                    this.kpi.likes = sum(this.series, 'likes');
+                    this.kpi.comments = sum(this.series, 'comments');
+                    this.kpi.shares = sum(this.series, 'shares');
+                    
+                    // 计算比率
+                    const interactions = this.kpi.likes + this.kpi.comments + this.kpi.shares;
+                    this.kpi.engagementRate = ((interactions / this.kpi.views) * 100).toFixed(2);
+                    this.kpi.followRate = ((this.funnel.follows / this.kpi.views) * 100).toFixed(2);
+                    this.kpi.purchaseRate = ((this.funnel.purchases / this.funnel.follows) * 100).toFixed(2);
+
+                    this.$nextTick(() => {
+                        this.renderCharts();
+                    });
+                },
+
+                refreshRealtimeData() {
+                    // 仅在演示模式下微调数据
+                    if(this.series.length > 0) {
+                        const last = this.series[this.series.length - 1];
+                        last.views += Math.floor(Math.random() * 50);
+                        this.charts.time.update();
+                    }
+                },
+
+                // --- 渲染 Chart.js 图表 ---
+                renderCharts() {
+                    // 1. 趋势折线图
+                    this.createChart('time', 'chartTime', 'line', {
+                        labels: this.series.map(x => x.time),
+                        datasets: [
+                            { label: '播放量', data: this.series.map(x => x.views), borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', fill: true, tension: 0.4 },
+                            { label: '互动量', data: this.series.map(x => x.likes + x.comments), borderColor: '#e74c3c', borderDash: [5,5], tension: 0.4 }
+                        ]
+                    });
+
+                    // 2. 平台饼图
+                    this.createChart('platform', 'chartPlatform', 'doughnut', {
+                        labels: this.platformsData.map(x => x.name),
+                        datasets: [{
+                            data: this.platformsData.map(x => x.value),
+                            backgroundColor: ['#2c3e50', '#ff2442', '#f39c12', '#07c160', '#3498db']
+                        }]
+                    });
+
+                    // 3. 漏斗图 (用横向柱状图模拟)
+                    this.createChart('funnel', 'chartFunnel', 'bar', {
+                        labels: ['曝光', '关注', '私信', '转化'],
+                        datasets: [{
+                            label: '用户数',
+                            data: [this.funnel.views, this.funnel.follows, this.funnel.messages, this.funnel.purchases],
+                            backgroundColor: ['#667eea', '#764ba2', '#9b59b6', '#2ecc71'],
+                            barPercentage: 0.6
+                        }]
+                    }, { indexAxis: 'y' });
+
+                    // 4. 竞品雷达图
+                    this.createChart('competitor', 'chartCompetitor', 'radar', {
+                        labels: ['内容质量', '发布频率', '粉丝互动', '话题热度', '转化能力'],
+                        datasets: this.competitors.map((c, i) => ({
+                            label: c.name,
+                            data: [c.score, c.score - Math.random()*10, c.score - Math.random()*20 + 10, c.score, c.score - Math.random()*10],
+                            borderColor: i===0 ? '#667eea' : (i===1 ? '#95a5a6' : '#e74c3c'),
+                            backgroundColor: i===0 ? 'rgba(102,126,234,0.2)' : 'transparent'
+                        }))
+                    });
+
+                    // 5. 年龄柱状图
+                    this.createChart('age', 'chartAge', 'bar', {
+                        labels: ['<18', '18-24', '25-30', '31-40', '40+'],
+                        datasets: [{
+                            label: '用户占比 (%)',
+                            data: [5, 25, 40, 20, 10],
+                            backgroundColor: '#667eea',
+                            borderRadius: 4
+                        }]
+                    });
+                },
+
+                createChart(key, canvasId, type, data, options = {}) {
+                    if (this.charts[key]) this.charts[key].destroy();
+                    const ctx = document.getElementById(canvasId);
+                    if (!ctx) return;
+                    this.charts[key] = new Chart(ctx, {
+                        type: type,
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            ...options
+                        }
+                    });
+                },
+
+                // --- 报告与文件功能 ---
+                generateReport(type) {
+                    const date = new Date().toLocaleDateString();
+                    const topPlatform = [...this.platformsData].sort((a,b)=>b.value-a.value)[0].name;
+                    
+                    let content = `【企媒AI宝数据分析报告】\n`;
+                    content += `生成日期: ${date}\n`;
+                    content += `报告类型: ${type === 'week' ? '周报' : '日报'}\n`;
+                    content += `------------------------\n`;
+                    content += `1. 核心数据\n`;
+                    content += `   - 总浏览量: ${this.formatNum(this.kpi.views)}\n`;
+                    content += `   - 互动总量: ${this.formatNum(this.kpi.likes + this.kpi.comments)}\n`;
+                    content += `   - 互动率: ${this.kpi.engagementRate}%\n\n`;
+                    content += `2. 渠道表现\n`;
+                    content += `   - 表现最佳平台: ${topPlatform}\n`;
+                    content += `   - 转化漏斗: ${this.formatNum(this.funnel.views)} -> ${this.formatNum(this.funnel.follows)} (关注) -> ${this.formatNum(this.funnel.purchases)} (购买)\n\n`;
+                    content += `3. 建议\n`;
+                    content += `   - 您的${topPlatform}账号表现优异，建议增加投入。\n`;
+                    content += `   - 粉丝对"${this.trends[0].topic}"话题感兴趣，建议制作相关内容。`;
+
+                    this.reportText = content;
+                    this.reportName = `QimeiAI_Report_${date}.txt`;
+                    alert(`✅ ${type === 'week' ? '周报' : '日报'}生成成功！请点击“下载报告”按钮保存。`);
+                },
+
+                downloadReport() {
+                    if (!this.reportText) return;
+                    const blob = new Blob([this.reportText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = this.reportName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                },
+
+                triggerUpload() { document.getElementById('data-file').click(); },
+                
+                handleUpload(e) {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    this.isLoading = true;
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const json = JSON.parse(event.target.result);
+                            // 简单的格式校验
+                            if (json.series && json.platformsData) {
+                                this.applyData(json);
+                                this.lastDatasetName = file.name;
+                                this.lastUpdateTime = new Date().toLocaleTimeString();
+                                alert('✅ 数据导入成功！');
+                            } else {
+                                throw new Error('格式不匹配');
+                            }
+                        } catch (err) {
+                            alert('❌ 数据导入失败：文件格式不正确，请确保是标准的企媒AI宝数据JSON。');
+                        } finally {
+                            this.isLoading = false;
+                            e.target.value = ''; // 重置input
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            }
+        }).mount('#analytics-app');
+    </script>
+</body>
+</html>

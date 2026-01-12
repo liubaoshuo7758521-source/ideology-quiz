@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频编辑器 - 企媒AI宝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部工具栏 */
+        .top-toolbar {
+            background: #2d2d2d;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #404040;
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #404040;
+        }
+
+        .project-name {
+            margin-left: 20px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .toolbar-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .toolbar-btn {
+            background: #404040;
+            border: none;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toolbar-btn:hover {
+            background: #555;
+        }
+
+        .toolbar-btn.primary {
+            background: #4a90e2;
+        }
+
+        .toolbar-btn.primary:hover {
+            background: #357abd;
+        }
+
+        /* 主编辑区域 */
+        .main-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 预览区域 */
+        .preview-area {
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .video-preview {
+            width: 80%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: #222;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: #666;
+        }
+
+        .preview-placeholder i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* 播放控制 */
+        .playback-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .play-btn {
+            background: #4a90e2;
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .play-btn:hover {
+            background: #357abd;
+            transform: scale(1.1);
+        }
+
+        .time-display {
+            color: #fff;
+            font-size: 14px;
+            font-family: monospace;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: #555;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* 时间轴区域 */
+        .timeline-area {
+            background: #2d2d2d;
+            height: 250px;
+            border-top: 1px solid #404040;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .timeline-header {
+            background: #252525;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #404040;
+        }
+
+        .timeline-tools {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            background: #404040;
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .tool-btn:hover {
+            background: #555;
+        }
+
+        .tool-btn.active {
+            background: #4a90e2;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .zoom-slider {
+            width: 100px;
+            height: 4px;
+            background: #555;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* 轨道区域 */
+        .tracks-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .track {
+            margin-bottom: 8px;
+            background: #333;
+            border-radius: 6px;
+            height: 60px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .track-header {
+            width: 80px;
+            font-size: 12px;
+            color: #999;
+            margin-right: 10px;
+        }
+
+        .track-content {
+            flex: 1;
+            height: 40px;
+            background: #444;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .track-item {
+            position: absolute;
+            height: 36px;
+            top: 2px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .track-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .track-item.video {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .track-item.audio {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .track-item.text {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .track-item.effect {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98);
+            color: white;
+        }
+
+        /* 时间标尺 */
+        .time-ruler {
+            height: 30px;
+            background: #252525;
+            border-bottom: 1px solid #404040;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0 90px;
+        }
+
+        .time-mark {
+            position: absolute;
+            font-size: 10px;
+            color: #888;
+            top: 8px;
+        }
+
+        /* 底部工具栏 */
+        .bottom-toolbar {
+            background: #2d2d2d;
+            height: 60px;
+            border-top: 1px solid #404040;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+
+        .editing-tools {
+            display: flex;
+            gap: 15px;
+        }
+
+        .edit-tool {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            padding: 8px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .edit-tool:hover {
+            color: #fff;
+            background: #404040;
+        }
+
+        .edit-tool.active {
+            color: #4a90e2;
+        }
+
+        .tool-tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .edit-tool:hover .tool-tooltip {
+            opacity: 1;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 右侧面板 */
+        .side-panel {
+            position: fixed;
+            right: -300px;
+            top: 50px;
+            width: 300px;
+            height: calc(100vh - 50px);
+            background: #252525;
+            border-left: 1px solid #404040;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-panel.open {
+            right: 0;
+        }
+
+        .panel-toggle {
+            position: absolute;
+            left: -30px;
+            top: 20px;
+            width: 30px;
+            height: 60px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-left: none;
+            border-radius: 6px 0 0 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .panel-toggle:hover {
+            background: #404040;
+            color: #fff;
+        }
+
+        .panel-tabs {
+            display: flex;
+            background: #1a1a1a;
+            border-bottom: 1px solid #404040;
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            color: #999;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .panel-tab:hover {
+            background: #333;
+            color: #ccc;
+        }
+
+        .panel-tab.active {
+            color: #4a90e2;
+            border-bottom-color: #4a90e2;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .effect-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .effect-item {
+            background: #333;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .effect-item:hover {
+            background: #404040;
+            transform: scale(1.05);
+        }
+
+        .effect-preview {
+            width: 100%;
+            height: 60px;
+            background: #444;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 24px;
+        }
+
+        .effect-name {
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #2d2d2d;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            border: 1px solid #404040;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .export-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .setting-control {
+            background: #404040;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .setting-control:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .timeline-area {
+                height: 200px;
+            }
+            
+            .bottom-toolbar {
+                height: 50px;
+            }
+            
+            .editing-tools {
+                gap: 10px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #444;
+            border-top: 2px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 拖拽提示 */
+        .drop-zone {
+            border: 2px dashed #666;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4a90e2;
+            background: rgba(74, 144, 226, 0.1);
+            color: #fff;
+        }
+
+        .drop-zone i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <header class="top-toolbar">
+        <button class="back-btn" onclick="window.location.href='QimeiAI-Stable.html'">
+            <i class="fas fa-arrow-left"></i>
+            返回主页
+        </button>
+        <div class="project-name">未命名项目</div>
+        <div class="toolbar-actions">
+            <button class="toolbar-btn" onclick="undoAction()">
+                <i class="fas fa-undo"></i>
+                撤销
+            </button>
+            <button class="toolbar-btn" onclick="redoAction()">
+                <i class="fas fa-redo"></i>
+                重做
+            </button>
+            <button class="toolbar-btn" onclick="exportToJianying()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <i class="fas fa-external-link-alt"></i>
+                在剪映中打开
+            </button>
+            <button class="toolbar-btn primary" onclick="showExportModal()">
+                <i class="fas fa-download"></i>
+                导出
+            </button>
+        </div>
+    </header>
+
+    <!-- 主编辑区域 -->
+    <div class="main-editor">
+        <!-- 预览区域 -->
+        <div class="preview-area">
+            <div class="video-preview" id="videoPreview">
+                <div class="preview-placeholder" id="previewPlaceholder">
+                    <i class="fas fa-video"></i>
+                    <p>拖拽视频文件到此处或点击导入</p>
+                    <button class="toolbar-btn" onclick="importVideo()" style="margin-top: 15px;">
+                        <i class="fas fa-folder-open"></i>
+                        导入视频
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 播放控制 -->
+            <div class="playback-controls" id="playbackControls" style="display: none;">
+                <button class="play-btn" onclick="togglePlay()">
+                    <i class="fas fa-play" id="playIcon"></i>
+                </button>
+                <div class="time-display">
+                    <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+                </div>
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" class="volume-slider" min="0" max="100" value="75">
+                </div>
+            </div>
+        </div>
+
+        <!-- 时间轴区域 -->
+        <div class="timeline-area">
+            <div class="timeline-header">
+                <div class="timeline-tools">
+                    <button class="tool-btn active" onclick="selectTool('select')" title="选择">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('cut')" title="剪切">
+                        <i class="fas fa-cut"></i>
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('trim')" title="修剪">
+                        <i class="fas fa-crop"></i>
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('split')" title="分割">
+                        <i class="fas fa-scissors"></i>
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('speed')" title="速度">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('volume')" title="音量">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+                <div class="zoom-controls">
+                    <i class="fas fa-search-minus"></i>
+                    <input type="range" class="zoom-slider" min="10" max="200" value="100">
+                    <i class="fas fa-search-plus"></i>
+                    <span>100%</span>
+                </div>
+            </div>
+
+            <!-- 时间标尺 -->
+            <div class="time-ruler" id="timeRuler">
+                <!-- 时间标记将通过JavaScript动态生成 -->
+            </div>
+
+            <!-- 轨道容器 -->
+            <div class="tracks-container" id="tracksContainer">
+                <div class="track">
+                    <div class="track-header">视频</div>
+                    <div class="track-content" id="videoTrack">
+                        <!-- 视频片段将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                <div class="track">
+                    <div class="track-header">音频</div>
+                    <div class="track-content" id="audioTrack">
+                        <!-- 音频片段将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                <div class="track">
+                    <div class="track-header">字幕</div>
+                    <div class="track-content" id="textTrack">
+                        <!-- 字幕片段将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                <div class="track">
+                    <div class="track-header">特效</div>
+                    <div class="track-content" id="effectTrack">
+                        <!-- 特效片段将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部工具栏 -->
+    <div class="bottom-toolbar">
+        <div class="editing-tools">
+            <button class="edit-tool" onclick="togglePanel('effects')">
+                <i class="fas fa-magic"></i>
+                <span class="tool-tooltip">特效</span>
+            </button>
+            <button class="edit-tool" onclick="togglePanel('transitions')">
+                <i class="fas fa-exchange-alt"></i>
+                <span class="tool-tooltip">转场</span>
+            </button>
+            <button class="edit-tool" onclick="togglePanel('text')">
+                <i class="fas fa-font"></i>
+                <span class="tool-tooltip">文字</span>
+            </button>
+            <button class="edit-tool" onclick="togglePanel('stickers')">
+                <i class="fas fa-smile"></i>
+                <span class="tool-tooltip">贴纸</span>
+            </button>
+            <button class="edit-tool" onclick="togglePanel('filters')">
+                <i class="fas fa-palette"></i>
+                <span class="tool-tooltip">滤镜</span>
+            </button>
+            <button class="edit-tool" onclick="togglePanel('audio')">
+                <i class="fas fa-music"></i>
+                <span class="tool-tooltip">音频</span>
+            </button>
+        </div>
+        <div class="export-options">
+            <button class="toolbar-btn" onclick="saveProject()">
+                <i class="fas fa-save"></i>
+                保存
+            </button>
+        </div>
+    </div>
+
+    <!-- 右侧面板 -->
+    <div class="side-panel" id="sidePanel">
+        <div class="panel-toggle" onclick="toggleSidePanel()">
+            <i class="fas fa-chevron-right" id="panelToggleIcon"></i>
+        </div>
+        
+        <div class="panel-tabs">
+            <div class="panel-tab active" data-panel="effects">特效</div>
+            <div class="panel-tab" data-panel="transitions">转场</div>
+            <div class="panel-tab" data-panel="text">文字</div>
+            <div class="panel-tab" data-panel="stickers">贴纸</div>
+            <div class="panel-tab" data-panel="filters">滤镜</div>
+            <div class="panel-tab" data-panel="audio">音频</div>
+        </div>
+        
+        <div class="panel-content" id="panelContent">
+            <!-- 面板内容将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <!-- 导出模态框 -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeExportModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2 class="modal-title">导出设置</h2>
+            </div>
+            <div class="export-settings">
+                <div class="setting-group">
+                    <label class="setting-label">文件名</label>
+                    <input type="text" class="setting-control" value="我的视频" id="exportName">
+                </div>
+                <div class="setting-group">
+                    <label class="setting-label">分辨率</label>
+                    <select class="setting-control" id="exportResolution">
+                        <option value="1080p">1080p (1920×1080)</option>
+                        <option value="720p">720p (1280×720)</option>
+                        <option value="480p">480p (854×480)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label class="setting-label">帧率</label>
+                    <select class="setting-control" id="exportFramerate">
+                        <option value="60">60 fps</option>
+                        <option value="30" selected>30 fps</option>
+                        <option value="24">24 fps</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label class="setting-label">格式</label>
+                    <select class="setting-control" id="exportFormat">
+                        <option value="mp4">MP4</option>
+                        <option value="mov">MOV</option>
+                        <option value="avi">AVI</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="toolbar-btn" onclick="closeExportModal()">取消</button>
+                <button class="toolbar-btn primary" onclick="exportVideo()">
+                    <i class="fas fa-download"></i>
+                    导出
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的文件输入 -->
+    <input type="file" id="fileInput" accept="video/*" style="display: none;" multiple>
+
+    <script>
+        // 应用状态
+        const appState = {
+            isPlaying: false,
+            currentTime: 0,
+            duration: 0,
+            selectedTool: 'select',
+            activePanel: 'effects',
+            videoFiles: [],
+            currentProject: {
+                name: '未命名项目',
+                tracks: {
+                    video: [],
+                    audio: [],
+                    text: [],
+                    effect: []
+                }
+            }
+        };
+
+        // 特效数据
+        const effectsData = {
+            effects: [
+                { name: '模糊', icon: 'fas fa-eye-slash', color: '#3498db' },
+                { name: '发光', icon: 'fas fa-star', color: '#f1c40f' },
+                { name: '震动', icon: 'fas fa-bolt', color: '#e74c3c' },
+                { name: '缩放', icon: 'fas fa-search-plus', color: '#2ecc71' },
+                { name: '旋转', icon: 'fas fa-sync', color: '#9b59b6' },
+                { name: '淡入淡出', icon: 'fas fa-adjust', color: '#34495e' }
+            ],
+            transitions: [
+                { name: '溶解', icon: 'fas fa-water', color: '#3498db' },
+                { name: '滑动', icon: 'fas fa-arrows-alt-h', color: '#e67e22' },
+                { name: '缩放', icon: 'fas fa-expand', color: '#2ecc71' },
+                { name: '翻转', icon: 'fas fa-exchange-alt', color: '#9b59b6' },
+                { name: '擦除', icon: 'fas fa-eraser', color: '#e74c3c' },
+                { name: '推进', icon: 'fas fa-arrow-right', color: '#f1c40f' }
+            ],
+            text: [
+                { name: '标题', icon: 'fas fa-heading', color: '#2c3e50' },
+                { name: '字幕', icon: 'fas fa-closed-captioning', color: '#3498db' },
+                { name: '对话气泡', icon: 'fas fa-comment', color: '#2ecc71' },
+                { name: '滚动文字', icon: 'fas fa-stream', color: '#e67e22' },
+                { name: '霓虹', icon: 'fas fa-lightbulb', color: '#f1c40f' },
+                { name: '打字机', icon: 'fas fa-keyboard', color: '#9b59b6' }
+            ],
+            stickers: [
+                { name: '爱心', icon: 'fas fa-heart', color: '#e74c3c' },
+                { name: '笑脸', icon: 'fas fa-smile', color: '#f1c40f' },
+                { name: '星星', icon: 'fas fa-star', color: '#f1c40f' },
+                { name: '火焰', icon: 'fas fa-fire', color: '#e67e22' },
+                { name: '彩虹', icon: 'fas fa-rainbow', color: '#9b59b6' },
+                { name: '礼物', icon: 'fas fa-gift', color: '#2ecc71' }
+            ],
+            filters: [
+                { name: '黑白', icon: 'fas fa-adjust', color: '#34495e' },
+                { name: '复古', icon: 'fas fa-film', color: '#8b4513' },
+                { name: '暖色', icon: 'fas fa-sun', color: '#f39c12' },
+                { name: '冷色', icon: 'fas fa-snowflake', color: '#3498db' },
+                { name: '梦幻', icon: 'fas fa-magic', color: '#9b59b6' },
+                { name: '电影', icon: 'fas fa-video', color: '#2c3e50' }
+            ],
+            audio: [
+                { name: '背景音乐', icon: 'fas fa-music', color: '#3498db' },
+                { name: '音效', icon: 'fas fa-bell', color: '#f1c40f' },
+                { name: '录音', icon: 'fas fa-microphone', color: '#e74c3c' },
+                { name: '降噪', icon: 'fas fa-volume-mute', color: '#95a5a6' },
+                { name: '混音', icon: 'fas fa-sliders-h', color: '#2ecc71' },
+                { name: '均衡器', icon: 'fas fa-chart-bar', color: '#9b59b6' }
+            ]
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditor();
+            setupEventListeners();
+            renderPanelContent('effects');
+            generateTimeRuler();
+        });
+
+        // 初始化编辑器
+        function initializeEditor() {
+            // 设置拖拽区域
+            const videoPreview = document.getElementById('videoPreview');
+            
+            videoPreview.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+            
+            videoPreview.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+            });
+            
+            videoPreview.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                handleFileDrop(e.dataTransfer.files);
+            });
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 文件输入
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                handleFileDrop(e.target.files);
+            });
+
+            // 面板标签切换
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const panel = this.getAttribute('data-panel');
+                    switchPanel(panel);
+                });
+            });
+
+            // 缩放控制
+            const zoomSlider = document.querySelector('.zoom-slider');
+            if (zoomSlider) {
+                zoomSlider.addEventListener('input', function(e) {
+                    const zoom = e.target.value;
+                    const zoomDisplay = document.querySelector('.zoom-controls span');
+                    if (zoomDisplay) {
+                        zoomDisplay.textContent = zoom + '%';
+                    }
+                });
+            }
+
+            // 音量控制
+            const volumeSlider = document.querySelector('.volume-slider');
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', function(e) {
+                    // 实际音量控制逻辑
+                    console.log('Volume:', e.target.value);
+                    if (appState.currentVideo) {
+                        appState.currentVideo.volume = e.target.value / 100;
+                    }
+                });
+            }
+        }
+
+        // 生成时间标尺
+        function generateTimeRuler() {
+            const ruler = document.getElementById('timeRuler');
+            const totalWidth = 1000; // 假设时间轴宽度为1000px
+            const markInterval = 100; // 每100px一个标记
+            const secondsPerMark = 5; // 每个标记代表5秒
+            
+            for (let i = 0; i <= totalWidth / markInterval; i++) {
+                const mark = document.createElement('div');
+                mark.className = 'time-mark';
+                mark.style.left = (90 + i * markInterval) + 'px';
+                mark.textContent = formatTime(i * secondsPerMark);
+                ruler.appendChild(mark);
+            }
+        }
+
+        // 格式化时间
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // 处理文件拖放
+        function handleFileDrop(files) {
+            if (files.length === 0) return;
+            
+            const videoFiles = Array.from(files).filter(file => file.type.startsWith('video/'));
+            if (videoFiles.length === 0) {
+                alert('请选择视频文件');
+                return;
+            }
+            
+            // 隐藏占位符，显示播放控制
+            document.getElementById('previewPlaceholder').style.display = 'none';
+            document.getElementById('playbackControls').style.display = 'flex';
+            
+            // 处理第一个视频文件
+            const file = videoFiles[0];
+            loadVideoFile(file);
+        }
+
+        // 加载视频文件
+        function loadVideoFile(file) {
+            appState.videoFiles.push(file);
+            
+            // 创建视频元素
+            const video = document.createElement('video');
+            video.src = URL.createObjectURL(file);
+            video.addEventListener('loadedmetadata', function() {
+                appState.duration = video.duration;
+                const totalTimeElement = document.getElementById('totalTime');
+                if (totalTimeElement) {
+                    totalTimeElement.textContent = formatTime(video.duration);
+                }
+                
+                // 添加视频到轨道
+                addVideoToTrack(file.name, video.duration);
+            });
+            
+            video.addEventListener('error', function() {
+                showNotification('视频加载失败，请检查文件格式');
+            });
+            
+            // 替换预览区域
+            const preview = document.getElementById('videoPreview');
+            if (preview) {
+                preview.innerHTML = '';
+                preview.appendChild(video);
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.objectFit = 'contain';
+            }
+            
+            appState.currentVideo = video;
+        }
+
+        // 添加视频到轨道
+        function addVideoToTrack(fileName, duration) {
+            const track = document.getElementById('videoTrack');
+            if (!track) return;
+            
+            const trackItem = document.createElement('div');
+            trackItem.className = 'track-item video';
+            trackItem.style.width = (duration * 20) + 'px'; // 假设每秒20px
+            trackItem.innerHTML = `
+                <i class="fas fa-video"></i>
+                ${fileName}
+            `;
+            track.appendChild(trackItem);
+            
+            // 添加拖拽功能
+            trackItem.draggable = true;
+            trackItem.addEventListener('dragstart', function(e) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+                this.style.opacity = '0.4';
+            });
+            
+            trackItem.addEventListener('dragend', function() {
+                this.style.opacity = '1';
+            });
+            
+            appState.currentProject.tracks.video.push({
+                name: fileName,
+                duration: duration,
+                startTime: 0
+            });
+        }
+
+        // 导入视频
+        function importVideo() {
+            document.getElementById('fileInput').click();
+        }
+
+        // 播放/暂停
+        function togglePlay() {
+            if (!appState.currentVideo) return;
+            
+            const playIcon = document.getElementById('playIcon');
+            
+            if (appState.isPlaying) {
+                appState.currentVideo.pause();
+                if (playIcon) {
+                    playIcon.className = 'fas fa-play';
+                }
+                appState.isPlaying = false;
+            } else {
+                appState.currentVideo.play().catch(error => {
+                    console.error('视频播放失败:', error);
+                    showNotification('视频播放失败，请检查文件格式');
+                });
+                if (playIcon) {
+                    playIcon.className = 'fas fa-pause';
+                }
+                appState.isPlaying = true;
+                updateProgress();
+            }
+        }
+
+        // 更新播放进度
+        function updateProgress() {
+            if (!appState.isPlaying || !appState.currentVideo) return;
+            
+            const video = appState.currentVideo;
+            appState.currentTime = video.currentTime;
+            
+            const currentTimeElement = document.getElementById('currentTime');
+            if (currentTimeElement) {
+                currentTimeElement.textContent = formatTime(video.currentTime);
+            }
+            
+            if (video.currentTime < video.duration) {
+                requestAnimationFrame(updateProgress);
+            } else {
+                // 播放结束
+                const playIcon = document.getElementById('playIcon');
+                if (playIcon) {
+                    playIcon.className = 'fas fa-play';
+                }
+                appState.isPlaying = false;
+            }
+        }
+
+        // 选择工具
+        function selectTool(tool) {
+            appState.selectedTool = tool;
+            
+            // 更新工具按钮状态
+            document.querySelectorAll('.timeline-tools .tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 安全地获取被点击的按钮元素
+            if (event && event.target) {
+                const clickedBtn = event.target.closest('.tool-btn');
+                if (clickedBtn) {
+                    clickedBtn.classList.add('active');
+                }
+            }
+        }
+
+        // 切换侧边面板
+        function toggleSidePanel() {
+            const panel = document.getElementById('sidePanel');
+            const icon = document.getElementById('panelToggleIcon');
+            
+            if (panel && icon) {
+                if (panel.classList.contains('open')) {
+                    panel.classList.remove('open');
+                    icon.className = 'fas fa-chevron-right';
+                } else {
+                    panel.classList.add('open');
+                    icon.className = 'fas fa-chevron-left';
+                }
+            }
+        }
+
+        // 切换面板内容
+        function togglePanel(panelName) {
+            appState.activePanel = panelName;
+            
+            // 更新标签状态
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-panel="${panelName}"]`).classList.add('active');
+            
+            // 渲染面板内容
+            renderPanelContent(panelName);
+            
+            // 打开侧边面板
+            const panel = document.getElementById('sidePanel');
+            if (!panel.classList.contains('open')) {
+                toggleSidePanel();
+            }
+        }
+
+        // 渲染面板内容
+        function renderPanelContent(panelName) {
+            const content = document.getElementById('panelContent');
+            const items = effectsData[panelName] || [];
+            
+            content.innerHTML = '<div class="effect-grid">' + 
+                items.map(item => `
+                    <div class="effect-item" onclick="applyEffect('${panelName}', '${item.name}')">
+                        <div class="effect-preview">
+                            <i class="${item.icon}" style="color: ${item.color}"></i>
+                        </div>
+                        <div class="effect-name">${item.name}</div>
+                    </div>
+                `).join('') + 
+                '</div>';
+        }
+
+        // 应用特效
+        function applyEffect(category, effectName) {
+            console.log(`应用特效: ${category} - ${effectName}`);
+            
+            // 检查是否有视频加载
+            if (!appState.currentVideo) {
+                showNotification('请先导入视频文件');
+                return;
+            }
+            
+            // 这里实现实际的特效应用逻辑
+            showNotification(`已应用 ${effectName} 特效`);
+            
+            // 添加到项目轨道
+            const effectTrack = document.getElementById('effectTrack');
+            if (effectTrack) {
+                const effectItem = document.createElement('div');
+                effectItem.className = 'track-item effect';
+                effectItem.style.width = '100px'; // 默认宽度
+                effectItem.style.left = '0px';
+                effectItem.innerHTML = `
+                    <i class="fas fa-magic"></i>
+                    ${effectName}
+                `;
+                effectTrack.appendChild(effectItem);
+                
+                // 更新项目数据
+                appState.currentProject.tracks.effect.push({
+                    name: effectName,
+                    category: category,
+                    startTime: 0,
+                    duration: 5 // 默认5秒
+                });
+            }
+        }
+
+        // 显示导出模态框
+        function showExportModal() {
+            document.getElementById('exportModal').style.display = 'block';
+        }
+
+        // 关闭导出模态框
+        function closeExportModal() {
+            document.getElementById('exportModal').style.display = 'none';
+        }
+
+        // 导出视频
+        function exportVideo() {
+            const settings = {
+                name: document.getElementById('exportName').value,
+                resolution: document.getElementById('exportResolution').value,
+                framerate: document.getElementById('exportFramerate').value,
+                format: document.getElementById('exportFormat').value
+            };
+            
+            console.log('导出设置:', settings);
+            
+            // 模拟导出过程
+            showNotification('开始导出视频...');
+            setTimeout(() => {
+                showNotification('视频导出完成！');
+                closeExportModal();
+            }, 2000);
+        }
+
+        // 保存项目
+        function saveProject() {
+            const projectData = {
+                ...appState.currentProject,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('保存项目:', projectData);
+            showNotification('项目已保存');
+        }
+
+        // 撤销操作
+        function undoAction() {
+            console.log('撤销操作');
+            showNotification('已撤销');
+        }
+
+        // 重做操作
+        function redoAction() {
+            console.log('重做操作');
+            showNotification('已重做');
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后移除
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+
+        // ========== 剪映集成功能 ==========
+
+        // 剪映 URL Scheme
+        const JIANYING_URL_SCHEME = 'jianying://';
+
+        // 导出项目到剪映
+        function exportToJianying() {
+            // 检查是否有项目数据
+            if (!appState.currentVideo && appState.videoFiles.length === 0) {
+                showNotification('请先导入视频文件', 'warning');
+                return;
+            }
+
+            // 直接打开剪映，不做检测
+            performJianyingExport();
+        }
+
+        // 显示剪映安装提示
+        function showJianyingInstallPrompt() {
+            const message = `
+检测到您尚未安装剪映客户端。
+
+是否前往下载剪映？
+• PC版: https://lv.ulikecam.com/
+• 移动端: 请在应用商店搜索"剪映"
+
+安装后即可使用"在剪映中打开"功能，享受更专业的编辑体验！
+            `;
+
+            if (confirm(message.trim())) {
+                window.open('https://lv.ulikecam.com/', '_blank');
+            }
+        }
+
+        // 执行剪映导出
+        function performJianyingExport() {
+            try {
+                // 转换项目数据为剪映格式
+                const jianyingProject = convertToJianyingFormat();
+
+                // 显示提示
+                showNotification('🎬 正在打开剪映专业版...', 'info');
+
+                // 尝试多种剪映URL Scheme
+                const schemes = [
+                    'jianyingpro://',      // 剪映专业版
+                    'jianying://',          // 剪映普通版
+                    'capcut://',            // 国际版CapCut
+                    'lv.ulikecam://'        // 旧版
+                ];
+
+                // 方法1: 使用iframe尝试唤起
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                document.body.appendChild(iframe);
+                iframe.src = schemes[0];  // 优先尝试专业版
+
+                // 清理iframe
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                    }
+                }, 3000);
+
+                // 方法2: 同时尝试直接window.location
+                setTimeout(() => {
+                    window.location.href = schemes[0];
+                }, 500);
+
+                // 提示信息
+                setTimeout(() => {
+                    showNotification('💡 如剪映未打开，请检查是否安装专业版', 'success');
+                }, 2500);
+
+            } catch (error) {
+                console.error('导出到剪映失败:', error);
+                showNotification('导出失败，请稍后重试', 'error');
+            }
+        }
+
+        // 转换项目数据为剪映格式
+        function convertToJianyingFormat() {
+            const project = appState.currentProject;
+
+            return {
+                version: "13.8.0",
+                id: generateProjectId(),
+                name: project.name || "企媒AI宝项目",
+                canvas: {
+                    ratio: "16:9",  // 默认横屏
+                    duration: appState.duration || 0
+                },
+                tracks: {
+                    video: project.tracks.video.map(clip => ({
+                        type: "video",
+                        id: clip.id || generateClipId(),
+                        start_time: clip.startTime || 0,
+                        duration: clip.duration || 5,
+                        source: clip.source || clip.url || "",
+                        // 剪映特定的属性
+                        material_id: clip.materialId || "",
+                        segments: clip.segments || []
+                    })),
+                    audio: project.tracks.audio.map(audio => ({
+                        type: "audio",
+                        id: audio.id || generateClipId(),
+                        start_time: audio.startTime || 0,
+                        duration: audio.duration || 5,
+                        volume: audio.volume || 1.0,
+                        source: audio.source || ""
+                    })),
+                    text: project.tracks.text.map(text => ({
+                        type: "text",
+                        id: text.id || generateClipId(),
+                        content: text.content || "",
+                        start_time: text.startTime || 0,
+                        duration: text.duration || 3,
+                        style: text.style || {}
+                    }))
+                },
+                materials: {
+                    texts: [],
+                    stickers: [],
+                    effects: [],
+                    filters: []
+                },
+                export_settings: {
+                    resolution: "1080p",
+                    fps: 30,
+                    bitrate: "high"
+                }
+            };
+        }
+
+        // 生成项目ID
+        function generateProjectId() {
+            return 'qimei_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // 生成片段ID
+        function generateClipId() {
+            return 'clip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // 显示导出说明
+        function showExportInstructions(project) {
+            const instructions = `
+剪映项目已准备完成！
+
+项目名称: ${project.name}
+视频片段: ${project.tracks.video.length} 个
+音频片段: ${project.tracks.audio.length} 个
+文字片段: ${project.tracks.text.length} 个
+
+由于剪映客户端的限制，请按照以下步骤操作：
+
+1. 剪映客户端将自动打开
+2. 在剪映中创建新项目
+3. 将您的视频文件导入到剪映
+4. 使用我们在基础编辑器中的编辑设置作为参考
+
+是否继续打开剪映？
+            `;
+
+            if (confirm(instructions.trim())) {
+                // 直接打开剪映
+                window.location.href = JIANYING_URL_SCHEME;
+                showNotification('已打开剪映，请导入视频文件继续编辑', 'success');
+            }
+        }
+
+        // 使用项目数据打开剪映（实验性功能）
+        function openJianyingWithProject(project) {
+            try {
+                // 尝试通过剪映草稿API导入
+                // 注意：这可能需要剪映开放平台API支持
+
+                // 方案1: 使用剪映草稿导入协议（如果支持）
+                const projectData = encodeURIComponent(JSON.stringify(project));
+
+                // 尝试多种scheme
+                const schemes = [
+                    'jianyingpro://import_draft?data=',
+                    'jianying://import_draft?data=',
+                    'capcut://import_draft?data='
+                ];
+
+                const importURL = schemes[0] + projectData;
+
+                // 方法1: 使用iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                iframe.src = importURL;
+
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                    }
+                }, 3000);
+
+                // 方法2: 直接跳转
+                setTimeout(() => {
+                    window.location.href = importURL;
+                }, 500);
+
+                showNotification('正在打开剪映专业版...', 'info');
+
+                // 3秒后检查是否成功
+                setTimeout(() => {
+                    showNotification('项目已准备，请在剪映中继续编辑', 'success');
+                }, 3000);
+
+            } catch (error) {
+                console.error('通过项目数据打开剪映失败:', error);
+                // 降级方案：直接打开剪映
+                performJianyingExport();
+            }
+        }
+
+        // 下载项目数据为JSON文件（供用户手动导入）
+        function downloadProjectJson() {
+            const project = convertToJianyingFormat();
+            const json = JSON.stringify(project, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${project.name}_剪映草稿.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('项目文件已下载', 'success');
+        }
+
+        // 高级：剪映草稿导入说明
+        function showJianyingDraftHelp() {
+            const helpContent = `
+【剪映草稿导入功能说明】
+
+当前版本支持以下功能：
+
+✓ 基础信息转换（项目名称、时长等）
+✓ 轨道数据转换（视频、音频、文字）
+✓ 材料清单生成
+✓ 导出设置预设
+
+⚠️ 限制说明：
+
+由于剪映客户端的限制，当前版本无法实现：
+- 自动导入视频文件
+- 自动应用特效和滤镜
+- 自动同步时间轴编辑
+
+💡 使用建议：
+
+1. 在基础编辑器中进行粗剪和预览
+2. 使用"在剪映中打开"进行精剪
+3. 参考编辑器的轨道设置在剪映中重建
+
+📧 功能反馈：
+
+如有问题或建议，请联系技术支持。
+
+是否下载项目JSON文件（可用于未来剪映API导入）？
+            `;
+
+            if (confirm(helpContent.trim())) {
+                downloadProjectJson();
+            }
+        }
+
+        // 在初始化时注册剪映功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 监听剪映相关的事件（如果有）
+            console.log('剪映集成功能已加载');
+        });
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

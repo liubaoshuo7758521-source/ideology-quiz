@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企媒AI宝 - AI创作工作台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .header h1 { font-size: 2em; color: #2c3e50; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .btn { background: linear-gradient(45deg, #667eea, #764ba2); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(102,126,234,0.35); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: linear-gradient(45deg, #95a5a6, #7f8c8d); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .card h3 { color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .input { width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 8px; outline: none; }
+        .input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); }
+        .row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .status { color: #7f8c8d; font-size: 14px; margin-top: 8px; }
+        .footer { text-align: center; margin-top: 20px; color: #7f8c8d; }
+        .dropzone { border: 2px dashed #667eea; border-radius: 12px; padding: 30px; text-align: center; color: #667eea; background: #f6f7ff; transition: all .2s; cursor: pointer; }
+        .dropzone:hover { background: #eef0ff; border-color: #4c5fe6; }
+        .empty-state { text-align: center; padding: 40px; color: #95a5a6; }
+        textarea.input { resize: vertical; min-height: 80px; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="header">
+                <h1>🎨 AI创作工作台</h1>
+                <div class="row">
+                    <button class="btn btn-secondary" @click="goHome">返回主页</button>
+                    <button class="btn" @click="showAISettings=true">AI设置</button>
+                </div>
+            </div>
+
+            <!-- AI设置模态框 -->
+            <div v-if="showAISettings" style="position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                <div style="background: #fff; width: 520px; border-radius: 14px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+                    <h3>🤖 AI设置</h3>
+                    <div class="row">
+                        <label>API 地址：</label>
+                        <input class="input" v-model="aiUrl">
+                    </div>
+                    <div class="row">
+                        <label>API Key：</label>
+                        <input class="input" type="password" v-model="aiKey">
+                    </div>
+                    <div class="row">
+                        <label>模型：</label>
+                        <input class="input" v-model="aiModel">
+                    </div>
+                    <div class="row" style="justify-content: flex-end;">
+                        <button class="btn btn-secondary" @click="showAISettings=false">取消</button>
+                        <button class="btn" @click="saveAIConfig">保存</button>
+                    </div>
+                    <div class="status">状态：{{ aiStatus }}</div>
+                </div>
+            </div>
+
+            <!-- 导入视频对话框 -->
+            <div v-if="showImportDialog" style="position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                <div style="background: #fff; width: 600px; border-radius: 14px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 80vh; overflow-y: auto;">
+                    <h3>📥 导入已有视频到草稿</h3>
+                    <p style="color: #7f8c8d; font-size: 13px; margin-bottom: 15px;">填写视频信息,将已生成的视频添加到草稿中</p>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">商品名称:</label>
+                        <input class="input" v-model="importDraft.productName" placeholder="例如: 智能手表">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">文案内容:</label>
+                        <textarea class="input" rows="3" v-model="importDraft.copyOutput" placeholder="粘贴之前生成的文案..."></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">视频链接 (每行一个):</label>
+                        <div v-for="(video, idx) in importDraft.videoUrls" :key="idx" class="row" style="margin-bottom: 8px;">
+                            <select class="input" v-model="video.style" style="width: 120px;">
+                                <option value="专业商务">专业商务</option>
+                                <option value="时尚活力">时尚活力</option>
+                                <option value="温馨生活">温馨生活</option>
+                            </select>
+                            <input class="input" v-model="video.url" placeholder="视频URL (例如: http://127.0.0.1:5000/static/videos/xxx.mp4)" style="flex: 1;">
+                            <button class="btn btn-secondary" @click="removeImportVideo(idx)" :disabled="importDraft.videoUrls.length <= 1" style="padding: 10px 12px;">×</button>
+                        </div>
+                        <button class="btn btn-secondary" @click="addImportVideo" style="font-size: 13px;">+ 添加视频</button>
+                    </div>
+
+                    <div class="row" style="justify-content: flex-end;">
+                        <button class="btn btn-secondary" @click="showImportDialog=false">取消</button>
+                        <button class="btn" @click="confirmImportDraft">确定导入</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <!-- 图片上传模块 -->
+                <div class="card">
+                    <h3>📸 图片上传</h3>
+                    <div class="dropzone" @click="$refs.imageInput.click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div>拖拽图片到此或点击选择</div>
+                    </div>
+                    <input ref="imageInput" type="file" accept="image/*" multiple style="display: none;" @change="handleImageUpload">
+
+                    <div class="row">
+                        <button class="btn" @click="uploadImages" :disabled="!selectedImages.length">
+                            <i class="fas fa-upload"></i> 上传图片
+                        </button>
+                        <button class="btn btn-secondary" @click="clearImages" :disabled="!selectedImages.length">清空</button>
+                    </div>
+
+                    <div class="status">已上传: {{ selectedImages.length }} 张图片</div>
+                </div>
+
+                <!-- 视频上传模块 -->
+                <div class="card">
+                    <h3>🎬 视频上传</h3>
+                    <div class="dropzone" @click="$refs.videoInput.click()">
+                        <i class="fas fa-video"></i>
+                        <div>拖拽视频到此或点击选择</div>
+                    </div>
+                    <input ref="videoInput" type="file" accept="video/*" multiple style="display: none;" @change="handleVideoUpload">
+
+                    <div class="row">
+                        <button class="btn" @click="uploadVideos" :disabled="!selectedVideos.length">
+                            <i class="fas fa-upload"></i> 上传视频
+                        </button>
+                        <button class="btn btn-secondary" @click="clearVideos" :disabled="!selectedVideos.length">清空</button>
+                    </div>
+
+                    <div class="status">已上传: {{ selectedVideos.length }} 个视频</div>
+                </div>
+
+                <!-- AI文案生成 - DeepSeek驱动 -->
+                <div class="card">
+                    <h3>✍️ AI文案生成 <span style="font-size: 11px; color: #667eea;">(Powered by DeepSeek)</span></h3>
+                    <div class="row">
+                        <input class="input" placeholder="商品名称" v-model="productName">
+                    </div>
+                    <div class="row">
+                        <textarea class="input" rows="2" placeholder="商品卖点（用逗号分隔）" v-model="productFeatures"></textarea>
+                    </div>
+                    <div class="row">
+                        <select class="input" v-model="copyTemplate" style="flex: 1;">
+                            <option value="通用营销">通用营销</option>
+                            <option value="社交媒体">社交媒体</option>
+                            <option value="电商详情">电商详情</option>
+                            <option value="品牌故事">品牌故事</option>
+                            <option value="限时促销">限时促销</option>
+                            <option value="新品发布">新品发布</option>
+                            <option value="短视频脚本">短视频脚本</option>
+                        </select>
+                        <select class="input" v-model="tone" style="flex: 1;">
+                            <option value="专业">专业</option>
+                            <option value="轻松">轻松</option>
+                            <option value="幽默">幽默</option>
+                            <option value="感性">感性</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <button class="btn" @click="generateCopy" :disabled="isGenerating">
+                            {{ isGenerating ? '生成中...' : '生成文案' }}
+                        </button>
+                        <button class="btn btn-secondary" @click="regenerateCopy" :disabled="isGenerating || !copyOutput">
+                            换一版
+                        </button>
+                        <button class="btn btn-secondary" @click="copyText" :disabled="!copyOutput">
+                            复制
+                        </button>
+                    </div>
+                    <div style="background: #f8f9fa; border: 1px solid #eee; border-radius: 10px; padding: 12px; min-height: 120px; white-space: pre-wrap;">
+                        {{ copyOutput || '点击生成按钮创建AI文案...' }}
+                    </div>
+                    <div class="status">生成状态：{{ generationStatus }}</div>
+                </div>
+
+                <!-- Runway ML AI智能宣传视频生成 -->
+                <div class="card" style="grid-column: span 2;">
+                    <h3>🎬 AI智能宣传视频生成 <span style="font-size: 11px; color: #667eea;">(Powered by Runway ML)</span></h3>
+
+                    <div style="background: #f0f4ff; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-size: 13px; color: #7f8c8d;">
+                            <div><i class="fas fa-check-circle" style="color: #27ae60;"></i> 已上传图片: {{ selectedImages.length }} 张</div>
+                            <div><i class="fas fa-check-circle" style="color: #27ae60;"></i> 已上传视频: {{ selectedVideos.length }} 个</div>
+                            <div><i class="fas fa-check-circle" :style="{color: copyOutput ? '#27ae60' : '#95a5a6'}"></i> 文案状态: {{ copyOutput ? '已生成' : '未生成' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500;">生成模式</label>
+                            <select class="input" v-model="sora2Mode">
+                                <option value="text">文本生成视频（基于文案）</option>
+                                <option value="image">图片生成视频（基于首图）</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 500;">分辨率</label>
+                            <select class="input" v-model="sora2Resolution">
+                                <option value="720p">720p</option>
+                                <option value="1080p">1080p</option>
+                                <option value="4K">4K</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="sora2Mode === 'text'" style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">视频描述（自动基于文案）</label>
+                        <textarea class="input" rows="2" readonly style="background: #f8f9fa;">{{ sora2Prompt || '请先生成文案...' }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <button class="btn" @click="generateMultipleVideos" :disabled="isSora2Generating" style="flex: 2;">
+                            {{ isSora2Generating ? 'AI正在生成...' : '🎬 同时生成3个不同风格的视频' }}
+                        </button>
+                    </div>
+
+                    <div class="status">{{ sora2OverallStatus || '准备就绪' }}</div>
+
+                    <!-- 三个视频显示区域 -->
+                    <div v-if="videoTasks.length > 0" style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 15px; color: #2c3e50;">生成的视频:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                            <div v-for="(task, index) in videoTasks" :key="index" style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                                <div style="margin-bottom: 10px;">
+                                    <strong style="color: #667eea;">视频 {{ index + 1 }}: {{ task.style }}</strong>
+                                </div>
+                                <div class="status" style="margin-bottom: 10px;">
+                                    <i :class="task.status === 'completed' ? 'fas fa-check-circle' : 'fas fa-spinner fa-spin'"
+                                       :style="{color: task.status === 'completed' ? '#27ae60' : '#667eea'}"></i>
+                                    {{ task.statusText }}
+                                </div>
+                                <div v-if="task.videoUrl" style="margin-top: 10px;">
+                                    <video :src="task.videoUrl" controls style="width: 100%; border-radius: 8px; background: #000;"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创作草稿模块 -->
+                <div class="card" style="grid-column: span 2;">
+                    <h3>
+                        <i class="fas fa-folder-open" style="color: #667eea;"></i>
+                        创作草稿
+                        <span style="font-size: 12px; color: #95a5a6; font-weight: normal;">(保存生成的视频和文案)</span>
+                    </h3>
+
+                    <div class="row" style="margin-bottom: 15px;">
+                        <button class="btn" @click="saveToDrafts" :disabled="!canSaveDraft">
+                            <i class="fas fa-save"></i> 保存当前创作到草稿
+                        </button>
+                        <button class="btn btn-secondary" @click="showImportDialog=true" style="background: #3498db;">
+                            <i class="fas fa-plus"></i> 导入已有视频
+                        </button>
+                        <button class="btn btn-secondary" @click="clearAllDrafts" :disabled="drafts.length === 0">
+                            <i class="fas fa-trash"></i> 清空所有草稿
+                        </button>
+                    </div>
+
+                    <div v-if="drafts.length === 0" class="empty-state">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; color: #ddd;"></i>
+                        <div>暂无草稿,生成视频后会自动显示在这里</div>
+                    </div>
+
+                    <div v-else style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+                        <div v-for="(draft, index) in drafts" :key="draft.id"
+                             style="background: #f8f9fa; border-radius: 12px; padding: 15px; border: 2px solid #eee; transition: all 0.2s;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #2c3e50; margin-bottom: 5px;">
+                                        <i class="fas fa-file-alt" style="color: #667eea;"></i>
+                                        {{ draft.productName || '未命名创作' }}
+                                    </h4>
+                                    <div style="font-size: 12px; color: #95a5a6;">
+                                        <i class="fas fa-clock"></i> {{ draft.timestamp }}
+                                    </div>
+                                </div>
+                                <button @click="deleteDraft(index)"
+                                        style="background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                                    <i class="fas fa-trash"></i> 删除
+                                </button>
+                            </div>
+
+                            <!-- 文案部分 -->
+                            <div v-if="draft.copyOutput" style="margin-bottom: 12px;">
+                                <div style="font-size: 13px; font-weight: 600; color: #667eea; margin-bottom: 5px;">
+                                    <i class="fas fa-pen"></i> 文案:
+                                </div>
+                                <div style="background: #fff; padding: 10px; border-radius: 8px; font-size: 13px; color: #555; max-height: 120px; overflow-y: auto; white-space: pre-wrap;">
+                                    {{ draft.copyOutput }}
+                                </div>
+                            </div>
+
+                            <!-- 视频部分 -->
+                            <div v-if="draft.videos && draft.videos.length > 0">
+                                <div style="font-size: 13px; font-weight: 600; color: #667eea; margin-bottom: 8px;">
+                                    <i class="fas fa-video"></i> 生成视频 ({{ draft.videos.filter(v => v.videoUrl).length }}/{{ draft.videos.length }})
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                                    <div v-for="(video, vIndex) in draft.videos" :key="vIndex"
+                                         style="background: #fff; border-radius: 8px; padding: 8px; text-align: center;">
+                                        <div style="font-size: 11px; color: #7f8c8d; margin-bottom: 5px;">{{ video.style }}</div>
+                                        <div v-if="video.videoUrl" style="position: relative;">
+                                            <video :src="video.videoUrl"
+                                                   controls
+                                                   style="width: 100%; border-radius: 6px; background: #000; max-height: 120px;"></video>
+                                            <a :href="video.videoUrl" target="_blank" download
+                                               style="display: inline-block; margin-top: 5px; font-size: 11px; color: #667eea; text-decoration: none;">
+                                                <i class="fas fa-download"></i> 下载
+                                            </a>
+                                        </div>
+                                        <div v-else style="background: #eee; padding: 20px; border-radius: 6px; color: #95a5a6; font-size: 12px;">
+                                            <i class="fas fa-times-circle"></i> 生成失败
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 10px;">
+                                <button class="btn" style="padding: 6px 12px; font-size: 13px;"
+                                        @click="loadDraft(index)">
+                                    <i class="fas fa-folder-open"></i> 加载此草稿
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">版本 2.0.0 | {{ buildTime }}</div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    selectedImages: [],
+                    selectedVideos: [],
+                    productName: '',
+                    productFeatures: '',
+                    copyTemplate: '通用营销',
+                    tone: '专业',
+                    copyOutput: '',
+                    isGenerating: false,
+                    generationStatus: '就绪',
+                    sora2Mode: 'text',
+                    sora2Prompt: '',
+                    sora2Resolution: '1080p',
+                    sora2VideoURL: '',
+                    isSora2Generating: false,
+                    sora2Status: '就绪',
+                    sora2OverallStatus: '就绪',
+                    videoTasks: [],  // 存储多个视频生成任务
+                    videoStyles: [
+                        { name: '专业商务', suffix: 'professional business style, corporate atmosphere, clean and modern' },
+                        { name: '时尚活力', suffix: 'dynamic and energetic, vibrant colors, fast-paced editing, youthful' },
+                        { name: '温馨生活', suffix: 'warm and cozy, soft lighting, emotional storytelling, family-friendly' }
+                    ],
+                    showAISettings: false,
+                    aiUrl: '',
+                    aiKey: '',
+                    aiModel: '',
+                    aiStatus: '未配置',
+                    copyServiceUrl: 'http://127.0.0.1:5001',
+                    sora2ApiUrl: 'http://127.0.0.1:5000',
+                    sora2Duration: 4,  // veo3.1只支持4/6/8秒
+                    drafts: [],  // 创作草稿列表
+                    showImportDialog: false,  // 导入对话框
+                    importDraft: {
+                        productName: '',
+                        copyOutput: '',
+                        videoUrls: [
+                            { style: '专业商务', url: '' },
+                            { style: '时尚活力', url: '' },
+                            { style: '温馨生活', url: '' }
+                        ]
+                    },
+                    buildTime: new Date().toLocaleString('zh-CN')
+                }
+            },
+            computed: {
+                canSaveDraft() {
+                    return (this.copyOutput || this.videoTasks.length > 0) && !this.isSora2Generating;
+                }
+            },
+            mounted() {
+                this.loadDraftsFromStorage();
+            },
+            methods: {
+                goHome() {
+                    window.location.href = 'QimeiAI-Stable.html';
+                },
+                saveAIConfig() {
+                    this.aiStatus = '已配置';
+                    this.showAISettings = false;
+                },
+                handleImageUpload(e) {
+                    const files = Array.from(e.target.files);
+                    files.forEach(f => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            this.selectedImages.push({
+                                file: f,
+                                name: f.name,
+                                preview: ev.target.result
+                            });
+                        };
+                        reader.readAsDataURL(f);
+                    });
+                },
+                clearImages() {
+                    this.selectedImages = [];
+                },
+                uploadImages() {
+                    alert('上传 ' + this.selectedImages.length + ' 张图片');
+                },
+                handleVideoUpload(e) {
+                    const files = Array.from(e.target.files);
+                    files.forEach(f => {
+                        this.selectedVideos.push({
+                            file: f,
+                            name: f.name
+                        });
+                    });
+                },
+                clearVideos() {
+                    this.selectedVideos = [];
+                },
+                uploadVideos() {
+                    alert('上传 ' + this.selectedVideos.length + ' 个视频');
+                },
+                async generateCopy() {
+                    if (!this.productName) {
+                        this.generationStatus = '请输入商品名称';
+                        return;
+                    }
+                    this.isGenerating = true;
+                    this.generationStatus = '正在生成文案...';
+
+                    try {
+                        const response = await fetch(`${this.copyServiceUrl}/api/copywriting/generate`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                productName: this.productName,
+                                features: this.productFeatures,
+                                template: this.copyTemplate,
+                                tone: this.tone,
+                                length: '中等'
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            this.copyOutput = data.copywriting;
+                            this.generationStatus = '✅ 文案生成完成！';
+                            // 生成简短的视频描述，使用商品名称和主要特点
+                            this.sora2Prompt = this.generateVideoPrompt();
+                        } else {
+                            throw new Error('生成失败');
+                        }
+                    } catch (error) {
+                        this.generationStatus = '生成失败，使用本地回退';
+                        this.copyOutput = this.getFallbackCopy();
+                        this.sora2Prompt = this.generateVideoPrompt();
+                    } finally {
+                        this.isGenerating = false;
+                    }
+                },
+                regenerateCopy() {
+                    this.generateCopy();
+                },
+                copyText() {
+                    navigator.clipboard.writeText(this.copyOutput);
+                    this.generationStatus = '✅ 已复制到剪贴板';
+                },
+                generateVideoPrompt(styleSuffix = '') {
+                    // 生成适合AI视频生成的简短描述
+                    const features = this.productFeatures || this.productName || '优质产品';
+                    const name = this.productName || '产品';
+
+                    // 提取主要特点（前100字符）
+                    const mainFeatures = features.substring(0, 100);
+
+                    // 构建视频提示词,添加风格后缀
+                    let prompt = `A professional promotional video for ${name}, featuring ${mainFeatures}. High quality, cinematic lighting, smooth camera movement.`;
+                    if (styleSuffix) {
+                        prompt += ` ${styleSuffix}.`;
+                    }
+                    return prompt;
+                },
+                getFallbackCopy() {
+                    return `${this.productName || '产品'}\n\n核心特点：\n${this.productFeatures || '优质、实用'}\n\n立即体验！`;
+                },
+                async generateMultipleVideos() {
+                    if (!this.copyOutput) {
+                        this.sora2OverallStatus = '⚠️ 请先生成文案';
+                        return;
+                    }
+
+                    this.isSora2Generating = true;
+                    this.videoTasks = [];
+                    this.sora2OverallStatus = '🚀 正在生成3个不同风格的视频...';
+
+                    // 为每种风格创建一个视频生成任务
+                    for (let i = 0; i < this.videoStyles.length; i++) {
+                        const style = this.videoStyles[i];
+
+                        // 初始化任务状态
+                        this.videoTasks.push({
+                            style: style.name,
+                            status: 'pending',
+                            statusText: '等待中...',
+                            videoUrl: null
+                        });
+
+                        // 生成带风格后缀的提示词
+                        const styledPrompt = this.generateVideoPrompt(style.suffix);
+
+                        // 发起生成请求
+                        this.generateSingleVideo(i, styledPrompt);
+                    }
+                },
+                async generateSingleVideo(taskIndex, prompt) {
+                    try {
+                        // 更新任务状态
+                        this.videoTasks[taskIndex].status = 'generating';
+                        this.videoTasks[taskIndex].statusText = '正在生成...';
+
+                        const endpoint = this.sora2Mode === 'text'
+                            ? `${this.sora2ApiUrl}/api/sora2/text-to-video`
+                            : `${this.sora2ApiUrl}/api/sora2/image-to-video`;
+
+                        const payload = {
+                            prompt: prompt,
+                            duration: this.sora2Duration,
+                            resolution: this.sora2Resolution
+                        };
+
+                        const response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await response.json();
+                        if (data.taskId) {
+                            this.videoTasks[taskIndex].statusText = '任务已创建,开始轮询...';
+                            this.pollTaskStatus(taskIndex, data.taskId);
+                        } else if (data.error) {
+                            this.videoTasks[taskIndex].status = 'failed';
+                            this.videoTasks[taskIndex].statusText = `❌ 错误: ${data.error}`;
+                            this.checkAllTasksComplete();
+                        }
+                    } catch (error) {
+                        this.videoTasks[taskIndex].status = 'failed';
+                        this.videoTasks[taskIndex].statusText = `❌ 生成失败: ${error.message}`;
+                        this.checkAllTasksComplete();
+                    }
+                },
+                async pollTaskStatus(taskIndex, taskId) {
+                    const maxAttempts = 120;
+                    let attempts = 0;
+
+                    const pollInterval = setInterval(async () => {
+                        attempts++;
+
+                        try {
+                            const response = await fetch(`${this.sora2ApiUrl}/api/sora2/task/${taskId}`);
+                            const data = await response.json();
+
+                            if (data.status === 'completed') {
+                                clearInterval(pollInterval);
+                                this.videoTasks[taskIndex].status = 'completed';
+                                this.videoTasks[taskIndex].statusText = '✅ 视频生成成功!';
+                                this.videoTasks[taskIndex].videoUrl = data.videoUrl;
+                                console.log(`Video ${taskIndex + 1} URL:`, data.videoUrl);
+                                this.checkAllTasksComplete();
+                            } else if (data.status === 'failed') {
+                                clearInterval(pollInterval);
+                                this.videoTasks[taskIndex].status = 'failed';
+                                this.videoTasks[taskIndex].statusText = `❌ 失败: ${data.error || '未知错误'}`;
+                                this.checkAllTasksComplete();
+                            } else if (attempts >= maxAttempts) {
+                                clearInterval(pollInterval);
+                                this.videoTasks[taskIndex].status = 'failed';
+                                this.videoTasks[taskIndex].statusText = '⏱️ 生成超时';
+                                this.checkAllTasksComplete();
+                            } else {
+                                const progress = data.progress || 0;
+                                const message = data.message || '处理中...';
+                                this.videoTasks[taskIndex].statusText = `🔄 ${message} (${progress}%)`;
+                            }
+                        } catch (error) {
+                            console.error('Poll error:', error);
+                        }
+                    }, 5000);
+                },
+                checkAllTasksComplete() {
+                    // 检查是否所有任务都已完成
+                    const allComplete = this.videoTasks.every(task =>
+                        task.status === 'completed' || task.status === 'failed'
+                    );
+
+                    if (allComplete) {
+                        this.isSora2Generating = false;
+                        const completedCount = this.videoTasks.filter(t => t.status === 'completed').length;
+                        this.sora2OverallStatus = `✅ 全部完成! 成功生成 ${completedCount}/3 个视频`;
+
+                        // 自动保存到草稿
+                        if (completedCount > 0) {
+                            this.saveToDrafts();
+                        }
+                    }
+                },
+                // ========== 草稿管理功能 ==========
+                saveToDrafts() {
+                    const draft = {
+                        id: Date.now(),
+                        timestamp: new Date().toLocaleString('zh-CN'),
+                        productName: this.productName,
+                        productFeatures: this.productFeatures,
+                        copyOutput: this.copyOutput,
+                        copyTemplate: this.copyTemplate,
+                        tone: this.tone,
+                        videos: this.videoTasks.map(task => ({
+                            style: task.style,
+                            status: task.status,
+                            videoUrl: task.videoUrl,
+                            statusText: task.statusText
+                        })),
+                        selectedImages: this.selectedImages.length,
+                        selectedVideos: this.selectedVideos.length
+                    };
+
+                    // 保存到数组开头
+                    this.drafts.unshift(draft);
+
+                    // 限制最多保存10个草稿
+                    if (this.drafts.length > 10) {
+                        this.drafts = this.drafts.slice(0, 10);
+                    }
+
+                    // 持久化到 localStorage
+                    this.saveDraftsToStorage();
+
+                    this.sora2OverallStatus = '✅ 已自动保存到草稿!';
+                },
+                loadDraft(index) {
+                    const draft = this.drafts[index];
+
+                    // 恢复数据
+                    this.productName = draft.productName;
+                    this.productFeatures = draft.productFeatures;
+                    this.copyOutput = draft.copyOutput;
+                    this.copyTemplate = draft.copyTemplate;
+                    this.tone = draft.tone;
+                    this.videoTasks = draft.videos.map(v => ({
+                        style: v.style,
+                        status: v.status,
+                        videoUrl: v.videoUrl,
+                        statusText: v.statusText
+                    }));
+
+                    // 更新视频提示词
+                    this.sora2Prompt = this.generateVideoPrompt();
+
+                    alert(`已加载草稿: ${draft.productName || '未命名创作'}`);
+                },
+                deleteDraft(index) {
+                    if (confirm('确定要删除这个草稿吗?')) {
+                        this.drafts.splice(index, 1);
+                        this.saveDraftsToStorage();
+                    }
+                },
+                clearAllDrafts() {
+                    if (confirm('确定要清空所有草稿吗?此操作不可恢复!')) {
+                        this.drafts = [];
+                        this.saveDraftsToStorage();
+                    }
+                },
+                saveDraftsToStorage() {
+                    try {
+                        localStorage.setItem('qimeiai_drafts', JSON.stringify(this.drafts));
+                    } catch (e) {
+                        console.error('保存草稿失败:', e);
+                    }
+                },
+                loadDraftsFromStorage() {
+                    try {
+                        const saved = localStorage.getItem('qimeiai_drafts');
+                        console.log('读取到的草稿数据:', saved);
+                        if (saved) {
+                            this.drafts = JSON.parse(saved);
+                            console.log('解析后的草稿数量:', this.drafts.length);
+                        } else {
+                            console.log('没有找到草稿数据');
+                        }
+                    } catch (e) {
+                        console.error('加载草稿失败:', e);
+                        this.drafts = [];
+                    }
+                },
+                addImportVideo() {
+                    this.importDraft.videoUrls.push({ style: '专业商务', url: '' });
+                },
+                removeImportVideo(idx) {
+                    if (this.importDraft.videoUrls.length > 1) {
+                        this.importDraft.videoUrls.splice(idx, 1);
+                    }
+                },
+                confirmImportDraft() {
+                    const videos = this.importDraft.videoUrls
+                        .filter(v => v.url.trim())
+                        .map(v => ({
+                            style: v.style,
+                            status: 'completed',
+                            videoUrl: v.url.trim(),
+                            statusText: '✅ 视频生成成功!'
+                        }));
+
+                    if (videos.length === 0) {
+                        alert('请至少填写一个视频链接');
+                        return;
+                    }
+
+                    const draft = {
+                        id: Date.now(),
+                        timestamp: new Date().toLocaleString('zh-CN'),
+                        productName: this.importDraft.productName,
+                        productFeatures: '',
+                        copyOutput: this.importDraft.copyOutput,
+                        copyTemplate: '通用营销',
+                        tone: '专业',
+                        videos: videos,
+                        selectedImages: 0,
+                        selectedVideos: 0
+                    };
+
+                    this.drafts.unshift(draft);
+                    if (this.drafts.length > 10) {
+                        this.drafts = this.drafts.slice(0, 10);
+                    }
+
+                    this.saveDraftsToStorage();
+                    this.showImportDialog = false;
+
+                    // 重置表单
+                    this.importDraft = {
+                        productName: '',
+                        copyOutput: '',
+                        videoUrls: [
+                            { style: '专业商务', url: '' },
+                            { style: '时尚活力', url: '' },
+                            { style: '温馨生活', url: '' }
+                        ]
+                    };
+
+                    alert('✅ 已成功导入到草稿!');
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

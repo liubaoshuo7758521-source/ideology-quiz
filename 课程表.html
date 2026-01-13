@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026春学期课程表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .semester-info {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .schedule-table {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .time-cell {
+            background: #2c3e50;
+            font-weight: bold;
+            color: #f1c40f;
+            width: 120px;
+        }
+
+        .course-cell {
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .course-cell:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .course-name {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 1.05em;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .course-info {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .course-info .time {
+            display: block;
+            color: #11998e;
+            font-weight: 500;
+        }
+
+        .course-info .location {
+            display: block;
+        }
+
+        .course-info .teacher {
+            display: block;
+            color: #888;
+        }
+
+        .empty-cell {
+            background: #fafafa;
+            color: #ccc;
+            font-size: 0.9em;
+            min-width: 180px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            td, th {
+                padding: 8px 5px;
+            }
+
+            .course-name {
+                font-size: 1em;
+            }
+
+            .course-info {
+                font-size: 0.75em;
+            }
+        }
+
+        .highlight {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                background: rgba(17, 153, 142, 0.1);
+            }
+            50% {
+                background: rgba(17, 153, 142, 0.3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 2026春学期课程表</h1>
+        <div class="semester-info">学期时间: 2026-03-02 至 2026-06-30 | 上课周次: 1-17周</div>
+
+        <div class="schedule-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>周一</th>
+                        <th>周二</th>
+                        <th>周三</th>
+                        <th>周四</th>
+                        <th>周五</th>
+                        <th>周六</th>
+                        <th>周日</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="time-cell">第1-2节<br><small>08:00-09:35</small></td>
+                        <td class="course-cell">
+                            <div class="course-name">程序设计能力实训</div>
+                            <div class="course-info">
+                                <span class="time">08:00-09:35</span>
+                                <span class="location">📍 理科大楼B226</span>
+                                <span class="teacher">👤 肖宇</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">学术英语写作</div>
+                            <div class="course-info">
+                                <span class="time">08:00-09:35 (1-16周)</span>
+                                <span class="location">📍 教书院105</span>
+                                <span class="teacher">👤 桑紫林</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">军事理论（含军训）</div>
+                            <div class="course-info">
+                                <span class="time">08:00-09:35</span>
+                                <span class="location">📍 文史楼201</span>
+                                <span class="teacher">👤 张益麟</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="course-cell">
+                            <div class="course-name">实用商务英语</div>
+                            <div class="course-info">
+                                <span class="time">08:00-09:35</span>
+                                <span class="location">📍 教书院313 (1-3,5-15单周,16周) | 线上(4-14双周)</span>
+                                <span class="teacher">👤 李征</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="empty-cell">无课程</td>
+                    </tr>
+                    <tr>
+                        <td class="time-cell">第3-4节<br><small>09:50-11:25</small></td>
+                        <td class="course-cell" rowspan="2">
+                            <div class="course-name">高等数学（二）</div>
+                            <div class="course-info">
+                                <span class="time">09:50-12:15</span>
+                                <span class="location">📍 教书院523</span>
+                                <span class="teacher">👤 唐晓艳</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">软件工程数学</div>
+                            <div class="course-info">
+                                <span class="time">09:50-11:25</span>
+                                <span class="location">📍 教书院418</span>
+                                <span class="teacher">👤 张民</span>
+                            </div>
+                        </td>
+                        <td class="course-cell" rowspan="2">
+                            <div class="course-name">高等数学（二）</div>
+                            <div class="course-info">
+                                <span class="time">09:50-12:15</span>
+                                <span class="location">📍 教书院523</span>
+                                <span class="teacher">👤 唐晓艳</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">软件工程数学</div>
+                            <div class="course-info">
+                                <span class="time">09:50-11:25</span>
+                                <span class="location">📍 教书院418</span>
+                                <span class="teacher">👤 张民</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell" rowspan="2">无课程</td>
+                        <td class="empty-cell" rowspan="2">无课程</td>
+                        <td class="empty-cell" rowspan="2">无课程</td>
+                    </tr>
+                    <tr>
+                        <td class="time-cell">第5节<br><small>11:25-12:15</small></td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="empty-cell">无课程</td>
+                    </tr>
+                    <tr>
+                        <td class="time-cell">第6-7节<br><small>13:00-14:35</small></td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="course-cell">
+                            <div class="course-name">数据结构与算法</div>
+                            <div class="course-info">
+                                <span class="time">13:00-14:35</span>
+                                <span class="location">📍 教书院319</span>
+                                <span class="teacher">👤 王丽苹</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="course-cell">
+                            <div class="course-name">数据结构与算法</div>
+                            <div class="course-info">
+                                <span class="time">13:00-14:35</span>
+                                <span class="location">📍 教书院319</span>
+                                <span class="teacher">👤 王丽苹</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">体育与健康--网球（初）</div>
+                            <div class="course-info">
+                                <span class="time">13:00-14:35</span>
+                                <span class="location">📍 中北网球场</span>
+                                <span class="teacher">👤 李牧</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="empty-cell">无课程</td>
+                    </tr>
+                    <tr>
+                        <td class="time-cell">第8-10节<br><small>14:50-17:15</small></td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="course-cell">
+                            <div class="course-name">计算机系统</div>
+                            <div class="course-info">
+                                <span class="time">14:50-17:15</span>
+                                <span class="location">📍 教书院218</span>
+                                <span class="teacher">👤 刘献忠</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="course-cell">
+                            <div class="course-name">人工智能的数学思维</div>
+                            <div class="course-info">
+                                <span class="time">14:50-16:25 (1-9周)</span>
+                                <span class="location">📍 干训楼阶梯教室</span>
+                                <span class="teacher">👤 吴敏</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">产业趋势解读（一）</div>
+                            <div class="course-info">
+                                <span class="time">14:50-17:15 (2-6双周)</span>
+                                <span class="location">📍 干训楼阶梯教室</span>
+                                <span class="teacher">👤 缪炜恺</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="empty-cell">无课程</td>
+                    </tr>
+                    <tr>
+                        <td class="time-cell">第11-13节<br><small>18:00-20:25</small></td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="course-cell">
+                            <div class="course-name">数据结构与算法实践</div>
+                            <div class="course-info">
+                                <span class="time">18:00-19:35</span>
+                                <span class="location">📍 理科大楼B226</span>
+                                <span class="teacher">👤 王丽苹</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">智能终端操作系统开发</div>
+                            <div class="course-info">
+                                <span class="time">18:00-20:25</span>
+                                <span class="location">📍 理科大楼B226</span>
+                                <span class="teacher">👤 陈闻杰</span>
+                            </div>
+                        </td>
+                        <td class="course-cell">
+                            <div class="course-name">毛泽东思想和中国特色社会主义理论体系概论</div>
+                            <div class="course-info">
+                                <span class="time">18:00-20:25</span>
+                                <span class="location">📍 教书院316</span>
+                                <span class="teacher">👤 祝毅</span>
+                            </div>
+                        </td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="empty-cell">无课程</td>
+                        <td class="empty-cell">无课程</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 获取当前日期并高亮当天的课程
+        function highlightToday() {
+            const today = new Date().getDay();
+            const dayColumns = document.querySelectorAll('tbody tr');
+
+            // 将周日(0)转换为周六(7),周一为1
+            const dayIndex = today === 0 ? 6 : today - 1;
+
+            dayColumns.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells[dayIndex + 1]) {
+                    cells[dayIndex + 1].classList.add('highlight');
+                }
+            });
+        }
+
+        // 页面加载时高亮今天的课程
+        window.onload = highlightToday;
+    </script>
+</body>
+</html>

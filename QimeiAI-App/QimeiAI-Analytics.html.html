@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>企媒AI宝 - 数据分析中心</title>
-    <!-- 引入 Vue 3 -->
-    <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
-    <!-- 引入 Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- 引入 Vue 3 (国内CDN镜像) -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
+    <!-- 引入 Chart.js (国内CDN镜像) -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
         /* --- 核心样式 (与主页保持一致) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -258,7 +258,7 @@
                 }, 5000);
             },
             methods: {
-                goHome() { window.location.href = 'QimeiAI-Stable.html'; },
+                goHome() { window.location.href = '../企媒AI宝.html'; },
                 formatNum(num) { return num ? num.toLocaleString() : '0'; },
 
                 // --- 核心业务逻辑 ---

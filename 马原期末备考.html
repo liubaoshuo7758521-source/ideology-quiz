@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>马原期末备考</title>
+<style>
+/* ============ 1. 主题配色变量：低饱和柔和配色，支持日间 / 黑夜护眼 ============ */
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --card2:#f7f6f2;
+  --text:#3e3b36; --muted:#8b867c;
+  --line:#e6e3da; --line2:#d6d2c7;
+  --accent:#71917f; --accent-dark:#597a67; --accent-soft:#ecf1ec;
+  --ok:#6e8f7d; --ok-soft:#ecf1ec;
+  --bad:#b58683; --bad-soft:#f6edec;
+}
+html[data-theme="dark"]{
+  --bg:#22252b; --card:#2a2e35; --card2:#31353d;
+  --text:#cfcbc2; --muted:#8f8b82;
+  --line:#3a3f47; --line2:#484e58;
+  --accent:#8db098; --accent-dark:#a7c8b1; --accent-soft:#2e3632;
+  --ok:#8db098; --ok-soft:#2e3632;
+  --bad:#c99893; --bad-soft:#3a2f2d;
+}
+/* ============ 2. 基础样式 ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);font-size:15px;line-height:1.8;
+  padding-bottom:58px; /* 为底部固定页脚留出空间 */
+}
+/* ============ 3. 顶部导航栏 ============ */
+.site-header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.header-inner{max-width:960px;margin:0 auto;padding:12px 16px 2px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.site-title{font-size:26px;font-weight:800;color:var(--accent-dark);letter-spacing:2px}
+.site-title small{margin-left:10px;font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0}
+.main-nav{max-width:960px;margin:0 auto;padding:6px 16px 10px;display:flex;gap:6px;flex-wrap:wrap}
+.nav-btn{border:1px solid transparent;background:transparent;color:var(--muted);padding:7px 16px;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+.nav-btn:hover{color:var(--text);background:var(--card2)}
+.nav-btn.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600}
+/* ============ 4. 通用布局 / 卡片 / 按钮 ============ */
+main{max-width:960px;margin:0 auto;padding:22px 16px 30px}
+.page{display:none}
+.page.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.card h2{font-size:17px;margin-bottom:10px;color:var(--text)}
+.card h3{font-size:15px;margin:6px 0}
+.tip{font-size:13px;color:var(--muted);margin-bottom:14px}
+.btn{display:inline-block;border:1px solid var(--line2);background:var(--card2);color:var(--text);padding:7px 14px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;line-height:1.5}
+.btn:hover{border-color:var(--accent);color:var(--accent-dark)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff}
+.btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-dark)}
+.btn-danger:hover{border-color:var(--bad);color:var(--bad)}
+.btn-sm{padding:4px 10px;font-size:12.5px;border-radius:6px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+/* ============ 5. 首页 ============ */
+.home-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.home-list{margin:10px 0 0 18px;color:var(--muted);font-size:14px}
+.home-list li{margin:4px 0}
+/* ============ 6. 知识点背诵（章节折叠 / 展开） ============ */
+.chapter{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;background:var(--card);overflow:hidden}
+.chapter-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 18px;cursor:pointer}
+.chapter-head:hover{background:var(--card2)}
+.chapter-head h3{font-size:15px;margin:0}
+.chapter-arrow{font-size:12px;color:var(--muted);white-space:nowrap}
+.chapter-body{display:none;padding:2px 20px 16px;border-top:1px solid var(--line)}
+.chapter.open .chapter-body{display:block}
+.chapter-body p{margin:10px 0;font-size:14.5px}
+.chapter-body ul{margin:8px 0 4px 18px}
+.chapter-body li{margin:6px 0;font-size:14.5px}
+/* ============ 7. 刷题中心 ============ */
+.toolbar-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px;font-size:14px}
+.toolbar-row:last-child{margin-bottom:0}
+.toolbar-lbl{color:var(--muted);font-size:13.5px}
+.timer-box{display:inline-flex;align-items:center;gap:8px}
+.timer-display{font-family:Consolas,Menlo,monospace;font-size:16px;color:var(--accent-dark);background:var(--accent-soft);padding:2px 10px;border-radius:6px;letter-spacing:1px}
+.score-item{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-size:13px}
+.score-item input,.score-input{width:60px;padding:5px 8px;border:1px solid var(--line2);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;font-size:13px}
+.score-item input:focus,.score-input:focus{outline:none;border-color:var(--accent)}
+.total-score{font-size:13px;color:var(--accent-dark);font-weight:600}
+/* ---- 题目卡片 ---- */
+.q-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.q-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.q-no{font-weight:700;font-size:14px}
+.q-type{font-size:12px;color:var(--accent-dark);background:var(--accent-soft);padding:2px 8px;border-radius:5px}
+.q-score{font-size:12px;color:var(--muted)}
+.q-mark{margin-left:auto} /* 标记错题按钮靠右 */
+.q-stem{margin:2px 0 10px;white-space:pre-wrap}
+.opt{display:block;width:100%;text-align:left;padding:8px 13px;margin:7px 0;border:1px solid var(--line);border-radius:8px;background:var(--card2);color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;line-height:1.6}
+.opt:hover{border-color:var(--accent)}
+.opt.selected{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark)}
+.opt[disabled]{cursor:default;opacity:.75}
+.q-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.q-feedback{margin-top:12px;font-size:13.5px;padding:8px 13px;border-radius:8px}
+.q-feedback.ok{background:var(--ok-soft);color:var(--accent-dark)}
+.q-feedback.bad{background:var(--bad-soft);color:var(--bad)}
+.q-feedback.note{background:var(--card2);color:var(--muted)}
+.q-answer{margin-top:12px;border-left:3px solid var(--accent);background:var(--card2);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px}
+.q-answer .ans-label{font-weight:600;color:var(--accent-dark)}
+.self-score-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:13.5px}
+.self-score-row .score-input{width:72px}
+.submit-bar{text-align:center}
+/* ============ 8. 成绩单 ============ */
+.report-summary{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 16px}
+.report-box{flex:1;min-width:150px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center}
+.report-box .num{font-size:24px;font-weight:700;color:var(--accent-dark)}
+.report-box .lbl{font-size:12.5px;color:var(--muted);margin-top:2px}
+.wrong-item{padding:12px 2px;border-bottom:1px dashed var(--line);font-size:14px}
+.wrong-item:last-child{border-bottom:none}
+.wrong-item .wi-meta{font-size:12.5px;color:var(--muted);margin-top:4px}
+.wrong-item .wi-tag{color:var(--bad)}
+/* ============ 9. 错题本 ============ */
+.card-head-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.card-head-row h2{margin:0}
+.record-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.record-table th,.record-table td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+.record-table th{color:var(--muted);font-weight:600;white-space:nowrap}
+.record-table tr:last-child td{border-bottom:none}
+.empty-tip{color:var(--muted);text-align:center;padding:20px 0;font-size:13.5px}
+.wrong-q{padding:12px 0;border-bottom:1px dashed var(--line)}
+.wrong-q:last-child{border-bottom:none}
+.wrong-q .wq-ans{margin-top:6px;font-size:13.5px;color:var(--muted)}
+/* ============ 10. 底部固定页脚（编号 257） ============ */
+.site-footer{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);text-align:center;padding:7px 10px;font-size:12px;color:var(--muted);letter-spacing:2px}
+/* ============ 11. 移动端适配 ============ */
+@media (max-width:640px){
+  body{font-size:14.5px}
+  .header-inner{padding-top:10px}
+  .site-title{font-size:21px;letter-spacing:1px}
+  .main-nav{justify-content:space-between}
+  .nav-btn{flex:1;text-align:center;padding:8px 4px}
+  .card,.q-card{padding:14px}
+  .report-box .num{font-size:20px}
+  .score-item input,.score-input{width:54px}
+  .record-table{font-size:12.5px}
+}
+</style>
+</head>
+<body>
+<!-- ============ 顶部：站点标题 + 日间/黑夜护眼模式切换 + 导航栏 ============ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="site-title">马原期末备考<small>马克思主义基本原理</small></div>
+    <button id="themeBtn" class="btn btn-sm" onclick="toggleTheme()">🌙 黑夜护眼模式</button>
+  </div>
+  <nav class="main-nav" id="mainNav">
+    <button class="nav-btn active" data-page="home">首页</button>
+    <button class="nav-btn" data-page="recite">知识点背诵</button>
+    <button class="nav-btn" data-page="quiz">刷题中心</button>
+    <button class="nav-btn" data-page="wrong">错题本</button>
+  </nav>
+</header>
+
+<main>
+<!-- ============ 页面一：首页 ============ -->
+<section id="page-home" class="page active">
+  <div class="card">
+    <h2>欢迎使用马原期末备考</h2>
+    <p class="tip">本站已内置《马克思主义基本原理概论》期末模拟试卷完整题库（单选 102 题、多选 62 题、判断 40 题、简答 18 题、论述 9 题，共 231 题，附全部参考答案）与章节考点速记，打开即可直接刷题与背诵。</p>
+    <p>刷题记录、考试分数与标记的错题都会保存在当前浏览器的 localStorage 中，关闭网页后重新打开数据不会丢失。</p>
+    <div class="home-links">
+      <button class="btn btn-primary" data-goto="recite">进入知识点背诵</button>
+      <button class="btn btn-primary" data-goto="quiz">进入刷题中心</button>
+      <button class="btn" data-goto="wrong">查看错题本</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>功能概览</h3>
+    <ul class="home-list">
+      <li>知识点背诵：按章节分组，可折叠 / 展开，支持日间 / 黑夜护眼模式一键切换</li>
+      <li>刷题中心：单选、多选、判断、简答、论述五种题型，客观题自动批改，主观题自评计分</li>
+      <li>成绩单：整卷提交后生成本次总分、答题正确率与做错题目列表</li>
+      <li>错题本：可标记任意题目加入错题本，并保留历史成绩记录</li>
+      <li>试卷导出：一键生成 A4 打印版试卷（按当前题序与自定义分值），末尾附参考答案页，可打印或另存为 PDF</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 页面二：知识点背诵 ============ -->
+<section id="page-recite" class="page">
+  <div class="card">
+    <h2>知识点背诵</h2>
+    <p class="tip">点击章节标题可折叠 / 展开；右上角按钮可一键切换日间 / 黑夜护眼模式。以下考点速记均按章节整理自内置题库的单选试题。</p>
+    <div id="chapterList"><!-- 章节列表由 JS 渲染 --></div>
+  </div>
+</section>
+<!-- ============ 页面三：刷题中心 ============ -->
+<section id="page-quiz" class="page">
+  <!-- 练习工具栏 -->
+  <div class="card">
+    <h2>刷题中心</h2>
+    <!-- ① 考场计时器：可开启 / 关闭，计时可启停 -->
+    <div class="toolbar-row">
+      <span class="toolbar-lbl">① 考场计时器：</span>
+      <button id="timerSwitch" class="btn btn-sm" onclick="toggleTimerSwitch()">开启计时器</button>
+      <span class="timer-box" id="timerBox" style="display:none">
+        <span class="timer-display" id="timerDisplay">00:00</span>
+        <button class="btn btn-sm" id="timerRunBtn" onclick="toggleTimerRun()">开始</button>
+      </span>
+    </div>
+    <!-- ② 题目乱序 / ④ 背诵模式 / 试卷导出打印 -->
+    <div class="toolbar-row">
+      <span class="toolbar-lbl">② 练习工具：</span>
+      <button class="btn" id="shuffleBtn" onclick="toggleShuffle()">乱序模式：关</button>
+      <button class="btn" id="reciteModeBtn" onclick="toggleReciteMode()">背诵模式：关</button>
+      <button class="btn" onclick="exportPaper()">导出 / 打印试卷</button>
+    </div>
+    <!-- ③ 自定义分值：每种题型每题多少分 -->
+    <div class="toolbar-row">
+      <span class="toolbar-lbl">③ 自定义分值（每题）：</span>
+      <span class="score-item">单选<input type="number" min="0" step="0.5" id="sc-single" onchange="onScoreChange('single',this.value)">分</span>
+      <span class="score-item">多选<input type="number" min="0" step="0.5" id="sc-multiple" onchange="onScoreChange('multiple',this.value)">分</span>
+      <span class="score-item">判断<input type="number" min="0" step="0.5" id="sc-judge" onchange="onScoreChange('judge',this.value)">分</span>
+      <span class="score-item">简答<input type="number" min="0" step="0.5" id="sc-short" onchange="onScoreChange('short',this.value)">分</span>
+      <span class="score-item">论述<input type="number" min="0" step="0.5" id="sc-essay" onchange="onScoreChange('essay',this.value)">分</span>
+      <span class="total-score">整卷满分：<span id="fullScoreLbl">60</span> 分</span>
+    </div>
+  </div>
+
+  <!-- 题目列表（由 JS 渲染） -->
+  <div id="questionList"></div>
+
+  <!-- 整卷提交：生成成绩单 -->
+  <div class="card submit-bar">
+    <button class="btn btn-primary" onclick="submitAll()">提交整卷 · 生成成绩单</button>
+    <p class="tip" style="margin:10px 0 0">提交后自动批改客观题，汇总主观题自评得分，生成成绩单并保存历史记录。</p>
+  </div>
+</section>
+
+<!-- ============ 页面四：成绩单（整卷提交后切换展示） ============ -->
+<section id="page-report" class="page">
+  <div class="card">
+    <h2>成绩单</h2>
+    <div class="report-summary">
+      <div class="report-box"><div class="num" id="rptTotal">--</div><div class="lbl">本次总分 / 满分</div></div>
+      <div class="report-box"><div class="num" id="rptRate">--</div><div class="lbl">答题正确率</div></div>
+      <div class="report-box"><div class="num" id="rptWrong">--</div><div class="lbl">做错题目数</div></div>
+    </div>
+    <h3>做错的题目</h3>
+    <div id="rptWrongList"></div>
+    <div class="q-actions" style="margin-top:16px">
+      <button class="btn" data-goto="quiz">返回刷题中心</button>
+      <button class="btn btn-primary" onclick="restartQuiz()">重新刷题</button>
+    </div>
+  </div>
+</section>
+<!-- ============ 页面五：错题本 ============ -->
+<section id="page-wrong" class="page">
+  <!-- 历史成绩记录（含一键清空成绩） -->
+  <div class="card">
+    <div class="card-head-row">
+      <h2>历史成绩记录</h2>
+      <button class="btn btn-sm btn-danger" onclick="clearRecords()">一键清空所有成绩记录</button>
+    </div>
+    <div id="recordList"></div>
+  </div>
+  <!-- 错题列表（含一键清空错题） -->
+  <div class="card">
+    <div class="card-head-row">
+      <h2>错题列表</h2>
+      <button class="btn btn-sm btn-danger" onclick="clearWrong()">一键清空全部错题</button>
+    </div>
+    <div id="wrongList"></div>
+  </div>
+</section>
+</main>
+
+<!-- 底部固定页脚：编号 257 -->
+<footer class="site-footer">257</footer>
+
+<script>
+/* ============================================================
+ * 一、内置题库数据（全部题目与答案内置自《马原例题》试卷，打开即用）
+ * ============================================================ */
+const TYPE_META = {
+  single  : { name:'单选题', def:2  },   // 默认每题分值
+  multiple: { name:'多选题', def:4  },
+  judge   : { name:'判断题', def:2  },
+  short   : { name:'简答题', def:10 },
+  essay   : { name:'论述题', def:20 }
+};
+
+const QUESTIONS = [
+/* 内置知识库（题源：《马原例题》——《马克思主义基本原理概论》期末模拟试卷，覆盖绪论及第一至第八章）
+ * 共 231 题：单选 102 + 多选 62 + 判断 40 + 简答 18 + 论述 9，全部附参考答案，判断题答案附错项更正 */
+/* ---- 单选题 1—102 ---- */
+{id:1,type:'single',stem:"马克思主义产生的时间是（ ）",options:["18世纪末","19世纪40年代中期","19世纪70年代","20世纪初"],answer:"B",analysis:"（绪论）马克思主义产生的时间是（19世纪40年代中期）"},
+{id:2,type:'single',stem:"马克思主义产生的阶级基础是（ ）",options:["德国古典哲学的完成","自然科学三大发现","资本主义迅速发展及其内在矛盾的尖锐化，以及工人阶级作为独立的政治力量登上历史舞台","资产阶级革命的胜利"],answer:"C",analysis:"（绪论）马克思主义产生的阶级基础是（资本主义迅速发展及其内在矛盾的尖锐化，以及工人阶级作为独立的政治力量登上历史舞台）"},
+{id:3,type:'single',stem:"下列各项中，不属于马克思主义产生的直接理论来源的是（ ）",options:["德国的古典哲学","英国的古典政治经济学","英法空想社会主义学说","古希腊罗马哲学"],answer:"D",analysis:"（绪论）下列各项中，不属于马克思主义产生的直接理论来源的是（古希腊罗马哲学）"},
+{id:4,type:'single',stem:"马克思主义的理论特征是（ ）",options:["科学性与阶级性的统一","以实践为基础的科学性和革命性的统一","系统性与完整性的统一","批判性与创造性的统一"],answer:"B",analysis:"（绪论）马克思主义的理论特征是（以实践为基础的科学性和革命性的统一）"},
+{id:5,type:'single',stem:"马克思主义的理论品质是（ ）",options:["实事求是","解放思想","与时俱进","求真务实"],answer:"C",analysis:"（绪论）马克思主义的理论品质是（与时俱进）"},
+{id:6,type:'single',stem:"马克思主义最高的社会理想是（ ）",options:["建设中国特色社会主义","实现共同富裕","建立社会主义市场经济体制","实现共产主义"],answer:"D",analysis:"（绪论）马克思主义最高的社会理想是（实现共产主义）"},
+{id:7,type:'single',stem:"坚持学习马克思主义的根本方法是（ ）",options:["熟读经典原著","理论联系实际","加强课堂教学","开展学术争鸣"],answer:"B",analysis:"（绪论）坚持学习马克思主义的根本方法是（理论联系实际）"},
+{id:8,type:'single',stem:"哲学的基本问题是（ ）",options:["理论和实践的关系问题","思维和存在的关系问题","个人和社会的关系问题","主体和客体的关系问题"],answer:"B",analysis:"（第一章 物质世界及其发展规律）哲学的基本问题是（思维和存在的关系问题）"},
+{id:9,type:'single',stem:"划分唯物主义和唯心主义的唯一标准是（ ）",options:["对世界有无统一性问题的不同回答","对思维和存在何者为第一性问题的不同回答","对世界是否运动变化问题的不同回答","对世界能否被认识问题的不同回答"],answer:"B",analysis:"（第一章 物质世界及其发展规律）划分唯物主义和唯心主义的唯一标准是（对思维和存在何者为第一性问题的不同回答）"},
+{id:10,type:'single',stem:"划分可知论和不可知论的唯一标准是（ ）",options:["对思维和存在何者为第一性问题的不同回答","对思维和存在有无同一性问题的不同回答","对世界统一性问题的不同回答","对社会存在和社会意识关系问题的不同回答"],answer:"B",analysis:"（第一章 物质世界及其发展规律）划分可知论和不可知论的唯一标准是（对思维和存在有无同一性问题的不同回答）"},
+{id:11,type:'single',stem:"社会历史观的基本问题是（ ）",options:["生产力和生产关系的关系问题","经济基础和上层建筑的关系问题","社会存在和社会意识的关系问题","领袖和群众的关系问题"],answer:"C",analysis:"（第一章 物质世界及其发展规律）社会历史观的基本问题是（社会存在和社会意识的关系问题）"},
+{id:12,type:'single',stem:"唯物辩证法和形而上学的根本对立和斗争焦点在于（ ）",options:["是否承认世界的统一性","是否承认事物的运动变化","是否承认矛盾是事物发展的动力","是否承认意识的能动作用"],answer:"C",analysis:"（第一章 物质世界及其发展规律）唯物辩证法和形而上学的根本对立和斗争焦点在于（是否承认矛盾是事物发展的动力）"},
+{id:13,type:'single',stem:"马克思主义物质观指出，客观实在性是一切物质的（ ）",options:["表现形式","外在特征","共性","特殊本质"],answer:"C",analysis:"（第一章 物质世界及其发展规律）马克思主义物质观指出，客观实在性是一切物质的（共性）"},
+{id:14,type:'single',stem:"只承认绝对运动不承认相对静止，会导致（ ）",options:["形而上学","相对主义诡辩论","唯心主义","循环论"],answer:"B",analysis:"（第一章 物质世界及其发展规律）只承认绝对运动不承认相对静止，会导致（相对主义诡辩论）"},
+{id:15,type:'single',stem:"时间的特点是（ ）",options:["一维性","二维性","三维性","伸缩性"],answer:"A",analysis:"（第一章 物质世界及其发展规律）时间的特点是（一维性）"},
+{id:16,type:'single',stem:"发展的实质是（ ）",options:["事物数量的增减和场所的变更","事物的循环往复","新事物的产生和旧事物的灭亡","事物位置的变化"],answer:"C",analysis:"（第一章 物质世界及其发展规律）发展的实质是（新事物的产生和旧事物的灭亡）"},
+{id:17,type:'single',stem:"事物发展变化的根据和第一位的原因是（ ）",options:["外因","内因","矛盾的斗争性","外部条件"],answer:"B",analysis:"（第一章 物质世界及其发展规律）事物发展变化的根据和第一位的原因是（内因）"},
+{id:18,type:'single',stem:"具体问题具体分析是马克思主义的（ ）",options:["理论特征","理论品质","活的灵魂","社会理想"],answer:"C",analysis:"（第一章 物质世界及其发展规律）具体问题具体分析是马克思主义的（活的灵魂）"},
+{id:19,type:'single',stem:"矛盾问题的精髓是（ ）",options:["矛盾的同一性和斗争性的关系","矛盾的普遍性和特殊性的辩证关系","主要矛盾和次要矛盾的关系","内因和外因的关系"],answer:"B",analysis:"（第一章 物质世界及其发展规律）矛盾问题的精髓是（矛盾的普遍性和特殊性的辩证关系）"},
+{id:20,type:'single',stem:"“白马非马”这一诡辩命题的错误在于割裂了（ ）",options:["本质和现象的联系","内容和形式的联系","矛盾普遍性和特殊性的联系","原因和结果的联系"],answer:"C",analysis:"（第一章 物质世界及其发展规律）“白马非马”这一诡辩命题的错误在于割裂了（矛盾普遍性和特殊性的联系）"},
+{id:21,type:'single',stem:"度是指事物保持自己质的（ ）",options:["内在规定性","外在表现","数量限度（或范围、幅度）","量的无限积累"],answer:"C",analysis:"（第一章 物质世界及其发展规律）度是指事物保持自己质的（数量限度（或范围、幅度））"},
+{id:22,type:'single',stem:"作为发展环节和联系环节之统一的辩证否定是扬弃，扬弃是指（ ）",options:["肯定一切","否定一切","既克服又保留","彻底抛弃"],answer:"C",analysis:"（第一章 物质世界及其发展规律）作为发展环节和联系环节之统一的辩证否定是扬弃，扬弃是指（既克服又保留）"},
+{id:23,type:'single',stem:"否定之否定规律揭示了事物发展的（ ）",options:["源泉和动力","形式和状态","总趋势是前进的，具体道路是曲折的","内在结构"],answer:"C",analysis:"（第一章 物质世界及其发展规律）否定之否定规律揭示了事物发展的（总趋势是前进的，具体道路是曲折的）"},
+{id:24,type:'single',stem:"规律具有的两个特点是（ ）",options:["主观性和多样性","客观性和普遍性","绝对性和相对性","必然性和偶然性"],answer:"B",analysis:"（第一章 物质世界及其发展规律）规律具有的两个特点是（客观性和普遍性）"},
+{id:25,type:'single',stem:"在意识产生过程中起决定性作用的是（ ）",options:["语言的产生","人脑的进化","社会性劳动","生物的进化"],answer:"C",analysis:"（第一章 物质世界及其发展规律）在意识产生过程中起决定性作用的是（社会性劳动）"},
+{id:26,type:'single',stem:"意识的本质是（ ）",options:["人脑分泌的特殊物质","人脑主观自生的观念","客观世界的主观映像","绝对精神的显现"],answer:"C",analysis:"（第一章 物质世界及其发展规律）意识的本质是（客观世界的主观映像）"},
+{id:27,type:'single',stem:"意识的能动性最突出的表现是（ ）",options:["意识活动的目的性和计划性","意识活动的主动创造性","意识对人的生理活动的影响作用","意识能通过指导实践改造客观物质世界"],answer:"D",analysis:"（第一章 物质世界及其发展规律）意识的能动性最突出的表现是（意识能通过指导实践改造客观物质世界）"},
+{id:28,type:'single',stem:"认识主体的突出特点是（ ）",options:["自然属性","社会历史性","能动性","客观实在性"],answer:"C",analysis:"（第二章 认识的本质及其规律）认识主体的突出特点是（能动性）"},
+{id:29,type:'single',stem:"主体和客体之间首要的基本关系是（ ）",options:["认识关系","实践关系","相互作用关系","价值关系"],answer:"B",analysis:"（第二章 认识的本质及其规律）主体和客体之间首要的基本关系是（实践关系）"},
+{id:30,type:'single',stem:"马克思主义认识论认为，认识的本质是（ ）",options:["主体对客体的直观反映","主体对客体的自由创造","在实践中主体对客体的能动反映","客体对主体的单向作用"],answer:"C",analysis:"（第二章 认识的本质及其规律）马克思主义认识论认为，认识的本质是（在实践中主体对客体的能动反映）"},
+{id:31,type:'single',stem:"在欧洲近代哲学中，不可知论的两位典型代表人物是（ ）",options:["黑格尔和费尔巴哈","休谟和康德","圣西门和傅立叶","莫尔和康帕内拉"],answer:"B",analysis:"（第二章 认识的本质及其规律）在欧洲近代哲学中，不可知论的两位典型代表人物是（休谟和康德）"},
+{id:32,type:'single',stem:"认识过程中具有更加重大意义的飞跃是（ ）",options:["从感性认识到理性认识","从理性认识到实践","从实践到感性认识","从知觉到表象"],answer:"B",analysis:"（第二章 认识的本质及其规律）认识过程中具有更加重大意义的飞跃是（从理性认识到实践）"},
+{id:33,type:'single',stem:"毛泽东概括的认识运动的总规律是（ ）",options:["从感性认识到理性认识","从理性认识到实践","实践、认识、再实践、再认识，循环往复以至无穷","去粗取精、去伪存真、由此及彼、由表及里"],answer:"C",analysis:"（第二章 认识的本质及其规律）毛泽东概括的认识运动的总规律是（实践、认识、再实践、再认识，循环往复以至无穷）"},
+{id:34,type:'single',stem:"实用主义哲学提出的“有用即真理”是一种（ ）",options:["客观真理论","主观真理论","绝对主义","相对主义"],answer:"B",analysis:"（第二章 认识的本质及其规律）实用主义哲学提出的“有用即真理”是一种（主观真理论）"},
+{id:35,type:'single',stem:"党的思想路线的核心是（ ）",options:["一切从实际出发","理论联系实际","实事求是","在实践中检验真理和发展真理"],answer:"C",analysis:"（第二章 认识的本质及其规律）党的思想路线的核心是（实事求是）"},
+{id:36,type:'single',stem:"在社会存在的三个方面中，对社会发展起决定作用的是（ ）",options:["地理环境","人口因素","生产方式","自然条件"],answer:"C",analysis:"（第三章 人类社会及其发展规律）在社会存在的三个方面中，对社会发展起决定作用的是（生产方式）"},
+{id:37,type:'single',stem:"从反映社会存在的程度和特点来看，社会意识包括社会心理和思想体系，其中社会心理是社会意识的（ ）",options:["高级层次","低级层次","核心层次","本质层次"],answer:"B",analysis:"（第三章 人类社会及其发展规律）从反映社会存在的程度和特点来看，社会意识包括社会心理和思想体系，其中社会心理是社会意识的（低级层次）"},
+{id:38,type:'single',stem:"下列思想体系中，属于非意识形态范围的是（ ）",options:["政治思想","道德","宗教","自然科学"],answer:"D",analysis:"（第三章 人类社会及其发展规律）下列思想体系中，属于非意识形态范围的是（自然科学）"},
+{id:39,type:'single',stem:"生产工具是劳动资料的主要内容，它是（ ）",options:["生产力发展水平的主要标志","生产关系的基础","划分阶级的标准","上层建筑的组成部分"],answer:"A",analysis:"（第三章 人类社会及其发展规律）生产工具是劳动资料的主要内容，它是（生产力发展水平的主要标志）"},
+{id:40,type:'single',stem:"现代生产力系统中的渗透性因素主要指（ ）",options:["教育","自然科学","分工协作","经济管理"],answer:"B",analysis:"（第三章 人类社会及其发展规律）现代生产力系统中的渗透性因素主要指（自然科学）"},
+{id:41,type:'single',stem:"提出“科学技术是第一生产力”著名论断的是（ ）",options:["马克思","列宁","毛泽东","邓小平"],answer:"D",analysis:"（第三章 人类社会及其发展规律）提出“科学技术是第一生产力”著名论断的是（邓小平）"},
+{id:42,type:'single',stem:"生产关系的三项内容中起决定作用的是（ ）",options:["生产资料的所有制形式","人们在生产中的地位及其相互关系","产品的分配方式","产品的交换方式"],answer:"A",analysis:"（第三章 人类社会及其发展规律）生产关系的三项内容中起决定作用的是（生产资料的所有制形式）"},
+{id:43,type:'single',stem:"经济基础是指一个社会中（ ）",options:["一切生产关系的总和","占统治地位的生产关系各个方面的总和","生产力的总和","经济体制的总和"],answer:"B",analysis:"（第三章 人类社会及其发展规律）经济基础是指一个社会中（占统治地位的生产关系各个方面的总和）"},
+{id:44,type:'single',stem:"以生产力和技术发展水平以及与此相适应的产业结构为标准划分的技术社会形态序列是（ ）",options:["原始社会—奴隶社会—封建社会—资本主义社会","渔猎社会—农业社会—工业社会—信息社会","自然经济社会—商品经济社会—产品经济社会","人的依赖性社会—物的依赖性社会—个人全面发展的社会"],answer:"B",analysis:"（第三章 人类社会及其发展规律）以生产力和技术发展水平以及与此相适应的产业结构为标准划分的技术社会形态序列是（渔猎社会—农业社会—工业社会—信息社会）"},
+{id:45,type:'single',stem:"划分阶级的唯一标准是（ ）",options:["政治标准","思想标准","经济标准","职业标准"],answer:"C",analysis:"（第三章 人类社会及其发展规律）划分阶级的唯一标准是（经济标准）"},
+{id:46,type:'single',stem:"社会革命的首要的基本的标志是（ ）",options:["生产力的发展","国家政权从反动阶级手里转移到革命的进步的阶级手里","人民群众生活的改善","社会意识形态的变化"],answer:"B",analysis:"（第三章 人类社会及其发展规律）社会革命的首要的基本的标志是（国家政权从反动阶级手里转移到革命的进步的阶级手里）"},
+{id:47,type:'single',stem:"劳动是人的（ ）",options:["一般本质","具体本质","自然属性","生理本能"],answer:"A",analysis:"（第三章 人类社会及其发展规律）劳动是人的（一般本质）"},
+{id:48,type:'single',stem:"我们党的最大政治优势是（ ）",options:["理论联系实际","批评与自我批评","密切联系群众","独立自主"],answer:"C",analysis:"（第三章 人类社会及其发展规律）我们党的最大政治优势是（密切联系群众）"},
+{id:49,type:'single',stem:"商品经济产生和存在的决定性条件是（ ）",options:["社会分工的产生和存在","生产资料和劳动产品属于不同的所有者","货币的产生","市场的出现"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）商品经济产生和存在的决定性条件是（生产资料和劳动产品属于不同的所有者）"},
+{id:50,type:'single',stem:"在商品的二因素中，使用价值和价值的关系是（ ）",options:["使用价值是价值的物质承担者","价值是使用价值的物质承担者","使用价值决定价值","二者互不相干"],answer:"A",analysis:"（第四章 资本主义的形成及其本质）在商品的二因素中，使用价值和价值的关系是（使用价值是价值的物质承担者）"},
+{id:51,type:'single',stem:"创造商品价值的劳动是（ ）",options:["具体劳动","抽象劳动","私人劳动","社会劳动"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）创造商品价值的劳动是（抽象劳动）"},
+{id:52,type:'single',stem:"决定商品价值量的是（ ）",options:["个别劳动时间","社会必要劳动时间","必要劳动时间","剩余劳动时间"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）决定商品价值量的是（社会必要劳动时间）"},
+{id:53,type:'single',stem:"货币的本质是（ ）",options:["价值的符号","固定充当一般等价物的商品","交换的媒介","财富的代表"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）货币的本质是（固定充当一般等价物的商品）"},
+{id:54,type:'single',stem:"以私有制为基础的商品经济的基本矛盾是（ ）",options:["使用价值和价值的矛盾","具体劳动和抽象劳动的矛盾","私人劳动和社会劳动的矛盾","个别劳动时间和社会必要劳动时间的矛盾"],answer:"C",analysis:"（第四章 资本主义的形成及其本质）以私有制为基础的商品经济的基本矛盾是（私人劳动和社会劳动的矛盾）"},
+{id:55,type:'single',stem:"价值规律作用的表现形式是（ ）",options:["价格与价值完全一致","价格围绕价值上下波动","价格总是高于价值","价格总是低于价值"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）价值规律作用的表现形式是（价格围绕价值上下波动）"},
+{id:56,type:'single',stem:"资本主义生产关系产生的基础是（ ）",options:["商业的发展","资本的原始积累","封建社会小商品生产者的两极分化","资产阶级革命的胜利"],answer:"C",analysis:"（第四章 资本主义的形成及其本质）资本主义生产关系产生的基础是（封建社会小商品生产者的两极分化）"},
+{id:57,type:'single',stem:"劳动力成为商品是（ ）的前提",options:["商品交换","货币转化为资本","价值形成","社会分工"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）劳动力成为商品是（货币转化为资本）的前提"},
+{id:58,type:'single',stem:"资本就是能够带来（ ）的价值",options:["使用价值","剩余价值","价值","价格"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）资本就是能够带来（剩余价值）的价值"},
+{id:59,type:'single',stem:"在工作日长度不变的条件下，由于缩短必要劳动时间、相应延长剩余劳动时间而生产的剩余价值是（ ）",options:["绝对剩余价值","相对剩余价值","超额剩余价值","额外剩余价值"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）在工作日长度不变的条件下，由于缩短必要劳动时间、相应延长剩余劳动时间而生产的剩余价值是（相对剩余价值）"},
+{id:60,type:'single',stem:"超额剩余价值就是商品的（ ）之间的差额",options:["个别价值低于社会价值","社会价值低于个别价值","生产价格低于价值","个别生产价格低于社会生产价格"],answer:"A",analysis:"（第四章 资本主义的形成及其本质）超额剩余价值就是商品的（个别价值低于社会价值）之间的差额"},
+{id:61,type:'single',stem:"把剩余价值再转化为资本，或者说剩余价值的资本化，叫做（ ）",options:["资本积聚","资本集中","资本积累","资本原始积累"],answer:"C",analysis:"（第四章 资本主义的形成及其本质）把剩余价值再转化为资本，或者说剩余价值的资本化，叫做（资本积累）"},
+{id:62,type:'single',stem:"由资本技术构成所决定并且反映资本技术构成变化的资本价值构成，叫做资本有机构成，它可用公式表示为（ ）",options:["c：v","m：v","m：（c+v）","v：m"],answer:"A",analysis:"（第四章 资本主义的形成及其本质）由资本技术构成所决定并且反映资本技术构成变化的资本价值构成，叫做资本有机构成，它可用公式表示为（c：v）"},
+{id:63,type:'single',stem:"相对过剩人口是指（ ）",options:["人口的绝对过剩","劳动力的供给相对于资本对劳动力的需求来说而过剩","生产资料的过剩","消费资料的过剩"],answer:"B",analysis:"（第四章 资本主义的形成及其本质）相对过剩人口是指（劳动力的供给相对于资本对劳动力的需求来说而过剩）"},
+{id:64,type:'single',stem:"资本主义政治制度的核心是（ ）",options:["政党制度","选举制度","国家制度","三权分立制度"],answer:"C",analysis:"（第四章 资本主义的形成及其本质）资本主义政治制度的核心是（国家制度）"},
+{id:65,type:'single',stem:"资本主义意识形态的核心是（ ）",options:["利己主义","拜金主义","享乐主义","虚无主义"],answer:"A",analysis:"（第四章 资本主义的形成及其本质）资本主义意识形态的核心是（利己主义）"},
+{id:66,type:'single',stem:"产业资本循环的三种职能形式是（ ）",options:["不变资本、可变资本、生产资本","货币资本、生产资本、商品资本","固定资本、流动资本、流通资本","产业资本、商业资本、借贷资本"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）产业资本循环的三种职能形式是（货币资本、生产资本、商品资本）"},
+{id:67,type:'single',stem:"产业资本实现连续循环的现实条件是三种职能形式在（ ）",options:["时间上并存、空间上继起","空间上并存、时间上继起","数量上完全相等","速度上完全一致"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）产业资本实现连续循环的现实条件是三种职能形式在（空间上并存、时间上继起）"},
+{id:68,type:'single',stem:"资本的周转速度与资本的周转时间（ ）",options:["成正比","成反比","按相同方向变化","没有关系"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）资本的周转速度与资本的周转时间（成反比）"},
+{id:69,type:'single',stem:"固定资本和流动资本划分的依据是（ ）",options:["资本在价值增殖中的作用不同","资本的实物形式不同","生产资本不同部分的价值周转方式不同","资本所处的领域不同"],answer:"C",analysis:"（第五章 资本的流通过程和剩余价值的分配）固定资本和流动资本划分的依据是（生产资本不同部分的价值周转方式不同）"},
+{id:70,type:'single',stem:"年剩余价值率是预付可变资本在一年中的增殖程度，用公式表示为（ ）",options:["m′","m′·n","m/(c+v)","m′·v·n"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）年剩余价值率是预付可变资本在一年中的增殖程度，用公式表示为（m′·n）"},
+{id:71,type:'single',stem:"考察社会资本再生产的核心问题是（ ）",options:["剩余价值的生产问题","社会总产品的实现问题","资本的循环问题","资本的周转问题"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）考察社会资本再生产的核心问题是（社会总产品的实现问题）"},
+{id:72,type:'single',stem:"社会资本简单再生产的基本实现条件是（ ）",options:["Ⅰ(v+m)=Ⅱc","Ⅰ(v+Δv+m/x)=Ⅱ(c+Δc)","Ⅱ(v+m)=Ⅰc","Ⅰ(c+v+m)=Ⅱ(c+v+m)"],answer:"A",analysis:"（第五章 资本的流通过程和剩余价值的分配）社会资本简单再生产的基本实现条件是（Ⅰ(v+m)=Ⅱc）"},
+{id:73,type:'single',stem:"社会资本扩大再生产的基本实现条件是（ ）",options:["Ⅰ(v+m)=Ⅱc","Ⅰ(v+Δv+m/x)=Ⅱ(c+Δc)","Ⅱ(v+m)=Ⅰc","Ⅰ(c+v+m)=Ⅱ(c+v+m)"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）社会资本扩大再生产的基本实现条件是（Ⅰ(v+Δv+m/x)=Ⅱ(c+Δc)）"},
+{id:74,type:'single',stem:"资本主义经济危机实质上是（ ）的危机",options:["生产绝对过剩","生产相对过剩","生产严重不足","通货膨胀"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）资本主义经济危机实质上是（生产相对过剩）的危机"},
+{id:75,type:'single',stem:"资本主义经济危机爆发的根源在于（ ）",options:["生产的社会化与生产资料私人资本主义占有形式之间的矛盾","生产和消费的矛盾","个别企业生产的有组织性","市场竞争的加剧"],answer:"A",analysis:"（第五章 资本的流通过程和剩余价值的分配）资本主义经济危机爆发的根源在于（生产的社会化与生产资料私人资本主义占有形式之间的矛盾）"},
+{id:76,type:'single',stem:"就数量关系而言，利润率与剩余价值率的关系是（ ）",options:["利润率大于剩余价值率","利润率等于剩余价值率","利润率总是小于剩余价值率","二者没有确定关系"],answer:"C",analysis:"（第五章 资本的流通过程和剩余价值的分配）就数量关系而言，利润率与剩余价值率的关系是（利润率总是小于剩余价值率）"},
+{id:77,type:'single',stem:"平均利润是通过（ ）形成的",options:["部门内部的竞争","部门之间的竞争和资本在不同部门之间的转移","银行垄断的形成","国家的经济干预"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）平均利润是通过（部门之间的竞争和资本在不同部门之间的转移）形成的"},
+{id:78,type:'single',stem:"生产价格是（ ）",options:["生产成本与剩余价值之和","生产成本与平均利润之和","价值与超额利润之和","成本价格与垄断利润之和"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）生产价格是（生产成本与平均利润之和）"},
+{id:79,type:'single',stem:"超额利润是商品的（ ）的差额",options:["个别生产价格低于社会生产价格","个别价值低于社会价值","生产价格低于价值","生产成本低于价值"],answer:"A",analysis:"（第五章 资本的流通过程和剩余价值的分配）超额利润是商品的（个别生产价格低于社会生产价格）的差额"},
+{id:80,type:'single',stem:"商业利润的来源是（ ）",options:["流通领域中的加价","商业店员的劳动","产业部门的工人创造的剩余价值","借贷资本家的让渡"],answer:"C",analysis:"（第五章 资本的流通过程和剩余价值的分配）商业利润的来源是（产业部门的工人创造的剩余价值）"},
+{id:81,type:'single',stem:"利息率的波动区间是（ ）",options:["高于平均利润率","等于平均利润率","低于平均利润率高于零","可以任意波动"],answer:"C",analysis:"（第五章 资本的流通过程和剩余价值的分配）利息率的波动区间是（低于平均利润率高于零）"},
+{id:82,type:'single',stem:"股票价格的计算公式是（ ）",options:["股息÷存款利息率","股息×存款利息率","股息÷平均利润率","股票票面额÷利息量"],answer:"A",analysis:"（第五章 资本的流通过程和剩余价值的分配）股票价格的计算公式是（股息÷存款利息率）"},
+{id:83,type:'single',stem:"级差地租形成的原因是（ ）",options:["土地私有权的垄断","对土地的资本主义经营垄断","土地肥沃程度的差别","地理位置的差别"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）级差地租形成的原因是（对土地的资本主义经营垄断）"},
+{id:84,type:'single',stem:"级差地租Ⅱ形成的条件是（ ）",options:["不同地块土地肥沃程度的差别","不同地块地理位置的差别","在同一块土地上连续追加投资的劳动生产率不同","土地私有权的存在"],answer:"C",analysis:"（第五章 资本的流通过程和剩余价值的分配）级差地租Ⅱ形成的条件是（在同一块土地上连续追加投资的劳动生产率不同）"},
+{id:85,type:'single',stem:"绝对地租形成的原因在于（ ）",options:["农业的资本有机构成低于社会平均资本有机构成","资本主义农业中的土地私有权垄断","对土地的资本主义经营垄断","农产品供不应求"],answer:"B",analysis:"（第五章 资本的流通过程和剩余价值的分配）绝对地租形成的原因在于（资本主义农业中的土地私有权垄断）"},
+{id:86,type:'single',stem:"土地价格的计算公式是（ ）",options:["地租÷存款利息率","地租×存款利息率","地租÷平均利润率","地租÷银行利润"],answer:"A",analysis:"（第五章 资本的流通过程和剩余价值的分配）土地价格的计算公式是（地租÷存款利息率）"},
+{id:87,type:'single',stem:"垄断是从（ ）中产生的",options:["自由竞争","资本输出","国家干预","经济危机"],answer:"A",analysis:"（第六章 资本主义发展的历史进程）垄断是从（自由竞争）中产生的"},
+{id:88,type:'single',stem:"金融资本是由垄断的工业资本和银行资本（ ）构成的一种新的资本形式",options:["融合或混合生长","相互竞争","相互分离","相互吞并"],answer:"A",analysis:"（第六章 资本主义发展的历史进程）金融资本是由垄断的工业资本和银行资本（融合或混合生长）构成的一种新的资本形式"},
+{id:89,type:'single',stem:"金融寡头在经济上统治的主要方式是（ ）",options:["个人联合","参与制","政策研究咨询","暴力手段"],answer:"B",analysis:"（第六章 资本主义发展的历史进程）金融寡头在经济上统治的主要方式是（参与制）"},
+{id:90,type:'single',stem:"垄断利润是垄断资本凭借其在生产和流通中的垄断地位所获得的（ ）的高额利润",options:["等于平均利润","大大超过平均利润","低于平均利润","等于超额利润"],answer:"B",analysis:"（第六章 资本主义发展的历史进程）垄断利润是垄断资本凭借其在生产和流通中的垄断地位所获得的（大大超过平均利润）的高额利润"},
+{id:91,type:'single',stem:"国家垄断资本主义产生的根源是（ ）",options:["战争的推动","生产力的发展，私人垄断不能适应社会化生产程度的进一步发展","市场自发调节的失灵","工人运动的高涨"],answer:"B",analysis:"（第六章 资本主义发展的历史进程）国家垄断资本主义产生的根源是（生产力的发展，私人垄断不能适应社会化生产程度的进一步发展）"},
+{id:92,type:'single',stem:"垄断阶段资本输出的必要性在于大量所谓（ ）的出现",options:["借贷资本","过剩资本","生产资本","商业资本"],answer:"B",analysis:"（第六章 资本主义发展的历史进程）垄断阶段资本输出的必要性在于大量所谓（过剩资本）的出现"},
+{id:93,type:'single',stem:"经济全球化萌芽于（ ）",options:["新科技革命","国际分工","资本输出","世界市场的形成"],answer:"B",analysis:"（第六章 资本主义发展的历史进程）经济全球化萌芽于（国际分工）"},
+{id:94,type:'single',stem:"早期空想社会主义出现于16—17世纪，其代表人物是（ ）",options:["莫尔和康帕内拉","圣西门和傅立叶","欧文和圣西门","黑格尔和费尔巴哈"],answer:"A",analysis:"（第七章 社会主义社会及其发展）早期空想社会主义出现于16—17世纪，其代表人物是（莫尔和康帕内拉）"},
+{id:95,type:'single',stem:"成为马克思主义科学社会主义直接理论来源的是19世纪的（ ）等人的思想",options:["法国的圣西门、傅立叶和英国的欧文","英国的莫尔和意大利的康帕内拉","德国的黑格尔和费尔巴哈","英国的斯密和李嘉图"],answer:"A",analysis:"（第七章 社会主义社会及其发展）成为马克思主义科学社会主义直接理论来源的是19世纪的（法国的圣西门、傅立叶和英国的欧文）等人的思想"},
+{id:96,type:'single',stem:"标志着科学社会主义理论公开问世的是1848年2月发表的（ ）",options:["《资本论》","《共产党宣言》","《乌托邦》","《太阳城》"],answer:"B",analysis:"（第七章 社会主义社会及其发展）标志着科学社会主义理论公开问世的是1848年2月发表的（《共产党宣言》）"},
+{id:97,type:'single',stem:"提出社会主义革命可以在一国或数国首先胜利理论的是（ ）",options:["马克思和恩格斯","列宁","斯大林","毛泽东"],answer:"B",analysis:"（第七章 社会主义社会及其发展）提出社会主义革命可以在一国或数国首先胜利理论的是（列宁）"},
+{id:98,type:'single',stem:"苏联宣布建成社会主义的时间是（ ）",options:["1917年11月","1924年","1936年12月","1945年5月"],answer:"C",analysis:"（第七章 社会主义社会及其发展）苏联宣布建成社会主义的时间是（1936年12月）"},
+{id:99,type:'single',stem:"马克思主义政党的组织原则是（ ）",options:["民主集中制","集体领导制","少数服从多数","首长负责制"],answer:"A",analysis:"（第七章 社会主义社会及其发展）马克思主义政党的组织原则是（民主集中制）"},
+{id:100,type:'single',stem:"共产主义社会个人消费品的分配原则是（ ）",options:["按劳分配","按需分配","按生产要素分配","平均分配"],answer:"B",analysis:"（第八章 共产主义社会是人类最崇高的社会理想）共产主义社会个人消费品的分配原则是（按需分配）"},
+{id:101,type:'single',stem:"共产主义社会消灭了一切阶级和阶级差别，国家将（ ）",options:["被暴力推翻","自行消亡","逐渐加强","转变为经济组织"],answer:"B",analysis:"（第八章 共产主义社会是人类最崇高的社会理想）共产主义社会消灭了一切阶级和阶级差别，国家将（自行消亡）"},
+{id:102,type:'single',stem:"社会主义是走向共产主义的（ ）",options:["必由之路","过渡形式","初级阶段","补充形式"],answer:"A",analysis:"（第八章 共产主义社会是人类最崇高的社会理想）社会主义是走向共产主义的（必由之路）"},
+/* ---- 多选题 103—164 ---- */
+{id:103,type:'multiple',stem:"马克思主义的三大组成部分包括（ ）",options:["马克思主义哲学","马克思主义政治经济学","科学社会主义","马克思主义法学"],answer:"ABC",analysis:"马克思主义的三大组成部分包括（马克思主义哲学；马克思主义政治经济学；科学社会主义）"},
+{id:104,type:'multiple',stem:"马克思主义产生的直接理论来源包括（ ）",options:["德国的古典哲学","英国的古典政治经济学","英法的空想社会主义学说","古希腊罗马哲学"],answer:"ABC",analysis:"马克思主义产生的直接理论来源包括（德国的古典哲学；英国的古典政治经济学；英法的空想社会主义学说）"},
+{id:105,type:'multiple',stem:"作为马克思主义产生的自然科学基础的三大发现是（ ）",options:["细胞学说","能量守恒和转化定律","达尔文生物进化论","牛顿力学定律"],answer:"ABC",analysis:"作为马克思主义产生的自然科学基础的三大发现是（细胞学说；能量守恒和转化定律；达尔文生物进化论）"},
+{id:106,type:'multiple',stem:"明确学习马克思主义的目的包括（ ）",options:["树立正确的世界观、人生观、价值观","掌握认识世界和改造世界的伟大工具","全面提高人的素质","谋取个人物质利益"],answer:"ABC",analysis:"明确学习马克思主义的目的包括（树立正确的世界观、人生观、价值观；掌握认识世界和改造世界的伟大工具；全面提高人的素质）"},
+{id:107,type:'multiple',stem:"哲学基本问题的两方面内容包括（ ）",options:["思维和存在何者为第一性","思维和存在有无同一性","世界是否运动变化","世界是否统一于物质"],answer:"AB",analysis:"哲学基本问题的两方面内容包括（思维和存在何者为第一性；思维和存在有无同一性）"},
+{id:108,type:'multiple',stem:"唯物主义经历的历史形态包括（ ）",options:["古代的朴素唯物主义","近代的形而上学唯物主义","现代的辩证唯物主义和历史唯物主义","客观唯心主义"],answer:"ABC",analysis:"唯物主义经历的历史形态包括（古代的朴素唯物主义；近代的形而上学唯物主义；现代的辩证唯物主义和历史唯物主义）"},
+{id:109,type:'multiple',stem:"实践的三个基本特点是（ ）",options:["客观性","自觉能动性","社会历史性","主观随意性"],answer:"ABC",analysis:"实践的三个基本特点是（客观性；自觉能动性；社会历史性）"},
+{id:110,type:'multiple',stem:"实践的三种基本形式包括（ ）",options:["物质生产实践","处理社会关系的实践","科学实验","宗教活动"],answer:"ABC",analysis:"实践的三种基本形式包括（物质生产实践；处理社会关系的实践；科学实验）"},
+{id:111,type:'multiple',stem:"“社会生活在本质上是实践的”，其表现有（ ）",options:["劳动实践是人类和人类社会产生的决定性环节","物质生产实践是人类社会得以存在的基础","实践活动是推动社会发展的动力","实践是人的存在方式"],answer:"ABC",analysis:"“社会生活在本质上是实践的”，其表现有（劳动实践是人类和人类社会产生的决定性环节；物质生产实践是人类社会得以存在的基础；实践活动是推动社会发展的动力）"},
+{id:112,type:'multiple',stem:"新事物必然战胜旧事物，这是因为（ ）",options:["新事物符合事物发展的必然趋势","新事物优越于旧事物","在社会历史领域内，新事物从根本上符合广大人民群众的利益和要求，能够得到人民群众的拥护和支持","旧事物会自动退出历史舞台"],answer:"ABC",analysis:"新事物必然战胜旧事物，这是因为（新事物符合事物发展的必然趋势；新事物优越于旧事物；在社会历史领域内，新事物从根本上符合广大人民群众的利益和要求，能够得到人民群众的拥护和支持）"},
+{id:113,type:'multiple',stem:"唯物辩证法和形而上学两种发展观的对立表现在（ ）",options:["联系观点和孤立观点的对立","发展变化观点和静止不变观点的对立","承认事物内部矛盾和否认事物内部矛盾的对立","可知论和不可知论的对立"],answer:"ABC",analysis:"唯物辩证法和形而上学两种发展观的对立表现在（联系观点和孤立观点的对立；发展变化观点和静止不变观点的对立；承认事物内部矛盾和否认事物内部矛盾的对立）"},
+{id:114,type:'multiple',stem:"矛盾的同一性是指矛盾双方相互联系、相互吸引的性质，它包括的含义有（ ）",options:["矛盾双方相互依存","矛盾双方相互贯通","矛盾双方相互排斥","矛盾双方在一定条件下相互转化"],answer:"ABD",analysis:"矛盾的同一性是指矛盾双方相互联系、相互吸引的性质，它包括的含义有（矛盾双方相互依存；矛盾双方相互贯通；矛盾双方在一定条件下相互转化）"},
+{id:115,type:'multiple',stem:"意识的能动性主要表现在（ ）",options:["意识活动具有目的性和计划性","意识活动具有主动创造性","意识对于人的生理活动具有一定影响作用","意识能通过指导实践改造客观物质世界"],answer:"ABCD",analysis:"意识的能动性主要表现在（意识活动具有目的性和计划性；意识活动具有主动创造性；意识对于人的生理活动具有一定影响作用；意识能通过指导实践改造客观物质世界）"},
+{id:116,type:'multiple',stem:"实践对认识的决定作用表现为实践是认识的（ ）",options:["来源","动力","真理性的唯一检验标准","目的"],answer:"ABCD",analysis:"实践对认识的决定作用表现为实践是认识的（来源；动力；真理性的唯一检验标准；目的）"},
+{id:117,type:'multiple',stem:"认识的主体和客体之间的关系包括（ ）",options:["实践关系","认识关系","相互作用","毫无关系"],answer:"ABC",analysis:"认识的主体和客体之间的关系包括（实践关系；认识关系；相互作用）"},
+{id:118,type:'multiple',stem:"真理的功能包括（ ）",options:["指导实践的功能","再认识的功能","教育的功能","激励的功能"],answer:"ABCD",analysis:"真理的功能包括（指导实践的功能；再认识的功能；教育的功能；激励的功能）"},
+{id:119,type:'multiple',stem:"党的思想路线的内容包括（ ）",options:["一切从实际出发","理论联系实际","实事求是","在实践中检验真理和发展真理"],answer:"ABCD",analysis:"党的思想路线的内容包括（一切从实际出发；理论联系实际；实事求是；在实践中检验真理和发展真理）"},
+{id:120,type:'multiple',stem:"社会存在包括的三个方面是（ ）",options:["地理环境","人口因素","生产方式","社会意识形态"],answer:"ABC",analysis:"社会存在包括的三个方面是（地理环境；人口因素；生产方式）"},
+{id:121,type:'multiple',stem:"生产方式在社会发展中的决定作用表现在（ ）",options:["生产方式或生产活动是人类从动物界分离出来的根本动力和人类区别于动物的根本标志","生产方式或生产活动是人类和人类社会得以存在和发展的基础","生产活动是形成人类一切社会关系的基础","生产方式决定社会制度的性质和社会制度的更替"],answer:"ABCD",analysis:"生产方式在社会发展中的决定作用表现在（生产方式或生产活动是人类从动物界分离出来的根本动力和人类区别于动物的根本标志；生产方式或生产活动是人类和人类社会得以存在和发展的基础；生产活动是形成人类一切社会关系的基础；生产方式决定社会制度的性质和社会制度的更替）"},
+{id:122,type:'multiple',stem:"社会意识相对独立性的主要表现有（ ）",options:["社会意识与社会存在变化发展的非完全同步性","社会意识与社会经济发展水平的不平衡性","社会意识的发展具有历史继承性","社会意识各种形式之间相互作用、相互影响，社会意识对社会存在具有反作用"],answer:"ABCD",analysis:"社会意识相对独立性的主要表现有（社会意识与社会存在变化发展的非完全同步性；社会意识与社会经济发展水平的不平衡性；社会意识的发展具有历史继承性；社会意识各种形式之间相互作用、相互影响，社会意识对社会存在具有反作用）"},
+{id:123,type:'multiple',stem:"现代生产力系统包括的四类要素是（ ）",options:["独立的实体性因素","运筹性的综合因素","渗透性因素","准备性因素"],answer:"ABCD",analysis:"现代生产力系统包括的四类要素是（独立的实体性因素；运筹性的综合因素；渗透性因素；准备性因素）"},
+{id:124,type:'multiple',stem:"生产关系包括的三项内容是（ ）",options:["生产资料的所有制形式","人们在生产中的地位及其相互关系（包括交换）","产品的分配方式","人们的消费方式"],answer:"ABC",analysis:"生产关系包括的三项内容是（生产资料的所有制形式；人们在生产中的地位及其相互关系（包括交换）；产品的分配方式）"},
+{id:125,type:'multiple',stem:"“科学技术是第一生产力”的主要含义包括（ ）",options:["科学渗透于现代生产力系统的各类要素之中","在现代化生产中出现了“科学—技术—生产”的过程，使科学对物质生产具有主导作用和超前作用","科学技术已经成为推动生产力发展的重大杠杆","科学技术可以直接代替劳动者的劳动"],answer:"ABC",analysis:"“科学技术是第一生产力”的主要含义包括（科学渗透于现代生产力系统的各类要素之中；在现代化生产中出现了“科学—技术—生产”的过程，使科学对物质生产具有主导作用和超前作用；科学技术已经成为推动生产力发展的重大杠杆）"},
+{id:126,type:'multiple',stem:"属于意识形态范围的思想体系包括（ ）",options:["政治思想、法律思想","道德、宗教","艺术、哲学","绝大部分社会科学"],answer:"ABCD",analysis:"属于意识形态范围的思想体系包括（政治思想、法律思想；道德、宗教；艺术、哲学；绝大部分社会科学）"},
+{id:127,type:'multiple',stem:"社会基本矛盾包括（ ）",options:["生产力和生产关系之间的矛盾","经济基础和上层建筑之间的矛盾","生产和消费之间的矛盾","国家和个人之间的矛盾"],answer:"AB",analysis:"社会基本矛盾包括（生产力和生产关系之间的矛盾；经济基础和上层建筑之间的矛盾）"},
+{id:128,type:'multiple',stem:"阶级斗争推动社会发展的作用表现在（ ）",options:["社会形态更替的过程中","同一个社会形态的量变过程中","生产力水平的直接提高中","科学技术的进步中"],answer:"AB",analysis:"阶级斗争推动社会发展的作用表现在（社会形态更替的过程中；同一个社会形态的量变过程中）"},
+{id:129,type:'multiple',stem:"社会改革推动社会发展的作用主要表现在（ ）",options:["巩固新生的社会制度或使原有的社会制度持续存在并获得一定程度的发展","在社会主义社会以前，为社会制度的诞生作量变和部分质变的准备","在社会经济、政治等社会体制改革的过程中，必然伴随着人们思想观念和价值取向的变更","直接推翻旧的国家政权"],answer:"ABC",analysis:"社会改革推动社会发展的作用主要表现在（巩固新生的社会制度或使原有的社会制度持续存在并获得一定程度的发展；在社会主义社会以前，为社会制度的诞生作量变和部分质变的准备；在社会经济、政治等社会体制改革的过程中，必然伴随着人们思想观念和价值取向的变更）"},
+{id:130,type:'multiple',stem:"文化的社会功能主要表现在（ ）",options:["信息功能","教化、培育和塑造人的功能","促进社会发展的功能","认识功能"],answer:"ABCD",analysis:"文化的社会功能主要表现在（信息功能；教化、培育和塑造人的功能；促进社会发展的功能；认识功能）"},
+{id:131,type:'multiple',stem:"人民群众推动历史发展的作用主要表现在（ ）",options:["人民群众是物质财富的创造者","人民群众是精神财富的创造者","人民群众是实现社会变革的决定力量","人民群众可以随心所欲地创造历史"],answer:"ABC",analysis:"人民群众推动历史发展的作用主要表现在（人民群众是物质财富的创造者；人民群众是精神财富的创造者；人民群众是实现社会变革的决定力量）"},
+{id:132,type:'multiple',stem:"无产阶级政党的群众观点主要包括（ ）",options:["人民群众自己解放自己的观点","全心全意为人民服务的观点","向人民群众负责的观点","向人民群众学习的观点"],answer:"ABCD",analysis:"无产阶级政党的群众观点主要包括（人民群众自己解放自己的观点；全心全意为人民服务的观点；向人民群众负责的观点；向人民群众学习的观点）"},
+{id:133,type:'multiple',stem:"商品经济的产生和存在需要的基本经济条件包括（ ）",options:["社会分工的产生和存在","生产资料和劳动产品属于不同的所有者","货币的产生","国家的产生"],answer:"AB",analysis:"商品经济的产生和存在需要的基本经济条件包括（社会分工的产生和存在；生产资料和劳动产品属于不同的所有者）"},
+{id:134,type:'multiple',stem:"货币的职能包括（ ）",options:["价值尺度","流通手段","贮藏手段","支付手段和世界货币"],answer:"ABCD",analysis:"货币的职能包括（价值尺度；流通手段；贮藏手段；支付手段和世界货币）"},
+{id:135,type:'multiple',stem:"在以私有制为基础的商品经济中，价值规律对社会经济发展的作用包括（ ）",options:["自发地调节生产资料和劳动力在社会生产各部门之间的分配，即调节社会资源的配置","自发地促进社会生产力的发展","引起和促进商品生产者的分化","自动消灭经济危机"],answer:"ABC",analysis:"在以私有制为基础的商品经济中，价值规律对社会经济发展的作用包括（自发地调节生产资料和劳动力在社会生产各部门之间的分配，即调节社会资源的配置；自发地促进社会生产力的发展；引起和促进商品生产者的分化）"},
+{id:136,type:'multiple',stem:"劳动力商品的价值包括的生活资料价值有（ ）",options:["维持劳动者自身生存所必需的生活资料的价值","劳动者繁育后代所必需的生活资料的价值","劳动者接受教育和训练所支出的费用","资本家无偿占有的剩余价值"],answer:"ABC",analysis:"劳动力商品的价值包括的生活资料价值有（维持劳动者自身生存所必需的生活资料的价值；劳动者繁育后代所必需的生活资料的价值；劳动者接受教育和训练所支出的费用）"},
+{id:137,type:'multiple',stem:"资本积累的后果包括（ ）",options:["导致资本有机构成的提高","相对过剩人口的形成","引起严重的贫富两极分化","消除资本主义基本矛盾"],answer:"ABC",analysis:"资本积累的后果包括（导致资本有机构成的提高；相对过剩人口的形成；引起严重的贫富两极分化）"},
+{id:138,type:'multiple',stem:"影响资本周转速度的因素包括（ ）",options:["生产时间和流通时间的长短","生产资本的构成与比例","剩余价值率的高低","不变资本的节省状况"],answer:"AB",analysis:"影响资本周转速度的因素包括（生产时间和流通时间的长短；生产资本的构成与比例）"},
+{id:139,type:'multiple',stem:"影响利润率的因素包括（ ）",options:["剩余价值率的高低","资本有机构成的高低","资本周转速度的快慢","不变资本节省的状况"],answer:"ABCD",analysis:"影响利润率的因素包括（剩余价值率的高低；资本有机构成的高低；资本周转速度的快慢；不变资本节省的状况）"},
+{id:140,type:'multiple',stem:"资本主义基本矛盾的两种主要表现是（ ）",options:["个别企业内部生产的有组织性和整个社会生产无政府状态之间的矛盾","资本主义生产无限扩大的趋势和劳动人民有支付能力的需求相对缩小之间的矛盾","生产和消费之间的矛盾","垄断和竞争之间的矛盾"],answer:"AB",analysis:"资本主义基本矛盾的两种主要表现是（个别企业内部生产的有组织性和整个社会生产无政府状态之间的矛盾；资本主义生产无限扩大的趋势和劳动人民有支付能力的需求相对缩小之间的矛盾）"},
+{id:141,type:'multiple',stem:"商业资本的作用包括（ ）",options:["有利于产业资本家提高经济效益","有利于产业资本家节省流通资本","可以加速产业资本的周转","可以缩短流通时间"],answer:"ABCD",analysis:"商业资本的作用包括（有利于产业资本家提高经济效益；有利于产业资本家节省流通资本；可以加速产业资本的周转；可以缩短流通时间）"},
+{id:142,type:'multiple',stem:"垄断组织的形式包括（ ）",options:["卡特尔","辛迪加","托拉斯","康采恩"],answer:"ABCD",analysis:"垄断组织的形式包括（卡特尔；辛迪加；托拉斯；康采恩）"},
+{id:143,type:'multiple',stem:"第二次世界大战后垄断统治进一步加强的主要表现有（ ）",options:["企业兼并速度加快，混合兼并占主导地位","企业规模扩大，垄断程度提高","垄断组织的生产经营多样化，混合联合企业大量涌现","垄断组织向国际化方向发展，跨国公司迅速增加"],answer:"ABCD",analysis:"第二次世界大战后垄断统治进一步加强的主要表现有（企业兼并速度加快，混合兼并占主导地位；企业规模扩大，垄断程度提高；垄断组织的生产经营多样化，混合联合企业大量涌现；垄断组织向国际化方向发展，跨国公司迅速增加）"},
+{id:144,type:'multiple',stem:"垄断利润的具体来源包括（ ）",options:["来自对本国无产阶级和其他劳动人民的剥削","通过垄断高价和垄断低价控制市场，获得其他企业特别是非垄断企业的利润","通过加强对其他国家劳动人民的剥削和掠夺，获取海外利润","通过资本主义国家政权进行有利于垄断资本的再分配"],answer:"ABCD",analysis:"垄断利润的具体来源包括（来自对本国无产阶级和其他劳动人民的剥削；通过垄断高价和垄断低价控制市场，获得其他企业特别是非垄断企业的利润；通过加强对其他国家劳动人民的剥削和掠夺，获取海外利润；通过资本主义国家政权进行有利于垄断资本的再分配）"},
+{id:145,type:'multiple',stem:"国家垄断资本主义的基本形式包括（ ）",options:["国家直接掌握的垄断资本","国家和私人资本在企业内部的结合","国家和私人资本在企业外部的结合","国际垄断同盟"],answer:"ABC",analysis:"国家垄断资本主义的基本形式包括（国家直接掌握的垄断资本；国家和私人资本在企业内部的结合；国家和私人资本在企业外部的结合）"},
+{id:146,type:'multiple',stem:"经济全球化的主要内容包括（ ）",options:["生产的全球化","贸易的全球化","资本的全球化","政治的全球化"],answer:"ABC",analysis:"经济全球化的主要内容包括（生产的全球化；贸易的全球化；资本的全球化）"},
+{id:147,type:'multiple',stem:"无产阶级革命是最新类型的革命，其理由在于（ ）",options:["无产阶级革命是要消灭私有制、建立公有制的社会革命","无产阶级革命是最终要彻底消灭一切阶级剥削和阶级统治的革命","无产阶级革命是为绝大多数人谋利益的运动","无产阶级革命是不断前进的历史进程"],answer:"ABCD",analysis:"无产阶级革命是最新类型的革命，其理由在于（无产阶级革命是要消灭私有制、建立公有制的社会革命；无产阶级革命是最终要彻底消灭一切阶级剥削和阶级统治的革命；无产阶级革命是为绝大多数人谋利益的运动；无产阶级革命是不断前进的历史进程）"},
+{id:148,type:'multiple',stem:"社会主义从一国到多国发展的历史贡献包括（ ）",options:["社会主义作为一种现实存在的社会制度出现在世界上，推动了人类历史的发展和社会制度的演进","社会主义国家的存在改变了世界格局，在一定程度上遏制了帝国主义和霸权主义在世界上的扩张","社会主义力量坚定地支持被压迫民族和被压迫人民，推动着和平与发展的世界时代潮流","社会主义引导着世界人民的前进方向"],answer:"ABCD",analysis:"社会主义从一国到多国发展的历史贡献包括（社会主义作为一种现实存在的社会制度出现在世界上，推动了人类历史的发展和社会制度的演进；社会主义国家的存在改变了世界格局，在一定程度上遏制了帝国主义和霸权主义在世界上的扩张；社会主义力量坚定地支持被压迫民族和被压迫人民，推动着和平与发展的世界时代潮流；社会主义引导着世界人民的前进方向）"},
+{id:149,type:'multiple',stem:"中国共产党人关于社会主义基本特征的认识包括（ ）",options:["解放和发展生产力，创造高度发达的生产力和比资本主义更高的劳动生产率","建立和完善社会主义的生产资料公有制，逐步消灭剥削，消除两极分化，最终达到共同富裕","社会主义的分配原则是按劳分配；社会主义事业要有以马克思主义为指导的共产党的领导","以马克思主义为指导的社会主义文化和精神文明建设"],answer:"ABCD",analysis:"中国共产党人关于社会主义基本特征的认识包括（解放和发展生产力，创造高度发达的生产力和比资本主义更高的劳动生产率；建立和完善社会主义的生产资料公有制，逐步消灭剥削，消除两极分化，最终达到共同富裕；社会主义的分配原则是按劳分配；社会主义事业要有以马克思主义为指导的共产党的领导；以马克思主义为指导的社会主义文化和精神文明建设）"},
+{id:150,type:'multiple',stem:"马克思主义关于未来共产主义社会的基本特征包括（ ）",options:["社会生产力高度发展和物质财富极大丰富，充分满足每个人的需要","实行社会公有制和按需分配；经济的计划调节管理和商品经济的消失","阶级的消灭是国家自行消亡的前提条件；精神境界极大提高","人的自由而全面发展；全人类的彻底解放"],answer:"ABCD",analysis:"马克思主义关于未来共产主义社会的基本特征包括（社会生产力高度发展和物质财富极大丰富，充分满足每个人的需要；实行社会公有制和按需分配；经济的计划调节管理和商品经济的消失；阶级的消灭是国家自行消亡的前提条件；精神境界极大提高；人的自由而全面发展；全人类的彻底解放）"},
+{id:151,type:'multiple',stem:"社会主义社会和共产主义社会的共同基本特征包括（ ）",options:["都以生产资料公有制作为社会经济制度的基础","目的都是为了满足劳动人民日益增长的物质文化生活需要，实现劳动人民的共同富裕","都要消灭剥削制度，劳动人民成为社会的主人","都以马克思主义为指导思想，以集体主义为意识形态的核心"],answer:"ABCD",analysis:"社会主义社会和共产主义社会的共同基本特征包括（都以生产资料公有制作为社会经济制度的基础；目的都是为了满足劳动人民日益增长的物质文化生活需要，实现劳动人民的共同富裕；都要消灭剥削制度，劳动人民成为社会的主人；都以马克思主义为指导思想，以集体主义为意识形态的核心）"},
+{id:152,type:'multiple',stem:"关于马克思主义政党，下列表述正确的有（ ）",options:["产生的条件是工人运动的发展和科学社会主义的传播","性质是无产阶级的先锋队","纲领和目标是实现共产主义，根本宗旨是为人民服务","组织原则是民主集中制"],answer:"ABCD",analysis:"关于马克思主义政党，下列表述正确的有（产生的条件是工人运动的发展和科学社会主义的传播；性质是无产阶级的先锋队；纲领和目标是实现共产主义，根本宗旨是为人民服务；组织原则是民主集中制）"},
+{id:153,type:'multiple',stem:"社会主义发展道路多样性的原因包括（ ）",options:["各国在社会主义革命时，其生产力状况和社会发展阶段是不同的","各国的历史传统、文化习俗及具体国情各不相同","在社会主义的实践中，各国都在探索适合本国国情的发展道路","苏联模式的强制推行"],answer:"ABC",analysis:"社会主义发展道路多样性的原因包括（各国在社会主义革命时，其生产力状况和社会发展阶段是不同的；各国的历史传统、文化习俗及具体国情各不相同；在社会主义的实践中，各国都在探索适合本国国情的发展道路）"},
+{id:154,type:'multiple',stem:"上世纪80年代以来，经济全球化加快的原因包括（ ）",options:["新科学技术特别是计算机、通信技术日新月异的进步和在社会经济生活中的广泛应用，加强了国际经济联系","国际贸易的自由程度大大提高","国际资本流动的大幅增加","发展中国家全部实现了工业化"],answer:"ABC",analysis:"上世纪80年代以来，经济全球化加快的原因包括（新科学技术特别是计算机、通信技术日新月异的进步和在社会经济生活中的广泛应用，加强了国际经济联系；国际贸易的自由程度大大提高；国际资本流动的大幅增加）"},
+{id:155,type:'multiple',stem:"股份公司产生的原因包括（ ）",options:["生产社会化程度的提高，使得生产规模和企业规模不断扩大","资本主义信用制度的发展，促进了股份公司的产生和发展","国家政权的强制推行","工人阶级斗争的结果"],answer:"AB",analysis:"股份公司产生的原因包括（生产社会化程度的提高，使得生产规模和企业规模不断扩大；资本主义信用制度的发展，促进了股份公司的产生和发展）"},
+{id:156,type:'multiple',stem:"职能资本家手中暂时闲置的货币资本成为借贷资本的主要来源，它包括（ ）",options:["暂时闲置的固定资本折旧费","暂时闲置的流动资本","暂时闲置的用于资本积累的剩余价值","工人的工资储蓄"],answer:"ABC",analysis:"职能资本家手中暂时闲置的货币资本成为借贷资本的主要来源，它包括（暂时闲置的固定资本折旧费；暂时闲置的流动资本；暂时闲置的用于资本积累的剩余价值）"},
+{id:157,type:'multiple',stem:"社会主义在曲折中前进的客观性原因包括（ ）",options:["同一切新生事物一样，社会主义作为一种崭新的社会制度，其成长过程必然不会一帆风顺","作为发展中国家的社会主义的基本矛盾运动，推动了社会主义的经济社会发展","世界经济政治形势错综复杂的发展变化，国际经济政治秩序和格局的变动演化","社会主义制度本身注定失败"],answer:"ABC",analysis:"社会主义在曲折中前进的客观性原因包括（同一切新生事物一样，社会主义作为一种崭新的社会制度，其成长过程必然不会一帆风顺；作为发展中国家的社会主义的基本矛盾运动，推动了社会主义的经济社会发展；世界经济政治形势错综复杂的发展变化，国际经济政治秩序和格局的变动演化）"},
+{id:158,type:'multiple',stem:"第二次世界大战后资本输出的新特点包括（ ）",options:["资本流向从主要是发达国家向经济落后国家输出，发展到当代的多方向输出，特别是发达国家间相互投资的大幅度增加","在私人资本输出增长的同时，国家资本的输出也在增长，并日益成为占重要地位的资本输出形式","发达国家向发展中国家的资本输出，多采取“援助”的方式进行","资本输出已经完全停止"],answer:"ABC",analysis:"第二次世界大战后资本输出的新特点包括（资本流向从主要是发达国家向经济落后国家输出，发展到当代的多方向输出，特别是发达国家间相互投资的大幅度增加；在私人资本输出增长的同时，国家资本的输出也在增长，并日益成为占重要地位的资本输出形式；发达国家向发展中国家的资本输出，多采取“援助”的方式进行）"},
+{id:159,type:'multiple',stem:"劳动力成为商品的两个条件是（ ）",options:["劳动者有人身自由","劳动者丧失了一切生产资料和生活资料，必须靠出卖劳动力为生","劳动者具有较高的劳动技能","社会上存在大量货币资本"],answer:"AB",analysis:"劳动力成为商品的两个条件是（劳动者有人身自由；劳动者丧失了一切生产资料和生活资料，必须靠出卖劳动力为生）"},
+{id:160,type:'multiple',stem:"资本主义劳动过程的特点是（ ）",options:["工人在资本家的监督下劳动","劳动产品归资本家所有","工人自由支配自己的劳动成果","劳动过程有严密计划"],answer:"AB",analysis:"资本主义劳动过程的特点是（工人在资本家的监督下劳动；劳动产品归资本家所有）"},
+{id:161,type:'multiple',stem:"意识是自然界长期发展的产物，自然界长期演化和发展包括的阶段有（ ）",options:["从无生命物质的反应特性到生物的刺激感应性","从低等生物的刺激感应性到动物的感觉和心理","从动物的感觉和心理到人类意识的产生","从类人猿直立行走到现代人的形成"],answer:"ABC",analysis:"意识是自然界长期发展的产物，自然界长期演化和发展包括的阶段有（从无生命物质的反应特性到生物的刺激感应性；从低等生物的刺激感应性到动物的感觉和心理；从动物的感觉和心理到人类意识的产生）"},
+{id:162,type:'multiple',stem:"事物联系的主要形式有（ ）",options:["直接联系与间接联系","内部联系与外部联系","本质联系与非本质联系","必然联系与偶然联系"],answer:"ABCD",analysis:"事物联系的主要形式有（直接联系与间接联系；内部联系与外部联系；本质联系与非本质联系；必然联系与偶然联系）"},
+{id:163,type:'multiple',stem:"实现感性认识向理性认识飞跃必须具备的条件是（ ）",options:["必须有正确的思维方法和正确途径，做到“去粗取精、去伪存真、由此及彼、由表及里”","感性材料应是丰富的、全面的，而不是零散不全的","认识主体必须有天赋才能","必须得到权威的认可"],answer:"AB",analysis:"实现感性认识向理性认识飞跃必须具备的条件是（必须有正确的思维方法和正确途径，做到“去粗取精、去伪存真、由此及彼、由表及里”；感性材料应是丰富的、全面的，而不是零散不全的）"},
+{id:164,type:'multiple',stem:"马克思说“革命是历史的火车头”，社会革命在社会发展中的重大作用表现在（ ）",options:["社会革命是阶级社会由低级向高级发展的决定性手段","人民群众在革命时期能发挥出创造历史的巨大的主动性和积极性","革命阶级在革命斗争中受到锻炼和改造，成为建设新社会的基础","社会革命能够直接消灭一切阶级差别"],answer:"ABC",analysis:"马克思说“革命是历史的火车头”，社会革命在社会发展中的重大作用表现在（社会革命是阶级社会由低级向高级发展的决定性手段；人民群众在革命时期能发挥出创造历史的巨大的主动性和积极性；革命阶级在革命斗争中受到锻炼和改造，成为建设新社会的基础）"},
+/* ---- 判断题 165—204 ---- */
+{id:165,type:'judge',stem:"马克思主义仅指马克思、恩格斯创立的理论，不包括继承者的理论。",options:["正确","错误"],answer:"B",analysis:"【更正】马克思主义不仅包括创始人的理论，而且包括继承人的理论，特别是列宁、毛泽东、邓小平等人的理论"},
+{id:166,type:'judge',stem:"哲学基本问题的第二方面内容，即思维和存在有无同一性，是划分唯物主义和唯心主义的唯一标准。",options:["正确","错误"],answer:"B",analysis:"【更正】第二方面是划分可知论和不可知论的唯一标准；划分唯物主义和唯心主义的唯一标准是何者为第一性"},
+{id:167,type:'judge',stem:"在唯物主义和唯心主义的对立中，又交织着辩证法和形而上学的对立，辩证法和形而上学的对立从属于唯物主义和唯心主义的对立。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:168,type:'judge',stem:"只承认绝对运动不承认相对静止，是形而上学的观点。",options:["正确","错误"],answer:"B",analysis:"【更正】只承认绝对运动不承认相对静止是相对主义诡辩论；只承认静止不承认绝对运动才是形而上学"},
+{id:169,type:'judge',stem:"矛盾的同一性是绝对的，矛盾的斗争性是相对的。",options:["正确","错误"],answer:"B",analysis:"【更正】矛盾的同一性是相对的，指它的条件性；矛盾的斗争性是绝对的，指它的无条件性"},
+{id:170,type:'judge',stem:"主要矛盾和次要矛盾的地位不是一成不变的，它们在一定条件下可以相互转化。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:171,type:'judge',stem:"割裂量变和质变的统一，会导致循环论和直线论。",options:["正确","错误"],answer:"B",analysis:"【更正】会导致激变论或庸俗进化论；割裂前进性和曲折性的统一才会导致循环论和直线论"},
+{id:172,type:'judge',stem:"假象不是客观存在的，它是一种主观上的错觉。",options:["正确","错误"],answer:"B",analysis:"【更正】假象同真相一样也是客观存在的，不能把它同主观上的错觉混为一谈；假象也反映本质"},
+{id:173,type:'judge',stem:"偶然性对事物的发展有重要的影响作用，我们决不能忽视偶然性。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:174,type:'judge',stem:"社会发展规律是通过人们的自觉活动实现的。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:175,type:'judge',stem:"意识是人脑的机能，人脑是意识的物质器官。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:176,type:'judge',stem:"强调实践是认识和知识的唯一源泉，就否认了从他人和书本获得知识的可能性。",options:["正确","错误"],answer:"B",analysis:"【更正】强调实践是认识和知识的唯一源泉，并不否认可以从他人和书本获得知识，书本上的知识仍然是从实践中得来的"},
+{id:177,type:'judge',stem:"真理和谬误在一定条件下可以相互转化。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:178,type:'judge',stem:"逻辑证明在认识和探索真理中有作用，因此可以用逻辑证明取代实践标准。",options:["正确","错误"],answer:"B",analysis:"【更正】逻辑证明有辅助作用，但它不是检验真理的标准，更不能取代实践标准"},
+{id:179,type:'judge',stem:"实践标准既是确定的、绝对的，又是不确定的、相对的。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:180,type:'judge',stem:"真理的绝对性和相对性是两个不同的真理。",options:["正确","错误"],answer:"B",analysis:"【更正】真理的绝对性和相对性是一个真理的两个方面，不是两个不同的真理"},
+{id:181,type:'judge',stem:"地理环境对社会发展起主要的决定作用。",options:["正确","错误"],answer:"B",analysis:"【更正】地理环境对社会发展起制约和影响作用，但不起主要的决定作用"},
+{id:182,type:'judge',stem:"社会意识的发展与社会存在的发展总是保持一致和平衡。",options:["正确","错误"],answer:"B",analysis:"【更正】社会意识的发展与社会存在的发展并不总是保持一致和平衡，这正是社会意识相对独立性的表现"},
+{id:183,type:'judge',stem:"社会历史规律不是别的，就是人的活动的规律。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:184,type:'judge',stem:"阶级首先是一个经济范畴，划分阶级的唯一标准是经济标准。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:185,type:'judge',stem:"社会改革是同一社会制度总的量变过程中的部分质变，不改变社会制度的根本性质。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:186,type:'judge',stem:"具体劳动和抽象劳动是商品生产者的两次各自独立存在的劳动。",options:["正确","错误"],answer:"B",analysis:"【更正】具体劳动和抽象劳动是同一劳动过程的不可分割的两个方面，在时间上和空间上是统一的"},
+{id:187,type:'judge',stem:"商品交换是按照商品的个别价值进行的。",options:["正确","错误"],answer:"B",analysis:"【更正】商品交换是按照其社会价值进行的"},
+{id:188,type:'judge',stem:"商品价格围绕价值上下波动，违背了价值规律。",options:["正确","错误"],answer:"B",analysis:"【更正】价格围绕价值上下波动不但没有违背价值规律，反而正是价值规律作用的表现形式"},
+{id:189,type:'judge',stem:"劳动力商品的使用价值不仅能创造出价值，而且能够创造出比劳动力自身的价值更大的价值。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:190,type:'judge',stem:"个别企业工人由于提高劳动强度而生产的剩余价值，属于绝对剩余价值。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:191,type:'judge',stem:"相对过剩人口是指人口的绝对过剩。",options:["正确","错误"],answer:"B",analysis:"【更正】是指劳动力的供给相对于资本对劳动力的需求来说而过剩，并不是人口的绝对过剩"},
+{id:192,type:'judge',stem:"利润率总是小于剩余价值率。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:193,type:'judge',stem:"商业利润来源于流通领域中商品的贱买贵卖。",options:["正确","错误"],answer:"B",analysis:"【更正】商业利润是产业资本家让渡给商业资本家的一部分剩余价值，其来源是产业部门的工人创造的剩余价值"},
+{id:194,type:'judge',stem:"垄断的产生消灭了竞争。",options:["正确","错误"],answer:"B",analysis:"【更正】垄断产生后，竞争仍然存在，垄断不能消灭竞争"},
+{id:195,type:'judge',stem:"垄断价格的出现并没有否定价值规律。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:196,type:'judge',stem:"社会主义民主只是手段而不是目的。",options:["正确","错误"],answer:"B",analysis:"【更正】社会主义民主是目的和手段的统一"},
+{id:197,type:'judge',stem:"改革是动力，发展是目的，稳定是保证。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:198,type:'judge',stem:"共产主义社会个人消费品的分配原则是按劳分配。",options:["正确","错误"],answer:"B",analysis:"【更正】共产主义社会的个人消费品分配是按需分配原则，社会主义社会公有制范围内实行按劳分配"},
+{id:199,type:'judge',stem:"远大理想是现阶段共同理想的奋斗目标，现阶段的共同理想是远大理想的坚实基础。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:200,type:'judge',stem:"有些国家和民族由于特殊的社会历史条件，在社会形态转变过程中，可能超越某一个或某几个社会形态。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:201,type:'judge',stem:"承认历史决定论和承认主体选择的作用是一致的、不矛盾的。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:202,type:'judge',stem:"观念上层建筑决定政治上层建筑。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:203,type:'judge',stem:"把全部剩余价值都用于资本家的个人消费，再生产只是在原有的规模上重复进行，这就是资本主义的简单再生产。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+{id:204,type:'judge',stem:"随着矛盾双方主次地位的转化，事物的性质也就发生了变化。",options:["正确","错误"],answer:"A",analysis:"表述正确。"},
+/* ---- 简答题 205—222 ---- */
+{id:205,type:'short',stem:"简述马克思主义的科学内涵。",answer:"①马克思主义是马克思、恩格斯共同创立的；②马克思主义不仅包括它的创始人马克思、恩格斯的理论，而且包括它的继承人的理论，特别是列宁、毛泽东、邓小平等人的理论；③在基本观点、基本立场、基本方法、价值取向等方面与马克思、恩格斯创立的理论前后相继、一脉相承，在本质上相一致；④马克思主义的各个组成部分是一个具有内在逻辑联系的科学体系。"},
+{id:206,type:'short',stem:"简述最高理想与共同理想的辩证关系。",answer:"马克思主义最高的社会理想是推翻资本主义、实现共产主义，实现共产主义是长期的远大的理想；建设中国特色社会主义是全国各族人民的共同理想，相对于最高理想来说，共同理想是近期的具体理想。二者既相互区别又相互联系，是辩证统一的关系：①共同理想是实现最高理想的必经阶段和必要基础；②实现共同理想，必须坚持以最高理想为根本方向。"},
+{id:207,type:'short',stem:"简述哲学基本问题及其两方面内容。",answer:"哲学的基本问题是思维和存在的关系问题。它包括两方面内容：①第一方面是思维和存在何者为第一性，它是划分唯物主义和唯心主义的唯一标准；②第二方面是思维和存在有无同一性，它是划分可知论和不可知论的唯一标准。"},
+{id:208,type:'short',stem:"简述实践的含义及其三个基本特点。",answer:"实践是主体能动地改造和探索客体的社会性的客观物质活动。三个基本特点：①客观性，从根本上与唯心主义实践观划清界限；②自觉能动性，从根本上与旧唯物主义实践观划清界限；③社会历史性，既同唯心主义实践观划清界限，又同旧唯物主义实践观以及实用主义实践观区别开来。"},
+{id:209,type:'short',stem:"简述承认相对静止的重要意义。",answer:"①只有承认相对静止，才能理解事物的多样性，区分开不同的事物；②只有承认相对静止，才能认识事物分化的条件和生命现象的产生；③只有承认相对静止，才能理解绝对运动。事物是绝对运动和相对静止的辩证统一。"},
+{id:210,type:'short',stem:"简述矛盾的同一性和斗争性的含义及其相互关系。",answer:"（1）含义：矛盾的同一性是指矛盾双方相互联系、相互吸引的性质，包括两方面含义：一是矛盾双方相互依存；二是矛盾双方相互贯通（表现为相互渗透或相互包含、一定条件下相互转化的趋势）。矛盾的斗争性是指矛盾双方相互排斥、相互对立的性质。<br>（2）相互关系：二者既相互区别又相互联结：①基本属性不同，在矛盾运动中所处的地位不同，同一性是相对的（条件性），斗争性是绝对的（无条件性）；②二者相互联结、不可分离：同一性不能脱离斗争而存在，没有斗争就没有同一性；斗争性寓于同一性之中，没有同一性也没有斗争性。这要求我们在分析和处理矛盾时，必须在对立中把握同一，在同一中把握对立。"},
+{id:211,type:'short',stem:"简述内因和外因的辩证关系。",answer:"①内因是事物发展变化的根据，是第一位的原因；②外因是事物发展变化的条件，是第二位的原因，在一定情况下，外因对事物的发展甚至起决定性作用；③外因通过内因而起作用。"},
+{id:212,type:'short',stem:"简述感性认识和理性认识的辩证关系。",answer:"感性认识和理性认识是认识的两个阶段，二者既相互区别又相互联系，是对立统一的关系。<br>（1）区别：感性认识是对事物表面的、直接的、具体的、个别特性的反映，是不深刻、片面的认识；理性认识是对事物本质的、间接的、全体的、概括的反映，是深刻、全面、相对稳定的认识。<br>（2）联系：①理性认识依赖于感性认识，这在认识论上坚持了唯物论；②感性认识有待于发展到理性认识，这在认识论上坚持了辩证法；③感性认识和理性认识相互渗透。<br>（3）割裂二者会导致经验论或唯理论的错误；在实际工作中，经验论和唯理论是经验主义和教条主义的认识论根源。"},
+{id:213,type:'short',stem:"简述真理的客观性及其两点含义。",answer:"真理的客观性有两个含义：①真理的客观性就是承认认识的内容来自客观实际又符合客观实际（事物及其规律本身并不是真理，真理属于认识范围）；②真理的客观性是指检验真理的标准是客观的，检验真理的标准只能是实践。主观的真理是根本不存在的，唯物主义承认客观真理，唯心主义否认客观真理。"},
+{id:214,type:'short',stem:"简述实践是检验认识真理性的唯一标准的原因。",answer:"这是由真理的本性和实践的特点所决定的。①是不是真理就是要判明认识与认识对象是否相一致、相符合，实践是人的主观见之于客观的活动，它能把主观认识与客观实际联系起来加以对照，确定认识与认识对象是否相一致、相符合，从而使认识得到检验；②唯有实践才具有直接现实性的品格，通过实践把思想、理论在现实中实现出来，把变成现实的东西同原来的观念、思想加以对照，从而判明其是否正确，使认识得到检验。"},
+{id:215,type:'short',stem:"简述生产方式在社会发展中的决定作用。",answer:"生产方式是人类借以向自然界谋取必需的生活资料的方式，包括生产力和生产关系两个方面，是特定的生产力和生产关系的统一。其决定作用表现在：①生产方式或生产活动是人类从动物界分离出来的根本动力和人类区别于动物的根本标志；②生产方式或生产活动是人类和人类社会得以存在和发展的基础；③生产活动是形成人类一切社会关系的基础，在生产关系的基础上形成了整个人类社会；④生产方式决定社会制度的性质和社会制度的更替。"},
+{id:216,type:'short',stem:"简述社会意识相对独立性的含义及其主要表现。",answer:"社会意识的相对独立性是指社会意识在反映社会存在、被社会存在所决定的同时，还具有自身的能动性和独特的发展规律，它的发展与社会存在的发展并不总是保持一致和平衡。主要表现在五个方面：①社会意识与社会存在变化发展的非完全同步性；②社会意识与社会经济发展水平的不平衡性；③社会意识的发展具有历史继承性；④社会意识各种形式之间相互作用、相互影响；⑤社会意识对社会存在的反作用（能动性），这是社会意识相对独立性的重要表现。"},
+{id:217,type:'short',stem:"简述社会改革在社会发展中的作用。",answer:"社会改革是在一定社会制度下，为了解决生产关系不适合生产力、上层建筑不适合经济基础的某些部分或环节，使该社会制度得到持续存在与发展或自我完善，而对社会体制进行的改善与革新。其作用主要表现在：①社会改革可以巩固新生的社会制度或使原有的社会制度持续存在并获得一定程度的发展；②在社会主义社会以前，社会改革为新社会制度的诞生作量变和部分质变的准备；③在社会经济、政治等社会体制改革的过程中，必然伴随着人们思想观念和价值取向的变更。"},
+{id:218,type:'short',stem:"简述社会革命与社会改革的区别。",answer:"①社会革命是人类社会的根本质变；社会改革则是同一社会制度总的量变过程中的部分质变，不改变社会制度的根本性质；②社会革命的目的是推翻反动统治阶级的国家政权，社会改革的目的是维护和巩固统治阶级的统治地位，因此社会革命一般是由下层群众首先发动的，社会改革则是自上而下展开的；③从历史上看，社会革命往往要通过暴力革命的形式，社会改革虽然也要付出代价，甚至流血牺牲，但一般不需要采取大规模的武装斗争和暴力冲突的形式。"},
+{id:219,type:'short',stem:"简述人民群众推动历史发展的作用的表现。",answer:"①人民群众是物质财富的创造者；②人民群众是精神财富的创造者；③人民群众是实现社会变革的决定力量。（人民群众创造历史的活动受既定的历史条件的制约，不能随心所欲地创造历史。）"},
+{id:220,type:'short',stem:"简述生产资本的构成——固定资本和流动资本的划分及其与不变资本、可变资本划分的区别。",answer:"（1）依据价值周转方式的不同，生产资本划分为固定资本和流动资本：①固定资本是产业资本家用于机器、工具、设备等劳动资料上的那部分生产资本，其价值周转方式的特点是多次转移、多次收回；②流动资本是产业资本家用于原料、材料、辅助材料等劳动对象和用于劳动力的那部分生产资本，其价值周转方式的特点是一次投入、一次收回。<br>（2）与不变资本、可变资本划分的区别：不变资本和可变资本是依据资本不同部分在价值增殖中的作用不同划分的（以生产资料形式存在的资本是不变资本，以劳动力形式存在的资本是可变资本）；而固定资本和流动资本是依据价值周转方式划分的，且只限于生产资本。此外，流动资本与流通资本也不同：流通资本是处于流通领域中的货币资本与商品资本，而流动资本是生产资本的一个组成部分。"},
+{id:221,type:'short',stem:"简述社会主义首先在经济文化相对落后的国家取得胜利的原因。",answer:"①这些国家已具备了一定程度的社会化生产力，这是发生社会主义革命、建立社会主义社会的物质基础；②这些国家发生社会主义革命时的客观形势和条件，使得它们在特定的历史条件下能够获得革命的成功。"},
+{id:222,type:'short',stem:"简述正确认识和评价杰出人物历史作用的基本观点和方法。",answer:"①杰出人物是一定历史条件下的产物，要正确认识杰出人物的历史作用，坚持历史主义原则，实事造英雄是历史唯物主义的观点；②在阶级社会里，杰出人物总是一定阶级的代表，其历史作用同他们所代表的那个阶级的历史作用分不开，因此必须对他们作阶级分析；③杰出人物的出现及其历史作用都是必然性与偶然性的辩证统一，必须用必然性与偶然性辩证统一的观点来分析；④任何杰出人物都有巨大的历史功绩，也必然会有这样那样的缺点或错误，对其历史作用要作全面的分析与评价，既不能肯定一切，也不能否定一切。"},
+/* ---- 论述题 223—231 ---- */
+{id:223,type:'essay',stem:"试述矛盾普遍性和特殊性辩证关系的原理及其对建设中国特色社会主义的意义。",answer:"（1）原理：矛盾的普遍性和特殊性的关系，也就是共性与个性、一般与个别的关系，它们是辩证统一的。①矛盾的普遍性与特殊性是互相联结的：普遍性存在于特殊性之中，特殊性中包含着普遍性，如果割裂了二者的联系，就会导致“白马非马”的诡辩命题；②矛盾的普遍性与特殊性是互相区别的：一般（普遍）比个别（特殊）更普遍、深刻，个别比一般更丰富、具体；③矛盾的普遍性与特殊性在一定条件下可以互相转化。<br>（2）意义：矛盾普遍性与特殊性辩证关系的原理，是矛盾问题的精髓，是我们坚持马克思主义普遍真理同中国具体实际相结合、建设中国特色社会主义的理论基础。中国特色社会主义既坚持了科学社会主义的普遍原则，又立足于中国的具体国情和实际，体现了普遍与特殊、共性与个性的统一。"},
+{id:224,type:'essay',stem:"试述量变和质变的辩证关系原理及其意义。",answer:"（1）量变和质变是辩证统一的：①量变是质变的必要准备，质变离不开量变；②质变是量变的必然结果；③量变和质变相互渗透：一方面质变体现和巩固量变的成果，另一方面在总的量变过程中有阶段性和局部性的部分质变。<br>（2）割裂二者的统一，就会导致激变论或庸俗进化论：激变论只承认质变、否认量变，在社会政治上表现为冒险主义；庸俗进化论只承认量变、否认质变，在社会政治上表现为改良主义。<br>（3）意义：质量互变规律要求我们在社会主义建设和改革过程中，把远大的理想和目标同有步骤、分阶段地踏实苦干、稳步前进的精神结合起来，反对急躁冒进、急于求成，否则会欲速则不达，得到事与愿违的结果。"},
+{id:225,type:'essay',stem:"试述事物发展是前进性和曲折性统一的原理及其对正确认识社会主义现代化建设事业的意义。",answer:"（1）原理：否定之否定规律的基本内容是：事物的发展经过两次辩证的否定，由肯定阶段到否定阶段，再到否定之否定阶段，从而使事物的发展表现为螺旋式上升和波浪式前进的过程。它揭示了事物的发展是前进性和曲折性的统一：事物发展的总趋势是前进的、上升的，具体道路是曲折的。如果割裂二者的统一，会导致循环论和直线论的错误。<br>（2）意义：把握这一原理，对我们正确认识社会主义现代化建设事业具有重要意义：①要坚信社会主义的前途是光明的；②要准备走曲折的路。"},
+{id:226,type:'essay',stem:"试述尊重客观规律和发挥主观能动性辩证统一的原理及其现实意义。",answer:"（1）原理：辩证唯物主义认为，物质与意识的关系是：物质决定意识，物质第一性，意识第二性；意识对物质又具有能动的反作用。要正确发挥人的主观能动性，必须正确处理主观能动性和客观规律性的关系，尊重客观规律和发挥主观能动性是辩证统一的：①尊重客观规律是正确发挥主观能动性的前提；②认识和利用规律又必须充分发挥人的主观能动性。<br>（2）现实意义：尊重客观规律和发挥主观能动性辩证统一的原理，要求我们在社会主义现代化建设和各项工作中，把高度的实践热情、创新精神与科学的求实态度结合起来。"},
+{id:227,type:'essay',stem:"试述认识过程的两次飞跃及其意义。",answer:"（1）第一次飞跃是从感性认识到理性认识（从实践到认识）。感性认识和理性认识是辩证统一的：理性认识依赖于感性认识（在认识论上坚持了唯物论），感性认识有待于发展到理性认识（在认识论上坚持了辩证法），二者相互渗透。实现这一飞跃要具备两个条件：①必须有正确的思维方法和正确途径（“去粗取精、去伪存真、由此及彼、由表及里”）；②感性材料应是丰富的、全面的，而不是零散不全的。<br>（2）第二次飞跃是从理性认识到实践。认识由感性上升到理性只是认识运动的一半，还要实现由理性认识向实践的飞跃。这次飞跃比第一次飞跃具有更加重大的意义：①只有经过这一次飞跃，才能把理论用于指导实践，实现对客观世界的改造；②只有经过这一次飞跃，使理性认识再回到实践中去，使之得到检验、丰富和发展。认识世界和改造世界的统一是马克思主义哲学的特点和优点。<br>（3）认识运动的总规律：实践、认识、再实践、再认识，这种形式循环往复以至无穷，而实践和认识之每一循环的内容，都比较地进到高一级的程度。主观和客观、认识和实践的统一是具体的、历史的。"},
+{id:228,type:'essay',stem:"试述真理的绝对性和相对性辩证统一的原理及对待马克思主义的正确态度。",answer:"（1）原理：真理的绝对性和相对性是一个真理的两个方面，不是两个不同的真理。二者辩证关系：①真理的绝对性和相对性相互依存；②二者互相包含、互相渗透：任何相对真理中都包含着绝对真理的颗粒，绝对真理通过相对真理表现出来，无数相对真理的总和构成绝对真理；③相对真理向绝对真理转化。<br>（2）在真理问题上，相对主义和绝对主义都是错误的：相对主义不承认相对真理中包含绝对真理的成分和颗粒，实际上就是否认客观真理的存在；绝对主义否认真理的相对性，否认真理是一个过程，从而把人的认识僵化。<br>（3）对待马克思主义的正确态度：马克思主义是真理，它也是绝对性和相对性的统一。它正确地反映了自然、社会和思维发展的普遍规律，因而具有绝对性的一面，所以我们必须坚持它并以它作为我们的指导思想；它又没有穷尽一切事物及其规律，需要随着社会实践的发展而发展，因而又具有相对性的一面，所以又必须在实践中丰富它、发展它。既坚持又发展，才是对待马克思主义的正确态度。"},
+{id:229,type:'essay',stem:"试述社会基本矛盾是社会发展的基本动力。",answer:"（1）社会基本矛盾是指生产力和生产关系之间的矛盾、经济基础和上层建筑之间的矛盾。这两对矛盾存在于一切社会形态之中，贯穿于每一个社会形态的始终；它们制约和决定着其他各种社会矛盾，决定着整个社会的面貌，决定着社会发展的必然阶段和客观趋势，决定社会形态由低级到高级的演进，所以社会基本矛盾是社会发展的基本动力。<br>（2）两对社会基本矛盾之间的关系不是互相孤立、平行的，而是相互制约、有主次之分的：①由于生产力决定生产关系、生产关系作为社会的经济基础又决定上层建筑，所以生产力与生产关系之间的矛盾对于经济基础与上层建筑之间的矛盾起着主导作用，上层建筑与经济基础之间的矛盾根源于生产力与生产关系之间的矛盾；②由于生产关系对生产力有反作用，上层建筑对经济基础有反作用，经济基础是联系上层建筑和生产力的中间环节，所以生产力和生产关系之间矛盾的解决，又有赖于经济基础和上层建筑之间矛盾的解决。<br>（3）意义：生产关系必须适合生产力性质的规律和上层建筑必须适合经济基础发展要求的规律，是无产阶级政党制定正确的路线、方针、政策的理论依据。正确理解和运用这两个规律，对于我国正在进行的改革开放和社会主义现代化建设以及其他方面的改革，具有重大的指导意义。我国社会主义初级阶段实行以公有制为主体、多种所有制经济共同发展的基本经济制度，就是以这一规律为理论依据的。"},
+{id:230,type:'essay',stem:"试述人民群众是历史的创造者以及无产阶级政党的群众观点和群众路线。",answer:"（1）人民群众是指推动历史发展的绝大多数社会成员的总和，这个范畴既有量的规定性（社会成员的大多数），又有质的规定性（一切推动历史发展和社会进步的社会力量），是一个历史范畴。历史唯物主义从社会存在决定社会意识和物质资料的生产方式是人类社会存在和发展的基础的基本原理出发，得出了人民群众是历史的创造者的结论。其作用表现在：①人民群众是物质财富的创造者；②人民群众是精神财富的创造者；③人民群众是实现社会变革的决定力量。但人民群众不能随心所欲地创造历史，其活动受既定的历史条件的制约，因此必须坚持以人为本。<br>（2）群众观点是无产阶级政党的根本观点，主要包括：①人民群众自己解放自己的观点；②全心全意为人民服务的观点；③向人民群众负责的观点；④向人民群众学习的观点。<br>（3）党的群众路线的内容是：“一切为了群众，一切依靠群众，从群众中来，到群众中去。”“一切为了群众”是群众路线的基本出发点和最终归宿；“一切依靠群众”是群众路线的根本要求；“从群众中来，到群众中去”是无产阶级政党的领导方法，也是群众路线的基本工作方法。从认识论看，“从群众中来”就是从实践到认识的过程，“到群众中去”就是从认识到实践的过程，群众路线同马克思主义哲学认识论是完全一致的。<br>（4）意义：我们党的最大政治优势是密切联系群众，党执政后的最大危险是脱离群众。推进党的作风建设，核心是保持党同人民群众的血肉联系。在改革开放和现代化建设的新形势下，坚持党的群众路线具有十分重大的意义。"},
+{id:231,type:'essay',stem:"试述资本周转速度对剩余价值生产的影响。",answer:"（1）资本周转速度对年剩余价值量的影响：在全部预付资本中，只有其中的可变资本是剩余价值的源泉。在一年之内，可变资本周转的速度越快，带来的年剩余价值总量就越多；反之，带来的年剩余价值总量就越少。年剩余价值量的计算公式为：M=m′·v·n（其中n为可变资本的周转次数）。<br>（2）资本周转速度对年剩余价值率的影响：年剩余价值率是一年内生产的剩余价值总量同一年内预付的可变资本数量的比率，它表示预付可变资本在一年中的增殖程度，用公式表示为：M′=M/v=m′·n。预付产业资本的周转速度越快，年剩余价值总量也就越多，年剩余价值率也就越高；反之，年剩余价值率就越低。<br>（3）结论：资本周转速度与资本的周转时间成反比，与周转次数成正比。资本家为了攫取更多的剩余价值，总是设法缩短生产时间和流通时间、优化生产资本的构成，以加快资本的周转速度。"},
+
+];
+/* ============================================================
+ * 二、知识点背诵：章节考点速记（按内置题库单选试题的章节分组整理）
+ * ============================================================ */
+const CHAPTERS = [
+/* 章节考点速记：按单选题的【章节】分组，每条要点由该题题干与正确答案组合而成 */
+  { title:"绪论",
+    para:"本章对应内置试卷单选题第 1—7 题（共 7 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "马克思主义产生的时间是（19世纪40年代中期）",
+      "马克思主义产生的阶级基础是（资本主义迅速发展及其内在矛盾的尖锐化，以及工人阶级作为独立的政治力量登上历史舞台）",
+      "下列各项中，不属于马克思主义产生的直接理论来源的是（古希腊罗马哲学）",
+      "马克思主义的理论特征是（以实践为基础的科学性和革命性的统一）",
+      "马克思主义的理论品质是（与时俱进）",
+      "马克思主义最高的社会理想是（实现共产主义）",
+      "坚持学习马克思主义的根本方法是（理论联系实际）",
+    ] },
+  { title:"第一章　物质世界及其发展规律",
+    para:"本章对应内置试卷单选题第 8—27 题（共 20 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "哲学的基本问题是（思维和存在的关系问题）",
+      "划分唯物主义和唯心主义的唯一标准是（对思维和存在何者为第一性问题的不同回答）",
+      "划分可知论和不可知论的唯一标准是（对思维和存在有无同一性问题的不同回答）",
+      "社会历史观的基本问题是（社会存在和社会意识的关系问题）",
+      "唯物辩证法和形而上学的根本对立和斗争焦点在于（是否承认矛盾是事物发展的动力）",
+      "马克思主义物质观指出，客观实在性是一切物质的（共性）",
+      "只承认绝对运动不承认相对静止，会导致（相对主义诡辩论）",
+      "时间的特点是（一维性）",
+      "发展的实质是（新事物的产生和旧事物的灭亡）",
+      "事物发展变化的根据和第一位的原因是（内因）",
+      "具体问题具体分析是马克思主义的（活的灵魂）",
+      "矛盾问题的精髓是（矛盾的普遍性和特殊性的辩证关系）",
+      "“白马非马”这一诡辩命题的错误在于割裂了（矛盾普遍性和特殊性的联系）",
+      "度是指事物保持自己质的（数量限度（或范围、幅度））",
+      "作为发展环节和联系环节之统一的辩证否定是扬弃，扬弃是指（既克服又保留）",
+      "否定之否定规律揭示了事物发展的（总趋势是前进的，具体道路是曲折的）",
+      "规律具有的两个特点是（客观性和普遍性）",
+      "在意识产生过程中起决定性作用的是（社会性劳动）",
+      "意识的本质是（客观世界的主观映像）",
+      "意识的能动性最突出的表现是（意识能通过指导实践改造客观物质世界）",
+    ] },
+  { title:"第二章　认识的本质及其规律",
+    para:"本章对应内置试卷单选题第 28—35 题（共 8 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "认识主体的突出特点是（能动性）",
+      "主体和客体之间首要的基本关系是（实践关系）",
+      "马克思主义认识论认为，认识的本质是（在实践中主体对客体的能动反映）",
+      "在欧洲近代哲学中，不可知论的两位典型代表人物是（休谟和康德）",
+      "认识过程中具有更加重大意义的飞跃是（从理性认识到实践）",
+      "毛泽东概括的认识运动的总规律是（实践、认识、再实践、再认识，循环往复以至无穷）",
+      "实用主义哲学提出的“有用即真理”是一种（主观真理论）",
+      "党的思想路线的核心是（实事求是）",
+    ] },
+  { title:"第三章　人类社会及其发展规律",
+    para:"本章对应内置试卷单选题第 36—48 题（共 13 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "在社会存在的三个方面中，对社会发展起决定作用的是（生产方式）",
+      "从反映社会存在的程度和特点来看，社会意识包括社会心理和思想体系，其中社会心理是社会意识的（低级层次）",
+      "下列思想体系中，属于非意识形态范围的是（自然科学）",
+      "生产工具是劳动资料的主要内容，它是（生产力发展水平的主要标志）",
+      "现代生产力系统中的渗透性因素主要指（自然科学）",
+      "提出“科学技术是第一生产力”著名论断的是（邓小平）",
+      "生产关系的三项内容中起决定作用的是（生产资料的所有制形式）",
+      "经济基础是指一个社会中（占统治地位的生产关系各个方面的总和）",
+      "以生产力和技术发展水平以及与此相适应的产业结构为标准划分的技术社会形态序列是（渔猎社会—农业社会—工业社会—信息社会）",
+      "划分阶级的唯一标准是（经济标准）",
+      "社会革命的首要的基本的标志是（国家政权从反动阶级手里转移到革命的进步的阶级手里）",
+      "劳动是人的（一般本质）",
+      "我们党的最大政治优势是（密切联系群众）",
+    ] },
+  { title:"第四章　资本主义的形成及其本质",
+    para:"本章对应内置试卷单选题第 49—65 题（共 17 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "商品经济产生和存在的决定性条件是（生产资料和劳动产品属于不同的所有者）",
+      "在商品的二因素中，使用价值和价值的关系是（使用价值是价值的物质承担者）",
+      "创造商品价值的劳动是（抽象劳动）",
+      "决定商品价值量的是（社会必要劳动时间）",
+      "货币的本质是（固定充当一般等价物的商品）",
+      "以私有制为基础的商品经济的基本矛盾是（私人劳动和社会劳动的矛盾）",
+      "价值规律作用的表现形式是（价格围绕价值上下波动）",
+      "资本主义生产关系产生的基础是（封建社会小商品生产者的两极分化）",
+      "劳动力成为商品是（货币转化为资本）的前提",
+      "资本就是能够带来（剩余价值）的价值",
+      "在工作日长度不变的条件下，由于缩短必要劳动时间、相应延长剩余劳动时间而生产的剩余价值是（相对剩余价值）",
+      "超额剩余价值就是商品的（个别价值低于社会价值）之间的差额",
+      "把剩余价值再转化为资本，或者说剩余价值的资本化，叫做（资本积累）",
+      "由资本技术构成所决定并且反映资本技术构成变化的资本价值构成，叫做资本有机构成，它可用公式表示为（c：v）",
+      "相对过剩人口是指（劳动力的供给相对于资本对劳动力的需求来说而过剩）",
+      "资本主义政治制度的核心是（国家制度）",
+      "资本主义意识形态的核心是（利己主义）",
+    ] },
+  { title:"第五章　资本的流通过程和剩余价值的分配",
+    para:"本章对应内置试卷单选题第 66—86 题（共 21 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "产业资本循环的三种职能形式是（货币资本、生产资本、商品资本）",
+      "产业资本实现连续循环的现实条件是三种职能形式在（空间上并存、时间上继起）",
+      "资本的周转速度与资本的周转时间（成反比）",
+      "固定资本和流动资本划分的依据是（生产资本不同部分的价值周转方式不同）",
+      "年剩余价值率是预付可变资本在一年中的增殖程度，用公式表示为（m′·n）",
+      "考察社会资本再生产的核心问题是（社会总产品的实现问题）",
+      "社会资本简单再生产的基本实现条件是（Ⅰ(v+m)=Ⅱc）",
+      "社会资本扩大再生产的基本实现条件是（Ⅰ(v+Δv+m/x)=Ⅱ(c+Δc)）",
+      "资本主义经济危机实质上是（生产相对过剩）的危机",
+      "资本主义经济危机爆发的根源在于（生产的社会化与生产资料私人资本主义占有形式之间的矛盾）",
+      "就数量关系而言，利润率与剩余价值率的关系是（利润率总是小于剩余价值率）",
+      "平均利润是通过（部门之间的竞争和资本在不同部门之间的转移）形成的",
+      "生产价格是（生产成本与平均利润之和）",
+      "超额利润是商品的（个别生产价格低于社会生产价格）的差额",
+      "商业利润的来源是（产业部门的工人创造的剩余价值）",
+      "利息率的波动区间是（低于平均利润率高于零）",
+      "股票价格的计算公式是（股息÷存款利息率）",
+      "级差地租形成的原因是（对土地的资本主义经营垄断）",
+      "级差地租Ⅱ形成的条件是（在同一块土地上连续追加投资的劳动生产率不同）",
+      "绝对地租形成的原因在于（资本主义农业中的土地私有权垄断）",
+      "土地价格的计算公式是（地租÷存款利息率）",
+    ] },
+  { title:"第六章　资本主义发展的历史进程",
+    para:"本章对应内置试卷单选题第 87—93 题（共 7 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "垄断是从（自由竞争）中产生的",
+      "金融资本是由垄断的工业资本和银行资本（融合或混合生长）构成的一种新的资本形式",
+      "金融寡头在经济上统治的主要方式是（参与制）",
+      "垄断利润是垄断资本凭借其在生产和流通中的垄断地位所获得的（大大超过平均利润）的高额利润",
+      "国家垄断资本主义产生的根源是（生产力的发展，私人垄断不能适应社会化生产程度的进一步发展）",
+      "垄断阶段资本输出的必要性在于大量所谓（过剩资本）的出现",
+      "经济全球化萌芽于（国际分工）",
+    ] },
+  { title:"第七章　社会主义社会及其发展",
+    para:"本章对应内置试卷单选题第 94—99 题（共 6 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "早期空想社会主义出现于16—17世纪，其代表人物是（莫尔和康帕内拉）",
+      "成为马克思主义科学社会主义直接理论来源的是19世纪的（法国的圣西门、傅立叶和英国的欧文）等人的思想",
+      "标志着科学社会主义理论公开问世的是1848年2月发表的（《共产党宣言》）",
+      "提出社会主义革命可以在一国或数国首先胜利理论的是（列宁）",
+      "苏联宣布建成社会主义的时间是（1936年12月）",
+      "马克思主义政党的组织原则是（民主集中制）",
+    ] },
+  { title:"第八章　共产主义社会是人类最崇高的社会理想",
+    para:"本章对应内置试卷单选题第 100—102 题（共 3 题），以下考点速记由本章试题题干与正确答案整理而成；多选、判断、简答与论述题请前往刷题中心作答。",
+    points:[
+      "共产主义社会个人消费品的分配原则是（按需分配）",
+      "共产主义社会消灭了一切阶级和阶级差别，国家将（自行消亡）",
+      "社会主义是走向共产主义的（必由之路）",
+    ] },
+
+];
+
+/* ============================================================
+ * 三、全局状态与本地存储（localStorage 持久化）
+ * ============================================================ */
+const LS_THEME='my_theme', LS_RECORDS='my_records', LS_WRONG='my_wrong', LS_SHUFFLE='my_shuffle';
+function loadJSON(key,fallback){
+  try{ const v=JSON.parse(localStorage.getItem(key)); return v===null?fallback:v; }
+  catch(e){ return fallback; }
+}
+let records  = loadJSON(LS_RECORDS,[]);  // 历史成绩记录（刷题记录、考试分数）
+let wrongIds = loadJSON(LS_WRONG,[]);    // 错题本（题目 id 列表）
+function saveRecords(){ localStorage.setItem(LS_RECORDS,JSON.stringify(records)); }
+function saveWrong(){ localStorage.setItem(LS_WRONG,JSON.stringify(wrongIds)); }
+
+const state = {
+  page:'home',                                          // 当前页面
+  scores:{ single:2, multiple:4, judge:2, short:10, essay:20 }, // 每种题型每题分值
+  order : QUESTIONS.map(q=>q.id),                       // 当前题目顺序（乱序模式开=随机排列，关=章节固定顺序）
+  answers:{},          // 每题作答状态 {selected,submitted,correct,hint,showAnswer,draft,recordedScore}
+  recite:false,        // 背诵模式开关（隐藏全部答案，只留题干）
+  shuffle:false,       // 乱序模式开关（开=每次打开重新随机排列；关=按章节固定顺序），偏好存 localStorage
+  timer:{ enabled:false, running:false, sec:0, handler:null } // 考场计时器
+};
+
+/* ============================================================
+ * 四、日间 / 黑夜护眼模式一键切换（选择结果存入 localStorage）
+ * ============================================================ */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('themeBtn').textContent = (t==='dark') ? '☀️ 日间模式' : '🌙 黑夜护眼模式';
+  localStorage.setItem(LS_THEME,t);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur==='dark' ? 'light' : 'dark');
+}
+
+/* ============================================================
+ * 五、页面切换（导航栏 4 个菜单 + 成绩单页）
+ * ============================================================ */
+function switchPage(page){
+  state.page = page;
+  document.querySelectorAll('.page').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  // 成绩单页归属「刷题中心」导航项高亮
+  const navKey = (page==='report') ? 'quiz' : page;
+  document.querySelectorAll('#mainNav .nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===navKey));
+  if(page==='wrong') renderWrongBook();  // 进入错题本时刷新展示
+  window.scrollTo(0,0);
+}
+
+/* ============================================================
+ * 六、知识点背诵：章节渲染与折叠 / 展开
+ * ============================================================ */
+function renderChapters(){
+  document.getElementById('chapterList').innerHTML = CHAPTERS.map((c,i)=>`
+    <div class="chapter" id="ch-${i}">
+      <div class="chapter-head" onclick="toggleChapter(${i})">
+        <h3>${c.title}</h3><span class="chapter-arrow" id="ch-arrow-${i}">点击展开 ▾</span>
+      </div>
+      <div class="chapter-body">
+        <p>${c.para}</p>
+        <ul>${c.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+      </div>
+    </div>`).join('');
+  toggleChapter(0,true); // 默认展开第一章，方便背诵时快速定位
+}
+function toggleChapter(i,forceOpen){
+  const el=document.getElementById('ch-'+i);
+  const opening = (forceOpen===true) ? true : !el.classList.contains('open');
+  el.classList.toggle('open',opening);
+  document.getElementById('ch-arrow-'+i).textContent = opening ? '点击收起 ▴' : '点击展开 ▾';
+}
+/* ============================================================
+ * 七、刷题中心：题目渲染与作答交互
+ * ============================================================ */
+const qById = id => QUESTIONS.find(q=>q.id===id);
+const isObjective = q => ['single','multiple','judge'].includes(q.type); // 客观题（自动批改）
+const fullOf = q => Number(state.scores[q.type])||0;                    // 每题满分（随自定义分值变化）
+const earnedOf = q => {                                                  // 每题已得分
+  const a=state.answers[q.id]; if(!a) return 0;
+  if(isObjective(q)) return (a.submitted && a.correct) ? fullOf(q) : 0;
+  const s=Number(a.recordedScore);
+  return isNaN(s) ? 0 : Math.min(Math.max(s,0), fullOf(q));             // 主观题手动得分
+};
+const totalFull = () => state.order.reduce((s,id)=>s+fullOf(qById(id)),0); // 整卷满分
+
+/* 渲染题目列表；背诵模式下隐藏全部答案，只保留题干 */
+function renderQuestions(){
+  const box=document.getElementById('questionList');
+  if(state.recite){
+    box.innerHTML = state.order.map((id,i)=>{
+      const q=qById(id);
+      return `<div class="q-card">
+        <div class="q-top"><span class="q-no">第${i+1}题</span><span class="q-type">${TYPE_META[q.type].name}</span></div>
+        <div class="q-stem">${q.stem}</div>
+      </div>`;
+    }).join('');
+    return;
+  }
+  box.innerHTML = state.order.map((id,i)=>renderOne(qById(id),i)).join('');
+}
+
+/* 渲染单道题目卡片 */
+function renderOne(q,i){
+  const a=state.answers[q.id]||{};
+  const full=fullOf(q);
+  const marked=wrongIds.includes(q.id);
+  let html=`<div class="q-card">
+    <div class="q-top">
+      <span class="q-no">第${i+1}题</span>
+      <span class="q-type">${TYPE_META[q.type].name}</span>
+      <span class="q-score">本题 ${full} 分</span>
+      <span class="q-mark"><button class="btn btn-sm ${marked?'on':''}" onclick="toggleMark(${q.id})">${marked?'★ 已加入错题本':'☆ 标记错题'}</button></span>
+    </div>
+    <div class="q-stem">${q.stem}</div>`;
+  /* 客观题选项（提交后锁定） */
+  if(isObjective(q)){
+    html += q.options.map((opt,idx)=>{
+      const letter=String.fromCharCode(65+idx);
+      const sel=a.selected&&a.selected.includes(letter);
+      return `<button type="button" class="opt ${sel?'selected':''}" ${a.submitted?'disabled':''} onclick="chooseOpt(${q.id},'${letter}')">${letter}. ${opt}</button>`;
+    }).join('');
+  }
+  /* 操作按钮：提交本题（客观题）/ 查看参考答案 */
+  html+=`<div class="q-actions">`;
+  if(isObjective(q) && !a.submitted) html+=`<button class="btn btn-sm btn-primary" onclick="submitOne(${q.id})">提交本题</button>`;
+  html+=`<button class="btn btn-sm" onclick="toggleAnswer(${q.id})">${a.showAnswer?'收起参考答案':'查看参考答案'}</button></div>`;
+  /* 批改反馈：客观题提交后自动批改、自动算分 */
+  if(a.submitted){
+    html += a.correct
+      ? `<div class="q-feedback ok">回答正确，本题得 ${full} 分。</div>`
+      : `<div class="q-feedback bad">回答错误，本题得 0 分。可点击「查看参考答案」对照解析。</div>`;
+  } else if(a.hint){
+    html += `<div class="q-feedback note">${a.hint}</div>`;
+  }
+  /* 参考答案区：默认隐藏，点击按钮后展示；主观题附带手动输入得分 */
+  if(a.showAnswer){
+    html+=`<div class="q-answer"><div class="ans-label">参考答案：</div>`;
+    if(isObjective(q)){
+      const ansTxt = (q.type==='judge') ? (q.answer==='A'?'正确':'错误') : q.answer.split('').join('、');
+      const optTxt = q.answer.split('').map(l=>l+'. '+q.options[l.charCodeAt(0)-65]).join('；');
+      html+=`<div>${ansTxt}（${optTxt}）</div><div style="margin-top:6px;color:var(--muted)">解析：${q.analysis}</div>`;
+    }else{
+      html+=`<div style="white-space:pre-wrap">${q.answer}</div>
+        <div class="self-score-row">自我评估得分：
+          <input class="score-input" type="number" min="0" max="${full}" step="0.5" value="${a.draft!==undefined?a.draft:''}" oninput="draftScore(${q.id},this.value)">
+          <span style="color:var(--muted)">/ ${full} 分</span>
+          <button class="btn btn-sm" onclick="recordScore(${q.id})">记录得分</button>
+          ${(a.recordedScore!==undefined)?`<span style="color:var(--accent-dark)">已记录：${a.recordedScore} 分</span>`:''}
+        </div>`;
+    }
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  return html;
+}
+
+/* 选择选项：单选 / 判断直接覆盖，多选可切换 */
+function chooseOpt(id,letter){
+  const q=qById(id), a=state.answers[id]||(state.answers[id]={selected:[]});
+  if(a.submitted) return;              // 已提交批改，锁定选项
+  if(!a.selected) a.selected=[];
+  if(q.type==='multiple'){
+    const i=a.selected.indexOf(letter);
+    (i>-1) ? a.selected.splice(i,1) : a.selected.push(letter);
+  }else{
+    a.selected=[letter];
+  }
+  a.hint='';
+  renderQuestions();
+}
+
+/* 提交单道客观题：程序自动批改、自动算出得分 */
+function submitOne(id){
+  const q=qById(id), a=state.answers[id];
+  if(!a || !a.selected || a.selected.length===0){
+    state.answers[id]={selected:[],hint:'请先选择选项，再提交本题。'};
+    renderQuestions(); return;
+  }
+  const mine=a.selected.slice().sort().join('');
+  a.submitted=true;
+  a.correct=(mine===q.answer.split('').sort().join('')); // 与正确答案比对
+  renderQuestions();
+}
+
+/* 展开 / 收起参考答案 */
+function toggleAnswer(id){
+  const a=state.answers[id]||(state.answers[id]={selected:[]});
+  a.showAnswer=!a.showAnswer;
+  renderQuestions();
+}
+
+/* 主观题：自评得分草稿 + 手动记录得分 */
+function draftScore(id,v){ const a=state.answers[id]||(state.answers[id]={}); a.draft=v; }
+function recordScore(id){
+  const q=qById(id), a=state.answers[id]||(state.answers[id]={});
+  const full=fullOf(q), s=Number(a.draft);
+  if(a.draft===undefined || a.draft==='' || isNaN(s)){ alert('请先输入 0 ~ '+full+' 之间的得分。'); return; }
+  a.recordedScore=Math.min(Math.max(s,0),full); // 限制在 0 ~ 满分之间
+  renderQuestions();
+}
+
+/* 标记 / 取消标记：把题目加入或移出错题本（存入 localStorage） */
+function toggleMark(id){
+  const i=wrongIds.indexOf(id);
+  (i>-1) ? wrongIds.splice(i,1) : wrongIds.push(id);
+  saveWrong();
+  renderQuestions();
+}
+/* ============================================================
+ * 八、刷题附加工具：① 计时器 ② 乱序 ③ 自定义分值 ④ 背诵模式
+ * ============================================================ */
+/* ① 考场计时器：可开启 / 关闭；开启后可开始 / 暂停计时 */
+function toggleTimerSwitch(){
+  const t=state.timer;
+  t.enabled=!t.enabled;
+  if(!t.enabled && t.running){ clearInterval(t.handler); t.running=false; document.getElementById('timerRunBtn').textContent='开始'; }
+  const sw=document.getElementById('timerSwitch');
+  sw.textContent=t.enabled?'关闭计时器':'开启计时器';
+  sw.classList.toggle('on',t.enabled);
+  document.getElementById('timerBox').style.display=t.enabled?'inline-flex':'none';
+}
+function toggleTimerRun(){
+  const t=state.timer; if(!t.enabled) return; // 计时器未开启时不可启停
+  const btn=document.getElementById('timerRunBtn');
+  if(t.running){ clearInterval(t.handler); t.running=false; btn.textContent='继续'; }
+  else{
+    t.handler=setInterval(()=>{ t.sec++; document.getElementById('timerDisplay').textContent=fmtTime(t.sec); },1000);
+    t.running=true; btn.textContent='暂停';
+  }
+}
+function fmtTime(s){ const m=String(Math.floor(s/60)).padStart(2,'0'), r=String(s%60).padStart(2,'0'); return m+':'+r; }
+
+/* ② 题目乱序：开关式 —— 开启后每次打开页面都重新随机排列，关闭后恢复章节固定顺序 */
+function toggleShuffle(){
+  state.shuffle=!state.shuffle;
+  localStorage.setItem(LS_SHUFFLE,state.shuffle?'1':'0');   // 记住乱序偏好，下次打开自动生效
+  applyOrder();
+  const b=document.getElementById('shuffleBtn');
+  b.textContent='乱序模式：'+(state.shuffle?'开':'关');
+  b.classList.toggle('on',state.shuffle);
+}
+/* 按乱序开关重排题目顺序：开=从固定题序出发重新洗牌（Fisher-Yates，每次结果都不同）；关=章节固定顺序 */
+function applyOrder(skipRender){
+  const o=QUESTIONS.map(q=>q.id);
+  if(state.shuffle){
+    for(let i=o.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [o[i],o[j]]=[o[j],o[i]];
+    }
+  }
+  state.order=o;
+  if(!skipRender) renderQuestions();
+}
+
+/* ③ 自定义分值：修改每种题型每题分值，即时生效并更新整卷满分 */
+function onScoreChange(type,val){
+  state.scores[type]=Math.max(0,Number(val)||0);
+  document.getElementById('fullScoreLbl').textContent=totalFull();
+  renderQuestions();
+}
+
+/* ④ 背诵模式：一键隐藏全部答案与选项，只保留题干 */
+function toggleReciteMode(){
+  state.recite=!state.recite;
+  const b=document.getElementById('reciteModeBtn');
+  b.textContent='背诵模式：'+(state.recite?'开':'关');
+  b.classList.toggle('on',state.recite);
+  renderQuestions();
+}
+
+/* ============================================================
+ * 九、整卷提交：自动批改汇总 + 切换成绩单 + 保存历史记录
+ * ============================================================ */
+function submitAll(){
+  const full=totalFull();
+  const total=state.order.reduce((s,id)=>s+earnedOf(qById(id)),0);
+  const rate=(full>0)?Math.round(total/full*1000)/10:0; // 答题正确率（得分率）
+  /* 统计做错的题目：客观题未作答 / 答错；主观题未自评 / 得分未达满分 */
+  const wrongList=state.order.filter(id=>{
+    const q=qById(id), a=state.answers[id];
+    if(isObjective(q)) return !a || !a.submitted || !a.correct;
+    return !a || a.recordedScore===undefined || earnedOf(q)<fullOf(q);
+  });
+  /* 保存本次成绩到 localStorage（关闭网页后不丢失） */
+  records.unshift({ time:new Date().toLocaleString('zh-CN'), total, full, rate, wrong:wrongList.length });
+  saveRecords();
+  /* 填充成绩单页面 */
+  document.getElementById('rptTotal').textContent=total+' / '+full;
+  document.getElementById('rptRate').textContent=rate+'%';
+  document.getElementById('rptWrong').textContent=wrongList.length;
+  document.getElementById('rptWrongList').innerHTML = (wrongList.length===0)
+    ? '<div class="empty-tip">太棒了，本次没有做错的题目。</div>'
+    : wrongList.map(id=>{
+        const q=qById(id), a=state.answers[id];
+        let tag;
+        if(isObjective(q)) tag=(!a||!a.submitted)?'未作答':'答错';
+        else tag=(a&&a.recordedScore!==undefined)?'得分未达满分':'未自评';
+        const ans=isObjective(q)
+          ? '正确答案：'+((q.type==='judge')?(q.answer==='A'?'正确':'错误'):q.answer)
+          : '参考答案：'+q.answer;
+        return `<div class="wrong-item">
+            <div>【${TYPE_META[q.type].name}】${q.stem}</div>
+            <div class="wi-meta"><span class="wi-tag">（${tag}）</span>本题得分 ${earnedOf(q)} / ${fullOf(q)} 分　${ans}</div>
+          </div>`;
+      }).join('');
+  switchPage('report'); // 切换到成绩单页面
+}
+
+/* 重新刷题：清空本次作答，按乱序开关重排题序（开=重新随机，关=章节固定）并重置计时器 */
+function restartQuiz(){
+  state.answers={};
+  applyOrder(true);
+  const t=state.timer;
+  if(t.running){ clearInterval(t.handler); t.running=false; }
+  t.sec=0;
+  document.getElementById('timerDisplay').textContent='00:00';
+  document.getElementById('timerRunBtn').textContent='开始';
+  renderQuestions();
+  switchPage('quiz');
+}
+/* ============================================================
+ * 十、错题本：历史成绩记录 + 错题列表展示
+ * ============================================================ */
+function renderWrongBook(){
+  /* 历史成绩记录（localStorage 中的考试分数） */
+  const rEl=document.getElementById('recordList');
+  rEl.innerHTML = (records.length===0)
+    ? '<div class="empty-tip">暂无成绩记录，去刷题中心完成一整卷练习吧。</div>'
+    : `<table class="record-table">
+         <tr><th>序号</th><th>时间</th><th>总分 / 满分</th><th>正确率</th><th>做错题数</th></tr>
+         ${records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.time}</td><td>${r.total} / ${r.full}</td><td>${r.rate}%</td><td>${r.wrong}</td></tr>`).join('')}
+       </table>`;
+  /* 收藏的错题列表 */
+  const wEl=document.getElementById('wrongList');
+  const qs=wrongIds.map(qById).filter(Boolean);
+  wEl.innerHTML = (qs.length===0)
+    ? '<div class="empty-tip">暂无标记的错题。刷题时点击「☆ 标记错题」即可收藏到错题本。</div>'
+    : qs.map(q=>{
+        const ans=isObjective(q)
+          ? '正确答案：'+((q.type==='judge')?(q.answer==='A'?'正确':'错误'):q.answer.split('').join('、'))
+          : '参考答案：'+q.answer;
+        const opts=isObjective(q)
+          ? `<div style="font-size:13.5px;color:var(--muted);margin-top:4px">${q.options.map((o,k)=>String.fromCharCode(65+k)+'. '+o).join('　')}</div>`
+          : '';
+        return `<div class="wrong-q">
+            <div class="q-top">
+              <span class="q-type">${TYPE_META[q.type].name}</span>
+              <span class="q-mark"><button class="btn btn-sm" onclick="toggleMark(${q.id});renderWrongBook();">移除本题</button></span>
+            </div>
+            <div class="q-stem" style="margin:6px 0 0">${q.stem}</div>${opts}
+            <div class="wq-ans">${ans}</div>
+          </div>`;
+      }).join('');
+}
+
+/* 一键清空所有成绩记录（重置按钮 1） */
+function clearRecords(){
+  if(!confirm('确定要清空所有成绩记录吗？此操作不可恢复。')) return;
+  records=[]; saveRecords(); renderWrongBook();
+}
+/* 一键清空全部错题（重置按钮 2） */
+function clearWrong(){
+  if(!confirm('确定要清空全部错题吗？此操作不可恢复。')) return;
+  wrongIds=[]; saveWrong(); renderWrongBook(); renderQuestions();
+}
+
+/* ============================================================
+ * 十一、试卷导出打印：新窗口生成 A4 试卷（当前题序 + 自定义分值），末页附参考答案
+ * ============================================================ */
+function exportPaper(){
+  const w=window.open('','_blank');
+  if(!w){ alert('导出窗口被浏览器拦截，请允许本页弹出窗口后重试。'); return; }
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escBr=s=>esc(s).replace(/&lt;br&gt;/g,'<br>');            // 保留主观题答案中的换行
+  const qs=state.order.map(qById);
+  const now=new Date(), pad=n=>String(n).padStart(2,'0');
+  const time=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+' '+pad(now.getHours())+':'+pad(now.getMinutes());
+  const cnt=t=>qs.filter(q=>q.type===t).length;
+  const parts=qs.map((q,i)=>{
+    const no='第'+(i+1)+'题', sc=state.scores[q.type], meta=TYPE_META[q.type];
+    if(q.type==='short'||q.type==='essay'){                        // 主观题：题干 + 答题留白区
+      return '<div class="q"><div class="qh"><b>'+no+'</b>（'+meta.name+'，'+sc+' 分）</div><div class="stem">'+esc(q.stem)
+        +'</div><div class="space '+(q.type==='essay'?'h16':'h8')+'"></div></div>';
+    }
+    const stem=esc(q.stem)+(q.type==='judge'?'（　）':'');          // 判断题在句末补（　）
+    const opts=q.options.map((o,k)=>'<div class="opt">'+String.fromCharCode(65+k)+'. '+esc(o)+'</div>').join('');
+    return '<div class="q"><div class="qh"><b>'+no+'</b>（'+meta.name+'，'+sc+' 分）</div><div class="stem">'+stem+'</div>'+opts+'</div>';
+  });
+  const cards=qs.filter(q=>q.type!=='short'&&q.type!=='essay')     // 客观题答案卡：题号+答案（判断题 √/×）
+    .map(q=>'<span>'+(state.order.indexOf(q.id)+1)+'<b>'+(q.type==='judge'?(q.answer==='A'?'√':'×'):q.answer)+'</b></span>').join('');
+  const fixes=qs.filter(q=>q.type==='judge'&&q.answer==='B')       // 判断题错项更正
+    .map(q=>'<p class="fix">第'+(state.order.indexOf(q.id)+1)+'题【更正】'+esc(q.analysis.replace(/^【更正】/,''))+'</p>').join('');
+  const texts=qs.filter(q=>q.type==='short'||q.type==='essay')     // 主观题参考答案全文
+    .map(q=>'<div class="ans"><p class="ans-h">第'+(state.order.indexOf(q.id)+1)+'题（'+TYPE_META[q.type].name+'）参考答案：</p><p class="ans-b">'+escBr(q.answer)+'</p></div>').join('');
+  w.document.write(
+'<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>马原期末备考模拟试卷</title><style>'
++'@page{size:A4;margin:14mm 13mm}*{box-sizing:border-box}body{margin:0;font-family:"Times New Roman","SimSun",宋体,serif;color:#000;font-size:10.5pt;line-height:1.65}'
++'.toolbar{position:fixed;top:0;left:0;right:0;background:#f5f5f5;border-bottom:1px solid #ccc;padding:8px 14px;font-size:13px;font-family:system-ui,sans-serif;display:flex;gap:12px;align-items:center}'
++'.toolbar button{padding:6px 16px;border:1px solid #888;background:#fff;border-radius:6px;cursor:pointer;font-size:13px}'
++'.toolbar button:hover{background:#eee}.paper{max-width:186mm;margin:0 auto;padding-top:52px}'
++'h1{font-size:16pt;text-align:center;margin:0 0 4px}.meta{text-align:center;font-size:9.5pt;color:#333;margin:0 0 2px}hr{border:none;border-top:1.5pt solid #000;margin:6px 0 10px}'
++'.q{page-break-inside:avoid;margin:0 0 9px}.qh{font-size:9.5pt;color:#555;margin-bottom:1px}.stem{margin-bottom:2px}.opt{margin-left:2em}'
++'.space{border:0.5pt solid #999;page-break-inside:avoid}.space.h8{height:8.2em}.space.h16{height:16.2em}'
++'.answers{page-break-before:always}h2{font-size:12pt;border-bottom:1pt solid #000;padding-bottom:2px}'
++'.cards{display:flex;flex-wrap:wrap;margin:6px 0 10px}.cards span{width:10%;border:0.5pt solid #999;text-align:center;font-size:9pt;padding:2px 0;margin:0 1pt 1pt 0}'
++'.cards b{margin-left:4px}.fix{font-size:9.5pt;margin:2px 0}.ans{margin:0 0 10px}.ans-h{font-weight:bold;margin:0 0 2px}.ans-b{margin:0}'
++'@media print{.toolbar{display:none}.paper{padding-top:0}}'
++'</style></head><body>'
++'<div class="toolbar"><button onclick="print()">🖨 打印 / 另存为 PDF</button><span>在打印对话框中可选择打印机或“另存为 PDF”；纸张 A4，已排好版，答案在末页。</span></div>'
++'<div class="paper"><h1>《马克思主义基本原理概论》期末备考模拟试卷</h1>'
++'<p class="meta">单选 '+cnt('single')+' 题 × '+state.scores.single+' 分　·　多选 '+cnt('multiple')+' 题 × '+state.scores.multiple+' 分　·　判断 '+cnt('judge')+' 题 × '+state.scores.judge
++' 分　·　简答 '+cnt('short')+' 题 × '+state.scores.short+' 分　·　论述 '+cnt('essay')+' 题 × '+state.scores.essay+' 分　·　满分 '+totalFull()+' 分</p>'
++'<p class="meta">题序：'+(state.shuffle?'乱序（随机）':'章节固定顺序')+'　·　生成时间：'+time+'　·　姓名：＿＿＿＿＿＿　班级：＿＿＿＿＿＿　得分：＿＿＿＿＿</p><hr>'
++parts.join('')
++'<div class="answers"><h2>参考答案</h2><div class="cards">'+cards+'</div>'
++(fixes?'<p style="font-weight:bold;font-size:10pt;margin:6px 0 2px">判断题错项更正：</p>'+fixes:'')
++(texts?'<p style="font-weight:bold;font-size:10pt;margin:10px 0 2px">主观题参考答案：</p>'+texts:'')
++'</div></div></body></html>');
+  w.document.close();
+}
+
+/* ============================================================
+ * 十二、初始化
+ * ============================================================ */
+function init(){
+  applyTheme(localStorage.getItem(LS_THEME)||'light'); // 恢复上次选择的主题
+  const sb=document.getElementById('shuffleBtn');       // 恢复乱序模式偏好（开=本次打开重新随机；关=章节固定顺序）
+  state.shuffle = localStorage.getItem(LS_SHUFFLE)==='1';
+  sb.textContent='乱序模式：'+(state.shuffle?'开':'关');
+  sb.classList.toggle('on',state.shuffle);
+  applyOrder(true);
+  /* 绑定导航栏与页面跳转按钮 */
+  document.querySelectorAll('#mainNav .nav-btn').forEach(b=>b.addEventListener('click',()=>switchPage(b.dataset.page)));
+  document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>switchPage(b.dataset.goto)));
+  /* 分值输入框填充默认值，并显示整卷满分 */
+  Object.keys(TYPE_META).forEach(t=>{ document.getElementById('sc-'+t).value=TYPE_META[t].def; });
+  document.getElementById('fullScoreLbl').textContent=totalFull();
+  renderChapters();   // 渲染知识点背诵章节
+  renderQuestions();  // 渲染题目列表
+  switchPage('home'); // 默认停留在首页
+}
+init();
+</script>
+</body>
+</html>
